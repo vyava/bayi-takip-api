@@ -23,9 +23,6 @@ export async function load (req: Request, res: Response, next: NextFunction, id:
  * Get user
  * @public
  */
-export async function get (req: Request, res: Response){
-    res.json("ok")
-}
 
 export async function getSehir(req : Request, res : Response){
   let sehir = req.param('sehir')
