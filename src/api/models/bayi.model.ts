@@ -52,12 +52,7 @@ const bayiSchema: Schema = new Schema(
 );
 
 
-const testSchema : Schema = new Schema({
-  _id : ObjectId,
-  il : String
-}, {
-  collection : "bayiler"
-})
+
 
 bayiSchema.static('getBayilerBySehir', (sehir: string, options: RequestOptions) => {
   return Bayi.find({ il: sehir }).select(options.select).limit(options.limit)
@@ -84,8 +79,6 @@ bayiSchema.static('setBayi', (options: IBayi) => {
  */
 
 export const Bayi: IBayiDocumentModel = mongoose.model<IBayiDocument, IBayiDocumentModel>("Bayi", bayiSchema);
-export const Test : any = mongoose.model("Test", testSchema)
-export default Bayi;
 
 
 // bayiSchema.set('toJSON', {

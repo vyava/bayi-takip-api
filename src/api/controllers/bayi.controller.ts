@@ -1,7 +1,7 @@
 export {};
 import { NextFunction, Request, Response, Router } from 'express';
 const httpStatus = require('http-status');
-import { Bayi, Test } from '../models/bayi.model';
+import { Bayi } from '../models/bayi.model';
 // import { startTimer, apiJson } from 'api/utils/Utils';
 const { handler: errorHandler } = require('../middlewares/error');
 

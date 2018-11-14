@@ -5,7 +5,7 @@ import {extend, array, string, number } from 'joi';
 import { Bayi } from '../models';
 const {LIMIT_MAX, LIMIT_MIN, LIMIT_DEFAULT} = require("../../config/vars")
 
-const custom = extend({
+const SELECT_CUSTOM_VALIDATE = extend({
   base : array(),
   name : "stringArray",
   coerce : (value : string, state, options) => (( value && value.includes(",")) ? value.split(",") : [value, "-_id"]) || ["il", "-_id"],
@@ -16,10 +16,10 @@ const custom = extend({
 })
 
 // Custom validation for selection
-const selectValidate = custom.stringArray().items(string()).sparse();
+const SELECT_VALIDATE = SELECT_CUSTOM_VALIDATE.stringArray().items(string()).sparse();
+const LIMIT_VALIDATE = number().less(LIMIT_MAX).greater(LIMIT_MIN).default(LIMIT_DEFAULT);
+const SEHIR_VALIDATE = string().only(["ADANA", "ANKARA", "İSTANBUL", "ORDU"]).uppercase().required();
 
-const limitSchema = number().less(LIMIT_MAX).greater(LIMIT_MIN).default(LIMIT_DEFAULT);
-const sehirSchema = string().only(["ADANA", "ANKARA", "İSTANBUL", "ORDU"]).uppercase().required()
 
 
 var validation : any = {
@@ -27,8 +27,8 @@ var validation : any = {
   getSehir: {
     query: {
       // sehir: Joi.string().max(5).required(),
-      limit : limitSchema,
-      select : selectValidate
+      limit : LIMIT_VALIDATE,
+      select : SELECT_VALIDATE
       // perPage: Joi.number()
       //   .min(1)
       //   .max(100),
@@ -37,18 +37,18 @@ var validation : any = {
       // role: Joi.string().valid(User.roles)
     },
     params : {
-      sehir : sehirSchema
+      sehir : SEHIR_VALIDATE
     }
   },
 
   // GET /v1/bayiler/{sehir}/{ilce}
   getIlce: {
     query: {
-      limit   : limitSchema,
-      select  : selectValidate
+      limit   : LIMIT_VALIDATE,
+      select  : SELECT_VALIDATE
     },
     params : {
-      sehir : sehirSchema,
+      sehir : SEHIR_VALIDATE,
       ilce  : string().uppercase()
     }
   },
