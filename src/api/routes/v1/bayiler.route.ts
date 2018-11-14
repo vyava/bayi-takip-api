@@ -8,7 +8,7 @@ import * as controller from "../../controllers/bayi.controller"
 // import {load} from "../../controllers/user.controller"
 const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth');
 // const { createUser, replaceUser, updateUser } = require('../../validations/bayi.validation');
-import { getSehir } from "../../validations/bayi.validation";
+import { getSehir, getIlce } from "../../validations/bayi.validation";
 
 const router = express.Router();
 
@@ -22,7 +22,15 @@ router
     // .get((req, res) => {
     //   res.json("ok")
     // })
-    .get(validate(getSehir), controller.get);
+    .get(validate(getSehir), controller.getSehir);
+router
+  .route("/yeni")
+
+    .get(controller.setBayi)
+router
+  .route("/get")
+  
+    .get(controller.findBayiById)
 router
   .route('/:sehir')
 
@@ -30,7 +38,8 @@ router
 router
   .route("/:sehir/:ilce")
     
-    .get(validate(getSehir), controller.getIlce)
+    .get(validate(getIlce), controller.getIlce)
+
   /**
    * @api {get} v1/users List Users
    * @apiDescription Get a list of users

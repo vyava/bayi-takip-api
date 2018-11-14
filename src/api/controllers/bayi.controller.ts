@@ -1,7 +1,7 @@
 export {};
 import { NextFunction, Request, Response, Router } from 'express';
 const httpStatus = require('http-status');
-import { Bayi } from '../models/bayi.model';
+import { Bayi, Test } from '../models/bayi.model';
 // import { startTimer, apiJson } from 'api/utils/Utils';
 const { handler: errorHandler } = require('../middlewares/error');
 
@@ -39,9 +39,32 @@ export async function getSehir(req : Request, res : Response){
 export async function getIlce(req : Request, res : Response){
   let sehir = req.param('sehir');
   let ilce = req.param('ilce');
-  let limit = req.query.limit || null
-  const user = await Bayi.getBayilerByIlce(sehir, ilce, limit);
+  let options = req.query || null;
+  console.log(options)
+  const user = Bayi.getBayilerByIlce(sehir, ilce, options);
+  
+  
   res.json(user);
+}
+
+export async function setBayi(req : Request, res : Response){
+  let options = req.query;
+  const bayi = await Bayi.findById("5bec0317ee6fd214c80bf9af");
+  res.json(bayi);
+}
+
+export async function findBayiById(req : Request, res : Response){
+  try{
+    let id = req.query.id;
+    let _bayi = await Bayi.findById("5bea83dbaf8c949699482755");
+    const bayi = await Bayi.findById(id).populate("distributor");
+    // bayi.distributor = _bayi._id;
+    // bayi.save();
+    res.json(bayi);
+  }catch(err) {
+    res.json(err)
+  }
+  
 }
 /**
  * Get logged in user info

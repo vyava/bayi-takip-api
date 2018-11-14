@@ -2,7 +2,7 @@ export { };
 import { NextFunction, Request, Response, Router } from 'express';
 // const mongoose = require('mongoose');
 import * as mongoose from "mongoose";
-import { Model, Document, Schema } from "mongoose";
+import { Model, Document, Schema, DocumentQuery } from "mongoose";
 const httpStatus = require('http-status');
 const { omitBy, isNil } = require('lodash');
 const bcrypt = require('bcryptjs');
@@ -10,74 +10,90 @@ const moment = require('moment-timezone');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
 import { getPageQuery, queryPromise } from '../utils/Utils';
-import { RequestOptions } from '../interface/request';
+import { RequestOptions, IBayiDocument, IBayi } from '../interface';
+import { ObjectId } from 'bson';
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 
 
-export interface IBayiDocument extends Document {
-  il: string;
-  ilce: string;
-  ruhsatNo: string;
-  adi: string;
-  soyadi: string;
-  unvan: string;
-  sinif: string;
-  adres: string;
-  durum: string;
-}
+
 
 export interface IBayiDocumentModel extends Model<IBayiDocument> {
   findAllByAuthor(id: string): Promise<IBayiDocument[]>
   getSehirById(id: string): Promise<IBayiDocument[]>
-  getBayilerBySehir:(sehir:string, options : RequestOptions | null)=>any
-  getBayilerByIlce:(sehir : string, ilce : string, limit : number | null)=>any
+  getBayilerBySehir(sehir: string, options: RequestOptions | null) : DocumentQuery<IBayiDocument[], Document>
+  getBayilerByIlce(sehir: string, ilce: string, options: RequestOptions | null) : DocumentQuery<IBayiDocument[], Document>
+  setBayi(options: IBayi) : any
+  findById(id: Object) : DocumentQuery<IBayiDocument, Document>
 }
 
 /**
- * User Roles
+ * Bayi Roles
  */
 const roles = ['user', 'admin'];
 
 /**
- * User Schema
+ * Bayi Schema
  * @private
  */
-const bayiSchema : Schema = new Schema(
+const bayiSchema: Schema = new Schema(
   {
-    il: {
-      type: String
-    },
-    ilce: {
-      type: String
-    },
-    ruhsatNo: {
-      type: String
-    },
-    adi: {
-      type: String
-    },
-    soyadi: {
-      type: String
-    },
-    unvan: {
-      type: String,
-      trim: true
-    },
-    sinif: {
-      type: String,
-      trim: true
-    },
-    adres: {
-      type: String,
-      trim: true
-    },
-    durum: {
-      type: String,
-      trim: true
-    }
+    il: { type: String },
+    ilce: { type: String },
+    ruhsatNo: { type: String, index: true, unique: true },
+    adi: { type: String },
+    soyadi: { type: String },
+    unvan: { type: String, trim: true },
+    sinif: { type: String, trim: true },
+    adres: { type: String, trim: true },
+    durum: { type: String, trim: true },
+    distributor : {type : Schema.Types.ObjectId, ref : 'Test'}
   },
   { collection: "bayiler" }
 );
+
+
+const testSchema : Schema = new Schema({
+  _id : ObjectId,
+  il : String
+}, {
+  collection : "bayiler"
+})
+
+bayiSchema.static('getBayilerBySehir', (sehir: string, options: RequestOptions) => {
+  return Bayi.find({ il: sehir }).select(options.select).limit(options.limit)
+});
+
+bayiSchema.static('findBayiById', (id: any) : DocumentQuery<IBayiDocument[], IBayiDocument, {}> => {
+  return Bayi.find({ _id: id }).populate("distributor");
+});
+
+bayiSchema.static('getBayilerByIlce', (sehir: string, ilce: string, options: RequestOptions) => {
+  return Bayi.find({ il: sehir, ilce: ilce }).select(options.select).limit(options.limit)
+});
+
+bayiSchema.static('setBayi', (options: IBayi) => {
+  let bayi = new Bayi();
+  bayi.il = options.il;
+  bayi.ilce = options.ilce;
+  return bayi.save();
+})
+
+
+/**
+ * @typedef Bayi
+ */
+
+export const Bayi: IBayiDocumentModel = mongoose.model<IBayiDocument, IBayiDocumentModel>("Bayi", bayiSchema);
+export const Test : any = mongoose.model("Test", testSchema)
+export default Bayi;
+
+
+// bayiSchema.set('toJSON', {
+//   virtuals : true,
+//   transform : (doc : any, ret : any, options : any) => {
+//     delete ret._id
+//   }
+// })
 
 /**
  * Add your
@@ -141,13 +157,8 @@ const bayiSchema : Schema = new Schema(
 /**
  * Statics
  */
-bayiSchema.static('getBayilerBySehir', (sehir : string, options : RequestOptions ) => {
-  return Bayi.find({il : sehir}).select(options.select).limit(options.limit)
-})
 
-bayiSchema.static('getBayilerByIlce', (sehir : string, ilce : string, options : RequestOptions) => {
-  return Bayi.find({il : sehir, ilce : ilce}).select([]).limit(options.limit)
-})
+
 // userSchema.statics = {
 //   // roles,
 
@@ -284,11 +295,3 @@ bayiSchema.static('getBayilerByIlce', (sehir : string, ilce : string, options : 
 //   }
 // };
 
-/**
- * @typedef User
- */
-
-export const Bayi: IBayiDocumentModel = mongoose.model<IBayiDocument, IBayiDocumentModel>("Bayi", bayiSchema);
-// export const = <Schema>mongoose.model('User', userSchema);
-
-export default Bayi;
