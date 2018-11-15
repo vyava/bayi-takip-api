@@ -20,5 +20,8 @@ module.exports = {
   // DEFAULT values and limiters
   LIMIT_MAX : 101,
   LIMIT_MIN : 9,
-  LIMIT_DEFAULT : 50
+  LIMIT_DEFAULT : 50,
+
+
+  TAPDK_URL : "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
 };
