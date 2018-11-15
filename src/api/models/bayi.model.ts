@@ -1,10 +1,11 @@
 export { };
 import { NextFunction, Request, Response, Router } from 'express';
 // const mongoose = require('mongoose');
-import * as mongoose from "mongoose";
-import { Model, Document, Schema, DocumentQuery } from "mongoose";
-const httpStatus = require('http-status');
-const { omitBy, isNil } = require('lodash');
+// import * as mongoose from "mongoose";
+import { Model, Document, Schema, DocumentQuery, model } from "mongoose";
+// const httpStatus = require('http-status');
+import * as httpStatus from "http-status"
+import { isEmpty } from "lodash";
 const bcrypt = require('bcryptjs');
 const moment = require('moment-timezone');
 const uuidv4 = require('uuid/v4');
@@ -15,15 +16,17 @@ import { ObjectId } from 'bson';
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 
 
-
-
 export interface IBayiDocumentModel extends Model<IBayiDocument> {
-  findAllByAuthor(id: string): Promise<IBayiDocument[]>
   getSehirById(id: string): Promise<IBayiDocument[]>
-  getBayilerBySehir(sehir: string, options: RequestOptions | null) : DocumentQuery<IBayiDocument[], Document>
-  getBayilerByIlce(sehir: string, ilce: string, options: RequestOptions | null) : DocumentQuery<IBayiDocument[], Document>
+  getBayilerBySehir(sehir: string,
+                    options?: RequestOptions | null
+                  ) : DocumentQuery<IBayiDocument[], Document>
+  getBayilerByIlce(sehir: string,
+                    ilce: string,
+                    options: RequestOptions | null
+                  ) : DocumentQuery<IBayiDocument[], Document>
   setBayi(options: IBayi) : any
-  findById(id: Object) : DocumentQuery<IBayiDocument, Document>
+  getBayiById(id: Object) : DocumentQuery<IBayiDocument, Document>
 }
 
 /**
@@ -51,26 +54,60 @@ const bayiSchema: Schema = new Schema(
   { collection: "bayiler" }
 );
 
-
-
-
-bayiSchema.static('getBayilerBySehir', (sehir: string, options: RequestOptions) => {
-  return Bayi.find({ il: sehir }).select(options.select).limit(options.limit)
+bayiSchema.static('getBayilerBySehir', async (sehir: string, options: RequestOptions) => {
+  try {
+    let bayi = await Bayi.find({ il: sehir }).select(options.select).limit(options.limit);
+    if(isEmpty(bayi)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    return bayi;
+  } catch (err) {
+    throw err
+  }
+  
 });
 
-bayiSchema.static('findBayiById', (id: any) : DocumentQuery<IBayiDocument[], IBayiDocument, {}> => {
-  return Bayi.find({ _id: id }).populate("distributor");
+bayiSchema.static('getBayiById', (id: any) : DocumentQuery<IBayiDocument[], IBayiDocument, {}> => {
+  try {
+    let bayi = Bayi.find({ _id: id }).populate("distributor");
+    if(isEmpty(bayi)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    return bayi
+  } catch (err) {
+    throw err
+  }
+  
 });
 
-bayiSchema.static('getBayilerByIlce', (sehir: string, ilce: string, options: RequestOptions) => {
-  return Bayi.find({ il: sehir, ilce: ilce }).select(options.select).limit(options.limit)
+bayiSchema.static('getBayilerByIlce', async (sehir: string, ilce: string, options: RequestOptions) => {
+  try {
+    let bayi = await Bayi.find({ 
+      il: sehir,
+      ilce: ilce 
+    }).select(options.select).limit(options.limit)  
+    
+    if(isEmpty(bayi)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    return bayi;
+  } catch (err) {
+    throw err;
+  }
 });
 
 bayiSchema.static('setBayi', (options: IBayi) => {
-  let bayi = new Bayi();
-  bayi.il = options.il;
-  bayi.ilce = options.ilce;
-  return bayi.save();
+  try {
+    let bayi = new Bayi();
+    bayi.il = options.il;
+    bayi.ilce = options.ilce;
+    return bayi.save();  
+  } catch (err) {
+    throw err
+  }
 })
 
 
@@ -78,7 +115,7 @@ bayiSchema.static('setBayi', (options: IBayi) => {
  * @typedef Bayi
  */
 
-export const Bayi: IBayiDocumentModel = mongoose.model<IBayiDocument, IBayiDocumentModel>("Bayi", bayiSchema);
+export const Bayi: IBayiDocumentModel = model<IBayiDocument, IBayiDocumentModel>("Bayi", bayiSchema);
 
 
 // bayiSchema.set('toJSON', {

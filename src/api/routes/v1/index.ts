@@ -1,6 +1,8 @@
 export {};
 import * as express from 'express';
 const bayilerRoutes = require('./bayiler.route');
+const bolgeRoute = require('./bolge.route');
+const distRoute = require('./dist.route');
 // import {} from "./user.route";
 // const authRoutes = require('./auth.route');
 
@@ -17,6 +19,8 @@ router.get('/status', (req, res) => res.send('OK'));
 // router.use('/docs', express.static('docs'));
 
 router.use('/bayiler', bayilerRoutes);
+router.use('/bolge', bolgeRoute);
+router.use('/dist', distRoute);
 // router.use('/auth', authRoutes);
 
 module.exports = router;

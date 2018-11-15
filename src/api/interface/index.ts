@@ -1,2 +1,5 @@
-export * from "./bayi";
-export * from "./request";
+export * from "./bayi.interface";
+export * from "./request.interface";
+export * from "./bolge.interface";
+export * from "./distributor.interface";
+export * from "./kullanici.interface";

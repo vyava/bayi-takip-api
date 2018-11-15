@@ -1,5 +1,5 @@
 export {};
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Request, Response } from 'express';
 const httpStatus = require('http-status');
 import { Bayi } from '../models/bayi.model';
 // import { startTimer, apiJson } from 'api/utils/Utils';
@@ -24,45 +24,53 @@ export async function load (req: Request, res: Response, next: NextFunction, id:
  * @public
  */
 
-export async function getSehir(req : Request, res : Response){
-  let sehir = req.param('sehir')
-  let options = req.query || null
-  console.log(options)
-  const user = await Bayi.getBayilerBySehir(sehir, options);
-  
-  // console.log(user.getSehirById(sehir));
-  // user.toString;
-  // let result = await user.getSehirById(sehir)
-  res.json(user);
+export async function getSehir(req : Request, res : Response, next : NextFunction){
+  try {
+    let sehir = req.param('sehir')
+    let options = req.query || null
+    console.log(options)
+    const user = await Bayi.getBayilerBySehir(sehir, options);
+    res.json(user);
+  } catch (err) {
+    console.log("hatalar....................")
+    next(err)
+  }
 };
 
-export async function getIlce(req : Request, res : Response){
-  let sehir = req.param('sehir');
-  let ilce = req.param('ilce');
-  let options = req.query || null;
-  console.log(options)
-  const user = Bayi.getBayilerByIlce(sehir, ilce, options);
-  
-  
-  res.json(user);
+export async function getIlce(req : Request, res : Response, next : NextFunction){
+  try {
+    let sehir = req.param('sehir');
+    let ilce = req.param('ilce');
+    let options = req.query || null;
+    console.log(options)
+    const user = await Bayi.getBayilerByIlce(sehir, ilce, options);
+    
+    res.json(user);  
+  } catch (err) {
+    next(err)
+  }
 }
 
-export async function setBayi(req : Request, res : Response){
-  let options = req.query;
-  const bayi = await Bayi.findById("5bec0317ee6fd214c80bf9af");
-  res.json(bayi);
+export async function setBayi(req : Request, res : Response, next : NextFunction){
+  try {
+    let options = req.query;
+    const bayi = await Bayi.findById("5bec0317ee6fd214c80bf9af");
+    res.json(bayi);  
+  } catch (err) {
+    next(err)
+  }
 }
 
-export async function findBayiById(req : Request, res : Response){
+export async function getBayiById(req : Request, res : Response, next : NextFunction){
   try{
-    let id = req.query.id;
-    let _bayi = await Bayi.findById("5bea83dbaf8c949699482755");
-    const bayi = await Bayi.findById(id).populate("distributor");
+    let ruhsatNo = req.query.ruhsatNo;
+    // let _bayi = await Bayi.findById("5bea83dbaf8c949699482755");
+    const bayi = await Bayi.find({ruhsatNo : ruhsatNo})
     // bayi.distributor = _bayi._id;
     // bayi.save();
     res.json(bayi);
   }catch(err) {
-    res.json(err)
+    next(err)
   }
   
 }

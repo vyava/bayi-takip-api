@@ -8,7 +8,7 @@ import * as controller from "../../controllers/bayi.controller"
 // import {load} from "../../controllers/user.controller"
 const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth');
 // const { createUser, replaceUser, updateUser } = require('../../validations/bayi.validation');
-import { getSehir, getIlce } from "../../validations/bayi.validation";
+import { getSehir, getIlce, getBayi } from "../../validations/bayi.validation";
 
 const router = express.Router();
 
@@ -28,9 +28,9 @@ router
 
     .get(controller.setBayi)
 router
-  .route("/get")
+  .route("/bayi")
   
-    .get(controller.findBayiById)
+    .get(validate(getBayi), controller.getBayiById)
 router
   .route('/:sehir')
 

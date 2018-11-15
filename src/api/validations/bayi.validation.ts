@@ -1,28 +1,41 @@
 export {};
 // import * as Joi from 'joi';
-import {extend, array, string, number } from 'joi';
+import * as Joi from 'joi';
 // const Joi = require("joi")
 import { Bayi } from '../models';
 const {LIMIT_MAX, LIMIT_MIN, LIMIT_DEFAULT} = require("../../config/vars")
 
-const SELECT_CUSTOM_VALIDATE = extend({
-  base : array(),
+const SELECT_CUSTOM_VALIDATE = Joi.extend({
+  base : Joi.array(),
   name : "stringArray",
-  coerce : (value : string, state, options) => (( value && value.includes(",")) ? value.split(",") : [value, "-_id"]) || ["il", "-_id"],
-  // pre : (value, state, options) => {
-  //   // İlçeler virgülle ayrılmışsa eğer virgülden split et, değilse eğer dizi içinde value döndür
-  //   return value.includes(",") ? value.split(",") : [value];
-  // }
+  coerce : (value : string, state, options) => 
+    (( value && value.includes(","))
+        ? value.split(",") 
+        : [value, "-_id"]) || ["il", "-_id"]
 })
 
 // Custom validation for selection
-const SELECT_VALIDATE = SELECT_CUSTOM_VALIDATE.stringArray().items(string()).sparse();
-const LIMIT_VALIDATE = number().less(LIMIT_MAX).greater(LIMIT_MIN).default(LIMIT_DEFAULT);
-const SEHIR_VALIDATE = string().only(["ADANA", "ANKARA", "İSTANBUL", "ORDU"]).uppercase().required();
+const SELECT_VALIDATE
+  = SELECT_CUSTOM_VALIDATE
+    .stringArray()
+    .items(Joi.string())
+    .sparse();
+
+const LIMIT_VALIDATE
+  = Joi
+    .number()
+    .less(LIMIT_MAX)
+    .greater(LIMIT_MIN)
+    .default(LIMIT_DEFAULT);
+
+const SEHIR_VALIDATE
+  = Joi
+    .string()
+    .uppercase()
+    .required();
 
 
-
-var validation : any = {
+var bayiValidation : any = {
   // GET /v1/bayiler/{sehir}
   getSehir: {
     query: {
@@ -49,46 +62,16 @@ var validation : any = {
     },
     params : {
       sehir : SEHIR_VALIDATE,
-      ilce  : string().uppercase()
+      ilce  : Joi.string().uppercase()
     }
   },
 
-  // PUT /v1/users/:userId
-  replaceUser: {
-    body: {
-      email: string()
-        .email()
-        .required(),
-      password: string()
-        .min(6)
-        .max(128)
-        .required(),
-      name: string().max(128),
-      // role: Joi.string().valid(User.roles)
-    },
-    params: {
-      userId: string()
-        .regex(/^[a-fA-F0-9]{24}$/)
-        .required()
-    }
-  },
-
-  // PATCH /v1/users/:userId
-  updateUser: {
-    body: {
-      email: string().email(),
-      password: string()
-        .min(6)
-        .max(128),
-      name: string().max(128),
-      // role: Joi.string().valid(User.roles)
-    },
-    params: {
-      userId: string()
-        .regex(/^[a-fA-F0-9]{24}$/)
-        .required()
+  // GET /v1/bayi
+  getBayi : {
+    query : {
+      ruhsatNo : Joi.string().required().regex(/^[0-9]{7,11}PT$/g)
     }
   }
 }
 
-export const{getSehir, getIlce} = validation
+export const{getSehir, getIlce, getBayi} = bayiValidation
