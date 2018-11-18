@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { Bolge } from '../models/bolge.model';
 import { IBolge } from '../interface';
-
 export async function getBolge(req : Request, res : Response){
     let bolgeKod = req.query.kod || null
     const bolge = await Bolge.getBolge(bolgeKod);

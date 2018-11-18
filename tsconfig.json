@@ -5,7 +5,8 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "target": "es6",
-    "module": "commonjs"
+    "module": "commonjs",
+    "baseUrl": "src"
   },
   "include": [
     "./src/**/*"
@@ -15,6 +16,7 @@
   ],
   "paths": {
     "api/*": ["api/*"],
-    "config/*": ["config/*"]
+    "config/*": ["config/*"],
+    "@model/*" : ["api/models/*"]
   }
 }

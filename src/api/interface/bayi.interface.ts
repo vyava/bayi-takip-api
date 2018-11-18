@@ -15,4 +15,17 @@ export interface IBayi {
     adres?        : string;
     durum?        : string;
     distributor?  : IDistributorDocument[];
+    timestamp?    : string;
+}
+
+export enum IBayiIndex {
+    İL            = 0,
+    İLÇE,
+    RUHSAT_NO,
+    ADI,
+    SOYADI,
+    ÜNVAN,
+    SINIF,
+    ADRES,
+    DURUM  
 }

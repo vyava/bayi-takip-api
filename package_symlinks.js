@@ -10,13 +10,38 @@
 const fs = require('fs');
 // const execSync = require('child_process').execSync;
 
-const arr = ['api', 'config']; // symlinks
+const arr = ['api', 'config', ]; // symlinks
 
-for (let i = 0; i < arr.length; i += 1) {
-  const srcpath = '../src/' + arr[i];
-  const dstpath = arr[i];
+const path = [
+  {
+    target : 'api/controllers',
+    alias  : "@controllers"
+  },
+  {
+    target : 'api/models',
+    alias  : '@models'
+  },
+  {
+    target : 'api/routes/v1',
+    alias  : '@routes'
+  },
+  {
+    target : 'api/validations',
+    alias  : '@validations'
+  },
+  {
+    target : 'api/helper',
+    alias  : '@helper'
+  }
+]
+
+for (let i = 0; i < path.length; i += 1) {
+  const srcpath = '../src/' + path[i]['target'];
+  const dstpath = path[i]['alias'];
 
   try {
     fs.symlinkSync(srcpath, dstpath, 'dir');
-  } catch (ex) {}
+  } catch (ex) {
+    console.log(ex)
+  }
 }
