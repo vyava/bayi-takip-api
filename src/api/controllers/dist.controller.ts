@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Dist } from '../models/distributor.model';
+import { DistRequest, IIlce } from 'api/interface';
 
 /**
  * Get distributor
@@ -25,3 +26,14 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
     next(err)
   }
 };
+
+export async function getDistSByAdres(req : Request, res : Response, next : NextFunction){
+  try {
+    let adres : DistRequest = req.query || null
+    const dists : any = await Dist.getDistsByAdres(adres);
+    if(dists["ilce"].length==0) throw new Error("Distribütör bulunamadı");
+    res.json(dists)
+  } catch (err) {
+    next(err)
+  }
+}

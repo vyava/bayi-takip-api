@@ -13,4 +13,11 @@ export interface IDistributor {
     operator?      : any[];
     scope?         : any[];
     bolge?         : IBolgeDocument;
+};
+
+export interface IDistributorShort {
+    bolge : string;
+    bolgeler : string;
+    id : number;
+    name : string;
 }

@@ -15,7 +15,13 @@ const distValidation = {
             name :Joi.string().required(),
             bolge : Joi.string().required()
         }
+    },
+    getDistSByAdres : {
+        query : {
+            il : Joi.string().required(),
+            ilce : Joi.string().uppercase().required()
+        }
     }
 };
 
-export const{getDist, setDist} = distValidation
+export const{getDist, setDist, getDistSByAdres} = distValidation

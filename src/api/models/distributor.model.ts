@@ -1,5 +1,6 @@
 import { Model, Document, Schema, DocumentQuery, model } from "mongoose";
-import { IDistributor, IDistributorDocument } from '../interface';
+import { IDistributor, IDistributorDocument, IIlce, DistRequest } from '../interface';
+import { Bolge } from "./bolge.model";
 
 // const httpStatus = require('http-status');
 import * as httpStatus from "http-status"
@@ -9,6 +10,7 @@ const APIError = require('../utils/APIError');
 export interface IDistributorDocumentModel extends Model<IDistributorDocument> {
     getDistById(id: string): Promise<IDistributorDocument[]>
     setDist(payload : Object) : any
+    getDistsByAdres(adres : DistRequest) : any
 }
 
 const distributorSchema: Schema = new Schema(
@@ -32,6 +34,19 @@ const distributorSchema: Schema = new Schema(
         status : httpStatus.NOT_FOUND
       });
       return dist;  
+    } catch (err) {
+      throw new APIError(err)
+    }
+  });
+
+  distributorSchema.static('getDistsByAdres', async (adres: DistRequest) => {
+    try {
+      let dists = await Bolge.getDistsByAdres(adres)
+      if(!dists) throw new APIError({
+        message : "Distributor bulunamadı",
+        status : httpStatus.NOT_FOUND
+      });
+      return dists;  
     } catch (err) {
       throw new APIError(err)
     }

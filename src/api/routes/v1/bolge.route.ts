@@ -12,5 +12,4 @@ router
     .route('/yeni')
         .get(validate(setBolge), bolgeController.setBolge)
 
-
 module.exports = router;
