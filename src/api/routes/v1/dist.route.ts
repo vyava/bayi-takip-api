@@ -1,7 +1,7 @@
 import * as express from "express";
 const validate = require('express-validation');
 import * as distController from "../../controllers/dist.controller"
-import {getDist, setDist, getDistSByAdres } from "../../validations"
+import {getDist, setDist, getDistsByAdres, getDistsByIl } from "../../validations"
 const router = express.Router();
 
 // GET /v1/bolge?kod={bolgeKod}
@@ -14,5 +14,8 @@ router
         .get(validate(setDist), distController.setDist)
 router
     .route('/byBolge')
-        .get(validate(getDistSByAdres), distController.getDistSByAdres)
+        .get(validate(getDistsByAdres), distController.getDistsByAdres)
+router
+    .route('/:il')
+        .get(validate(getDistsByIl), distController.getDistsByIl)
 module.exports = router;

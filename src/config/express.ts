@@ -20,6 +20,10 @@ const app = express();
 
 // request logging. dev: console | production: file
 app.use(morgan(logs));
+app.use(function(req, res, next){
+    res.setHeader('charset', "utf-8");
+    next()
+})
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json());

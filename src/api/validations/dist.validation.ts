@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import { Dist } from '../models';
 const {LIMIT_MAX, LIMIT_MIN, LIMIT_DEFAULT} = require("../../config/vars");
 
+
 const distValidation = {
     getDist : {
         query : {
@@ -16,12 +17,17 @@ const distValidation = {
             bolge : Joi.string().required()
         }
     },
-    getDistSByAdres : {
+    getDistsByAdres : {
         query : {
             il : Joi.string().required(),
             ilce : Joi.string().uppercase().required()
         }
+    },
+    getDistsByIl : {
+        params : {
+            il : Joi.string().required().uppercase()
+        }
     }
 };
 
-export const{getDist, setDist, getDistSByAdres} = distValidation
+export const{getDist, setDist, getDistsByAdres, getDistsByIl} = distValidation

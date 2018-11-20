@@ -46,7 +46,7 @@ const distributorSchema: Schema = new Schema(
         message : "Distributor bulunamadı",
         status : httpStatus.NOT_FOUND
       });
-      return dists;  
+      return dists;
     } catch (err) {
       throw new APIError(err)
     }

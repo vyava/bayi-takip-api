@@ -5,6 +5,7 @@ export interface IBolgeDocumentModel extends Model<IBolgeDocument> {
     getBolge(il: string): any;
     getDistsByAdres(adres: DistRequest): any;
     setBolge(payload: IBolge): any;
+    getDistsByIl(il : string) : any;
 }
 
 const bolgeSchema: Schema = new Schema({
@@ -29,7 +30,17 @@ bolgeSchema.static('getDistsByAdres', (adres: DistRequest) => {
     );
 });
 
+bolgeSchema.static('getDistsByIl', (il: string) => {
+    return Bolge.findOne(
+        {
+            "il" : il,
+        },
+    );
+});
 
+bolgeSchema.static('getBolge', (il: string) => {
+    return Bolge.find({});
+});
 // bolgeSchema.static('setBolge', (payload: IBolge) => {
 //     return Bolge.findOneAndUpdate(
 //         { il: payload.il },
