@@ -20,13 +20,13 @@ export interface IBayiDocumentModel extends Model<IBayiDocument> {
   getSehirById(id: string): Promise<IBayiDocument[]>
   getBayilerBySehir(sehir: string,
                     options?: RequestOptions | null
-                  ) : DocumentQuery<IBayiDocument[], Document>
+                  ) : IBayiDocument[]
   getBayilerByIlce(sehir: string,
                     ilce: string,
                     options: RequestOptions | null
-                  ) : DocumentQuery<IBayiDocument[], Document>
+                  ) : IBayiDocument[]
   setBayi(options: IBayi) : any
-  getBayiById(id: Object) : DocumentQuery<IBayiDocument, Document>
+  getBayiById(id: Object) : IBayiDocument
 }
 
 /**

@@ -4,13 +4,16 @@ import { Bolge } from "./bolge.model";
 
 // const httpStatus = require('http-status');
 import * as httpStatus from "http-status"
+import { IBayiDocumentModel } from "./bayi.model";
 const APIError = require('../utils/APIError');
 // import * as APIError from "../utils/APIError"
 
 export interface IDistributorDocumentModel extends Model<IDistributorDocument> {
-    getDistById(id: string): Promise<IDistributorDocument[]>
+    getDistById(id: number): IDistributorDocument
     setDist(payload : Object) : any
-    getDistsByAdres(adres : DistRequest) : any
+    getDistsByAdres(adres : DistRequest) : IDistributorDocument
+    getDistAll() : IDistributorDocument[]
+    toJSON() : any
 }
 
 const distributorSchema: Schema = new Schema(
@@ -23,12 +26,19 @@ const distributorSchema: Schema = new Schema(
       scope: { type: String },
       bolge: { type: String, required : true}
     },
-    { collection: "distributor" }
+    {
+      collection: "distributor",
+      toJSON : {
+        transform : (doc, ret) => {
+          delete ret._id
+        }
+      }
+    }
   );
 
-  distributorSchema.static('getDistById', async (id: string) => {
+  distributorSchema.static('getDistById', async (kod: number) => {
     try {
-      let dist = await Dist.findOne({ id: id });
+      let dist = await Dist.findOne({ kod: kod });
       if(!dist) throw new APIError({
         message : "Distributor bulunamadı",
         status : httpStatus.NOT_FOUND
@@ -42,6 +52,19 @@ const distributorSchema: Schema = new Schema(
   distributorSchema.static('getDistsByAdres', async (adres: DistRequest) => {
     try {
       let dists = await Bolge.getDistsByAdres(adres)
+      if(!dists) throw new APIError({
+        message : "Distributor bulunamadı",
+        status : httpStatus.NOT_FOUND
+      });
+      return dists;
+    } catch (err) {
+      throw new APIError(err)
+    }
+  });
+
+  distributorSchema.static('getDistAll', async (adres: DistRequest) => {
+    try {
+      let dists = Dist.find().select(["kod", "cc", "to"])
       if(!dists) throw new APIError({
         message : "Distributor bulunamadı",
         status : httpStatus.NOT_FOUND

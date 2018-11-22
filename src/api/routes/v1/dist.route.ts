@@ -7,7 +7,8 @@ const router = express.Router();
 // GET /v1/bolge?kod={bolgeKod}
 router
     .route('/')
-        .get(validate(getDist), distController.getDist)
+        .get(distController.getDistAll)
+        // .get(validate(getDist), distController.getDist)
 
 router
     .route('/yeni')

@@ -13,6 +13,7 @@ export interface IUser {
         name : string;
     };
     status : boolean;
+    distributor : string;
 }
 
 export interface IDSM extends IUser {

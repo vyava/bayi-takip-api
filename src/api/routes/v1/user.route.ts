@@ -7,9 +7,10 @@ const router = express.Router();
 // GET /v1/bolge?kod={bolgeKod}
 router
     .route('/')
-        .get(validate(getUser), userController.getDist)
+        // .get(validate(getUser), userController.getUser)
+        .get(userController.getUsers)
 
 router
     .route('/yeni')
-        .get(validate(setUser), userController.setDist)
+        .get(userController.setUser)
 module.exports = router;

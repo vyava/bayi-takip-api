@@ -13,6 +13,8 @@ export interface IDistributor {
     operator?      : any[];
     scope?         : any[];
     bolge?         : IBolgeDocument;
+    to? : any;
+    cc? : any;
 };
 
 export interface IDistributorShort {
