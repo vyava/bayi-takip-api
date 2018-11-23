@@ -86,6 +86,7 @@
     "cors": "^2.8.3",
     "cross-env": "^5.0.1",
     "dotenv-safe": "^6.0.0",
+    "exceljs": "^1.6.3",
     "express": "^4.16.3",
     "express-validation": "^1.0.2",
     "helmet": "^3.13.0",

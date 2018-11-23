@@ -12,9 +12,14 @@ const distValidation = {
     },
     setDist : {
         query : {
-            kod :Joi.string().required(),
+            kod :Joi.number().required(),
             name :Joi.string().required(),
-            bolge : Joi.string().required()
+            bolge : Joi.string().required(),
+            bolgeKod : Joi.number().required(),
+            bolgeler : Joi.string().required(),
+            cc: Joi.any().required(),
+            to: Joi.any().required(),
+            status : Joi.boolean().required()
         }
     },
     getDistsByAdres : {

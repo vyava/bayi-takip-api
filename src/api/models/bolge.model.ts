@@ -1,18 +1,32 @@
 import { Model, Document, Schema, DocumentQuery, model, Types } from "mongoose";
-import { IBolgeDocument, IBolge, DistRequest, IIlce } from "../interface";
+import { IBolgeDocument, IBolge, DistRequest, IIlce, IDistributor } from "../interface";
 
 export interface IBolgeDocumentModel extends Model<IBolgeDocument> {
     getBolge(il: string): any;
     getDistsByAdres(adres: DistRequest): any;
     setBolge(payload: IBolge): any;
     getDistsByIl(il : string) : any;
+    getDistsByBolge(bolgeName : string) : IDistributor[]
 }
 
 const bolgeSchema: Schema = new Schema({
     il: { type: String },
-    ilce: { type : Array}
+    ilce: { type : Array},
+    bolge : {
+        type : String,
+        default : "TANIMSIZ"
+    },
+    bolgeKod : {
+        type : Number,
+        default : 0
+    }
 }, {
-        collection: "bolge"
+        collection: "bolge",
+        toJSON : {
+            transform : (doc, ret) => {
+              delete ret._id
+            }
+          }
     });
 
 bolgeSchema.static('getDistsByAdres', (adres: DistRequest) => {
@@ -28,6 +42,14 @@ bolgeSchema.static('getDistsByAdres', (adres: DistRequest) => {
             }
         }
     );
+});
+
+bolgeSchema.static('getDistsByBolge', (bolgeName: string) => {
+    return Bolge.find(
+        {
+            "bolge" : bolgeName,
+        }
+    ).sort("bolgeKod")
 });
 
 bolgeSchema.static('getDistsByIl', (il: string) => {

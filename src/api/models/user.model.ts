@@ -21,6 +21,11 @@ const userSchema: Schema = new Schema({
             required : true
         }
     },
+    level : {
+        type : String,
+        enum : ["rsm", "dsm", "tte", "operator"],
+        required : true
+    },
     status : {
         type : Boolean,
         default : true
@@ -29,7 +34,12 @@ const userSchema: Schema = new Schema({
         type : Schema.Types.ObjectId, ref : 'Dist', default : null
     }
 }, {
-        collection: "user"
+        collection: "user",
+        toJSON : {
+            transform : (doc, ret) => {
+              delete ret._id
+            }
+          }
     });
 
 userSchema.static('getUser', (_id: number) => {

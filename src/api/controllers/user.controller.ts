@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { User, Dist } from '../models';
-import { getDist } from "../controllers";
 import { IUser, IDistributor } from '../interface';
 import { ObjectID } from 'bson';
 
@@ -38,13 +37,12 @@ export async function setUser(req: Request, res: Response) {
             firstName : "",
             lastName : "",
             status : true,
+            level : "dsm",
             fullName : "Ümit ÖZDELİCE",
             distributor : "5bec5cb8fb6fc005dcd59a72",
             _id : new ObjectID()
         })
         
-        
-
     })
     // const user = await User.setUser(payload);
     res.json(dists);

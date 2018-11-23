@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { DistRequest, IIlce } from '../interface';
 import { Bolge, Dist } from '../models';
+import { readExcelFile } from '../helper/file';
 
 /**
  * Get distributor
@@ -19,9 +20,10 @@ export async function getDist(req: Request, res: Response, next: NextFunction) {
 
 export async function setDist(req: Request, res: Response, next: NextFunction) {
   try {
-    let payload = req.query || null
-    const dist = await Dist.setDist(payload);
-    res.json(dist);
+    let count = await readExcelFile()
+    
+    // const dist = await Dist.setDist(payload);
+    res.json(count);
   } catch (err) {
     next(err)
   }

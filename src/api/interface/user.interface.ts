@@ -3,15 +3,18 @@ import { Document } from "mongoose";
 
 export interface IUserDocument extends Document, IUser { };
 
+export interface Mail {
+    address : string;
+    name : string;
+}
+
 export interface IUser {
     _id : any;
     firstName : string;
     lastName : string;
     fullName : string;
-    email : {
-        address : string;
-        name : string;
-    };
+    email : Mail;
+    level : string;
     status : boolean;
     distributor : string;
 }

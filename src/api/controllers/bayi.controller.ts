@@ -28,11 +28,9 @@ export async function getSehir(req : Request, res : Response, next : NextFunctio
   try {
     let sehir = req.param('sehir')
     let options = req.query || null
-    console.log(options)
     const user = await Bayi.getBayilerBySehir(sehir, options);
     res.json(user);
   } catch (err) {
-    console.log("hatalar....................")
     next(err)
   }
 };
@@ -42,7 +40,6 @@ export async function getIlce(req : Request, res : Response, next : NextFunction
     let sehir = req.param('sehir');
     let ilce = req.param('ilce');
     let options = req.query || null;
-    console.log(options)
     const user = await Bayi.getBayilerByIlce(sehir, ilce, options);
     
     res.json(user);  

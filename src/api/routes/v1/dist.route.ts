@@ -12,7 +12,8 @@ router
 
 router
     .route('/yeni')
-        .get(validate(setDist), distController.setDist)
+        // .get(validate(setDist), distController.setDist)
+        .get(distController.setDist)
 router
     .route('/byBolge')
         .get(validate(getDistsByAdres), distController.getDistsByAdres)
