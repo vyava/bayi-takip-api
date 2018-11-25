@@ -27,7 +27,7 @@ const distributorSchema: Schema = new Schema(
       bolge: { type: String, required : true}
     },
     {
-      collection: "distributor",
+      collection: "dist",
       toJSON : {
         transform : (doc, ret) => {
           delete ret._id

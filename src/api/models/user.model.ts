@@ -8,20 +8,19 @@ export interface IUserDocumentModel extends Model<IUserDocument> {
 }
 
 const userSchema: Schema = new Schema({
-    firstName: {type : String, required : false},
-    lastName: {type : String, required : false},
-    fullName: {type : String, required : true},
-    email: {
+    name: {type : String, required : true},
+    email : new Schema({
         address : {
             type : String,
-            required : true
+            required : true,
+            unique : true
         },
         name : {
             type : String,
             required : true
         }
-    },
-    level : {
+    }),
+    taskName : {
         type : String,
         enum : ["rsm", "dsm", "tte", "operator"],
         required : true

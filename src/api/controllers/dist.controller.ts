@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { DistRequest, IIlce } from '../interface';
-import { Bolge, Dist } from '../models';
+import { DistRequest, IIlce, IDistributor, IUser } from '../interface';
+import * as mongoose from "mongoose"
+import { Bolge, Dist, User } from '../models';
 import { readExcelFile } from '../helper/file';
+const DistModel = mongoose.model("Dist");
+const UserModel = mongoose.model("User");
+
 
 /**
  * Get distributor
@@ -20,10 +24,16 @@ export async function getDist(req: Request, res: Response, next: NextFunction) {
 
 export async function setDist(req: Request, res: Response, next: NextFunction) {
   try {
-    let count = await readExcelFile()
-    
+    let distData : any[] = await readExcelFile()
+    distData.map((dist : any) => {
+      let users : IUser[] = dist.users;
+      users.map((user : IUser) => {
+        let _user = new User(user);
+        _user.save()
+      })
+    })
     // const dist = await Dist.setDist(payload);
-    res.json(count);
+    res.json(distData);
   } catch (err) {
     next(err)
   }
@@ -53,7 +63,10 @@ export async function getDistsByIl(req : Request, res : Response, next : NextFun
 
 export async function getDistAll(req : Request, res : Response, next : NextFunction){
   try {
-    const dists : any = await Dist.getDistAll();
+    // const dists : any = await Dist.getDistAll();
+    let dists = await DistModel.findOne({
+      kod : 1
+    });
     if(!dists) throw new Error("Distribütör bulunamadı");
 
 

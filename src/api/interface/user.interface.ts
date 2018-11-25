@@ -9,14 +9,12 @@ export interface Mail {
 }
 
 export interface IUser {
-    _id : any;
-    firstName : string;
-    lastName : string;
-    fullName : string;
+    // _id : any;
+    name : string;
     email : Mail;
-    level : string;
+    taskName : string;
     status : boolean;
-    distributor : string;
+    distributor? : string;
 }
 
 export interface IDSM extends IUser {

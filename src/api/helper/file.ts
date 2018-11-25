@@ -1,47 +1,158 @@
 import * as _ from "lodash";
-import {Workbook, Worksheet, config } from "exceljs";
+import { Workbook, Worksheet, config, Cell, Row } from "exceljs";
 const path = require("path")
 
 config.setValue('promise', require("bluebird"));
 
 enum HEADER {
-    NO = "No",
-    İl_Adı = "il",
-    İlçe_Adı = "ilce",
-    Sicil_No = "ruhsatNo",
-    Adi = "adi",
-    Soyadı = "adi",
-    SATIŞ_YERİNİN_UNVANI = "unvan",
-    SATICI_SINIFI = "sinif",
-    İŞ_ADRESİ = "adres",
-    DURUMU = "durum",
-    AÇIKLAMA = "aciklama"
+    bolgeler = 1,
+    bolge,
+    bolgeKod,
+    distributor,
+    kod,
+    dsm,
+    tte,
+    operator,
+    bolgeSehir
 }
 
-export async function readExcelFile(){
-    let filePath = path.join(__dirname, "file.xlsx");
-    const workbook = new Workbook();
-    let count =  await workbook.xlsx.readFile(filePath)
-        .then(_wb => {
-            let sheet =  _wb.getWorksheet(1);
-            let row : any = sheet.getRow(1).values;
-            row =  _.compact(row)
-            row = row.map( (val : string) => val.replace(/ /g, "_"));
-            let header = row.map((val : any) => {
-                return HEADER[val]
-            });
-            let array : any[] = []
-            let _vals : any = sheet.getRow(2).values;
-            _vals.map((v : any, index : number) => {
-                array.push({
-                    [header[index-1]] : _vals[index]
+function parseData(row: Row) {
+
+    let data: any = {}
+    data['users'] = []
+    data['bolgeData'] = []
+
+    row.eachCell((cell: any, cellIndex) => {
+        switch (cellIndex) {
+            case HEADER.bolgeler:
+                data['bolgeler'] = cell.value;
+                break
+            case HEADER.bolge:
+                data['bolge'] = cell.value;
+                break
+            case HEADER.bolgeKod:
+                data['bolgeKod'] = cell.value;
+                break
+            case HEADER.bolgeKod:
+                data['bolgeKod'] = cell.value;
+                break
+            case HEADER.distributor:
+                data['distributor'] = cell.value;
+                break
+            case HEADER.kod:
+                data['kod'] = cell.value;
+                break
+            case HEADER.dsm:
+                let _dsm: any = []
+                cell.value.split(",").map((v: any) => {
+                    let _v = _.trim(v);
+                    let matchedData: any = {}
+                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
+                        matchedData['email'] = {
+                            name : p1,
+                            address : p2
+                        };
+                        matchedData['name'] = p1;
+                        matchedData['taskName'] = "dsm"
+                        return m
+                    })
+                    data['users'].push(matchedData)
                 })
+                break;
+            case HEADER.tte:
+                let _tte: any = []
+                cell.value.split(",").map((v: any) => {
+                    let _v = _.trim(v);
+                    let matchedData: any = {}
+                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
+                        matchedData['email'] = {
+                            name : p1,
+                            address : p2
+                        };
+                        matchedData['name'] = p1;
+                        matchedData['taskName'] = "tte"
+                        return m
+                    })
+                    data['users'].push(matchedData)
+                })
+                break;
+            case HEADER.operator:
+                let _operator: any = []
+                cell.value.split(",").map((v: any) => {
+                    let _v = _.trim(v);
+                    let matchedData: any = {}
+                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
+                        matchedData['email'] = {
+                            name : p1,
+                            address : p2
+                        };
+                        matchedData['name'] = p1;
+                        matchedData['taskName'] = "operator"
+                        return m
+                    })
+                    data['users'].push(matchedData)
+                })
+                break;
+            case HEADER.bolgeSehir:
+                let val : [] = cell.value.split(";").map(_.trim);
+                let result : any = {}
+                val.map((v : any, i : number) => {
+                    let _v : any[] = v.split("=");
+
+                    result[_v[0]] = [];
+                    result[_v[0]] = _v[1].split(",").map(_.trim);
+                })
+
+                // data['sehir'] = (!_.isArray(data['sehir'])) ? [] : data['sehir'];
+                data['bolgeData'] = result;
+                break;
+            default:
+                break;
+        }
+    });
+
+    return data;
+}
+
+export async function readExcelFile() {
+    try {
+        let filePath = path.join(__dirname, "file.xlsx");
+        const workbook = new Workbook();
+        let distData = await workbook.xlsx.readFile(filePath)
+            .then(_wb => {
+                let sheet = _wb.getWorksheet(1);
+                let data : any[] = [];
+                sheet.eachRow((row, rowIndex) => {
+                    if (rowIndex != 1) {
+                        // let _values = _.compact(row.values);
+                        data.push(parseData(row))
+
+                        // header.push(HEADER[index]);
+                    }
+                })
+                // let row : any = sheet.getRow(1).values;
+                // row =  _.compact(row)
+                // row = row.map( (val : string) => val.replace(/ /g, "_"));
+                // let header = row.map((val : any) => {
+                //     return HEADER[val]
+                // });
+                // let array : any[] = []
+                // let _vals : any = sheet.getRow(2).values;
+                // _vals.map((v : any, index : number) => {
+                //     array.push({
+                //         [header[index-1]] : _vals[index]
+                //     })
+                // });
+                return data;
+            })
+            .catch(err => {
+                throw err
             });
-            return array;
-        })
-        .catch(err => {
-            throw err
-        });
-    return count;
+        return distData;
+
+    } catch (err) {
+        throw err
+    }
+
 }
 
