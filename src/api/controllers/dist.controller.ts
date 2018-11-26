@@ -51,27 +51,26 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
 
         user.distributor = distId;
         user._id = userId;
-        userIds.push()
+        userIds.push(userId)
         let _user = new UserModel(user);
         _user.save();
       })
 
       dist._id = distId;
       dist.users = userIds;
-      let distData = _.pick(dist, ["_id", "bolgeler", "bolge", "bolgeKod", "name", "kod"]);
+      let distData = _.pick(dist, ["_id", "bolgeler", "bolge", "bolgeKod", "name", "kod", "bolgeData", "users"]);
       let _dist = new DistModel(distData);
       await _dist.save();
 
     })
-    // distData.map((dist : any) => {
-    //   let users : IUser[] = dist.users;
+    distData.map((dist : any) => {
+      let users : IUser[] = dist.users;
       
-    //   users.map((user : IUser) => {
-    //     let _user = new UserModel(user);
-    //     _user.save()
-    //   })
-    // })
-    // const dist = await Dist.setDist(payload);
+      users.map((user : IUser) => {
+        let _user = new UserModel(user);
+        _user.save()
+      })
+    })
     res.json(distData);
   } catch (err) {
     next(err)
@@ -80,33 +79,35 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
 
 export async function getDistsByAdres(req : Request, res : Response, next : NextFunction){
   try {
-    let adres : DistRequest = req.body;
-    let dists = await BolgeModel.findOne(
-      {
-          "il" : adres.il,
-      },
-      {
-          "ilce" : {
-              $elemMatch : {
-                  name : adres.ilce
-              }
-          }
-      });
-    if(!dists) throw new APIError({
+    let adres : DistRequest = req.query;
+    console.log(adres)
+    let dists = await DistModel.find({
+      bolgeData : {
+        $elemMatch : {
+          il : adres.il,
+          ilce : adres.ilce
+        }
+      }
+    }).populate("users")
+    if(_.isEmpty(dists) || dists.length == 0) throw new APIError({
       message : "Distributor bulunamadı",
       status : httpStatus.NOT_FOUND
     });
-    return dists;
+    res.json(dists);
   } catch (err) {
-    throw new APIError(err)
+    next(err)
   }
 }
 
 export async function getDistsByIl(req : Request, res : Response, next : NextFunction){
   try {
-    let il : string = req.params.il || null
+    let il : string = req.params.il || null 
     const dists : any = await DistModel.find({
-      il : il
+      bolgeData : {
+        $elemMatch : {
+          il : il
+        }
+      }
     });
     if(_.isEmpty(dists) || dists.length == 0) throw new Error("Distribütör bulunamadı");
     res.json(dists)

@@ -23,7 +23,21 @@ const distributorSchema: Schema = new Schema(
         ref : 'User'
       }],
       scope: { type: String },
-      bolge: { type: String, required : true}
+      bolge: { type: String, required : true},
+      bolgeData : [
+        {
+          il : {
+            type : String,
+            uppercase : true,
+            require : true
+          },
+          ilce : {
+            type : String,
+            uppercase : true,
+            require : true
+          }
+        }
+      ]
     },
     {
       collection: "dist",
@@ -35,6 +49,10 @@ const distributorSchema: Schema = new Schema(
     }
   );
 
+  distributorSchema.pre("find", function(next){
+    console.log(this.$where(""))
+    next()
+  })
 
   distributorSchema.static('setDist', async (payload: Object) => {
     try {

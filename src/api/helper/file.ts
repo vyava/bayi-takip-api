@@ -33,8 +33,8 @@ function parseData(row: Row) {
             case HEADER.bolgeKod:
                 data['bolgeKod'] = cell.value;
                 break
-            case HEADER.bolgeKod:
-                data['bolgeKod'] = cell.value;
+            case HEADER.bolgeler:
+                data['bolgeler'] = cell.value;
                 break
             case HEADER.distributor:
                 data['name'] = cell.value;
@@ -95,12 +95,16 @@ function parseData(row: Row) {
                 break;
             case HEADER.bolgeSehir:
                 let val : [] = cell.value.split(";").map(_.trim);
-                let result : any = {}
+                let result : any = []
                 val.map((v : any, i : number) => {
                     let _v : any[] = v.split("=");
 
-                    result[_v[0]] = [];
-                    result[_v[0]] = _v[1].split(",").map(_.trim);
+                    _v[1].split(",").map((ilce : string) => {
+                        result.push({
+                            il : _v[0],
+                            ilce : _.trim(ilce)
+                        })
+                    });
                 })
 
                 // data['sehir'] = (!_.isArray(data['sehir'])) ? [] : data['sehir'];

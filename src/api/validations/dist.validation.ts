@@ -25,12 +25,12 @@ const distValidation = {
     getDistsByAdres : {
         query : {
             il : Joi.string().required(),
-            ilce : Joi.string().uppercase().required()
+            ilce : Joi.string().required()
         }
     },
     getDistsByIl : {
         params : {
-            il : Joi.string().required().uppercase()
+            il : Joi.string().required()
         }
     }
 };

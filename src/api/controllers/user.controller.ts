@@ -1,26 +1,42 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import "../models/distributor.model"
 import * as mongoose from "mongoose";
-const DistModel = mongoose.model("Dist")
-import { User, Dist } from '../models';
+import "../models/distributor.model"
+import "../models/user.model"
+import * as _ from "lodash"
+const DistModel = mongoose.model("Dist");
+const UserModel = mongoose.model("User");
+
+import * as httpStatus from "http-status"
+const APIError = require('../utils/APIError');
+
+
 import { IUser, IDistributor } from '../interface';
-import { ObjectID } from 'bson';
 
-export async function getUser(req: Request, res: Response, next : NextFunction) {
+export async function getUserByEmail(req: Request, res: Response, next: NextFunction) {
     try {
-        let userId = req.query.id || null
-        const user = await User.getUser(userId);
+        let userEmail = req.params.email || null
+        const users = await UserModel.find({
+            "email.address": userEmail
+        });;
+        if (_.isEmpty(users) || users.length == 0) throw new APIError({
+            message: "Kullanıcı bulunamadı",
+            status: httpStatus.NOT_FOUND
+        });
 
-        res.json(user);
+        res.json(users);
     } catch (err) {
         next(err)
     }
 };
 
-export async function getUsers(req: Request, res: Response, next : NextFunction) {
+export async function getUsersAll(req: Request, res: Response, next: NextFunction) {
     try {
-        const users = await User.getUsers();
-
+        const users = await UserModel.find();
+        if (_.isEmpty(users) || users.length == 0) throw new APIError({
+            message: "Kullanıcı bulunamadı",
+            status: httpStatus.NOT_FOUND
+        });
         res.json(users);
     } catch (err) {
         next(err)
@@ -45,7 +61,7 @@ export async function setUser(req: Request, res: Response) {
     //         distributor : "5bec5cb8fb6fc005dcd59a72",
     //         _id : new ObjectID()
     //     })
-        
+
     // })
     // // const user = await User.setUser(payload);
     res.json(true);
