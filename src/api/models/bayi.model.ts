@@ -1,33 +1,12 @@
-export { };
-import { NextFunction, Request, Response, Router } from 'express';
-// const mongoose = require('mongoose');
-// import * as mongoose from "mongoose";
 import { Model, Document, Schema, DocumentQuery, model } from "mongoose";
-// const httpStatus = require('http-status');
-import * as httpStatus from "http-status"
-import { isEmpty } from "lodash";
 const bcrypt = require('bcryptjs');
 const moment = require('moment-timezone');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
-import { getPageQuery, queryPromise } from '../utils/Utils';
-import { RequestOptions, IBayiDocument, IBayi } from '../interface';
-import { ObjectId } from 'bson';
-const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
+import { IBayiDocument } from '../interface';
 
 
-export interface IBayiDocumentModel extends Model<IBayiDocument> {
-  getSehirById(id: string): Promise<IBayiDocument[]>
-  getBayilerBySehir(sehir: string,
-                    options?: RequestOptions | null
-                  ) : IBayiDocument[]
-  getBayilerByIlce(sehir: string,
-                    ilce: string,
-                    options: RequestOptions | null
-                  ) : IBayiDocument[]
-  setBayi(options: IBayi) : any
-  getBayiById(id: Object) : IBayiDocument
-}
+export interface IBayiDocumentModel extends Model<IBayiDocument> { }
 
 /**
  * Bayi Roles
@@ -53,62 +32,6 @@ const bayiSchema: Schema = new Schema(
   },
   { collection: "bayiler" }
 );
-
-bayiSchema.static('getBayilerBySehir', async (sehir: string, options: RequestOptions) => {
-  try {
-    let bayi = await Bayi.find({ il: sehir }).select(options.select).limit(options.limit);
-    if(isEmpty(bayi)) throw new APIError({
-      message : "Bayi bulunamadı",
-      code : httpStatus.NO_CONTENT
-    });
-    return bayi;
-  } catch (err) {
-    throw err
-  }
-  
-});
-
-bayiSchema.static('getBayiById', (id: any) : DocumentQuery<IBayiDocument[], IBayiDocument, {}> => {
-  try {
-    let bayi = Bayi.find({ _id: id }).populate("distributor");
-    if(isEmpty(bayi)) throw new APIError({
-      message : "Bayi bulunamadı",
-      code : httpStatus.NO_CONTENT
-    });
-    return bayi
-  } catch (err) {
-    throw err
-  }
-  
-});
-
-bayiSchema.static('getBayilerByIlce', async (sehir: string, ilce: string, options: RequestOptions) => {
-  try {
-    let bayi = await Bayi.find({ 
-      il: sehir,
-      ilce: ilce 
-    }).select(options.select).limit(options.limit)  
-    
-    if(isEmpty(bayi)) throw new APIError({
-      message : "Bayi bulunamadı",
-      code : httpStatus.NO_CONTENT
-    });
-    return bayi;
-  } catch (err) {
-    throw err;
-  }
-});
-
-bayiSchema.static('setBayi', (options: IBayi) => {
-  try {
-    let bayi = new Bayi();
-    bayi.il = options.il;
-    bayi.ilce = options.ilce;
-    return bayi.save();  
-  } catch (err) {
-    throw err
-  }
-})
 
 
 /**

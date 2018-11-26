@@ -22,7 +22,7 @@ router
     // .get((req, res) => {
     //   res.json("ok")
     // })
-    .get(validate(getSehir), controller.getSehir);
+    .get(validate(getSehir), controller.getBayilerBySehir);
 router
   .route("/yeni")
 
@@ -34,11 +34,11 @@ router
 router
   .route('/:sehir')
 
-    .get(validate(getSehir), controller.getSehir);
+    .get(validate(getSehir), controller.getBayilerBySehir);
 router
   .route("/:sehir/:ilce")
     
-    .get(validate(getIlce), controller.getIlce)
+    .get(validate(getIlce), controller.getBayilerByIlce)
 
   /**
    * @api {get} v1/users List Users
@@ -89,8 +89,8 @@ router
    */
   // .post(authorize(ADMIN), validate(createUser), controller.create);
 
-router
-  .route('/profile')
+// router
+//   .route('/profile')
   /**
    * @api {get} v1/users/profile User Profile
    * @apiDescription Get logged in user profile information

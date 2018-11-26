@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSourceFromExternal } from "../helper/tapdk";
+import { IBayi } from 'api/interface';
+import "../models/distributor.model"
+import * as mongoose from "mongoose";
+const DistModel = mongoose.model("Dist");
 /**
  * Get distributor
  * @public
@@ -7,9 +11,9 @@ import { getSourceFromExternal } from "../helper/tapdk";
 
 export async function getSource(req: Request, res: Response, next: NextFunction) {
   try {
-    let result : any = await getSourceFromExternal()
-    
-    res.json(result)
+    let bayiler : IBayi[] = await getSourceFromExternal()
+
+    res.json(bayiler[0].unvan)
   } catch (err) {
     next(err)
   }

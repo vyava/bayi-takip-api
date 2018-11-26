@@ -37,7 +37,7 @@ function parseData(row: Row) {
                 data['bolgeKod'] = cell.value;
                 break
             case HEADER.distributor:
-                data['distributor'] = cell.value;
+                data['name'] = cell.value;
                 break
             case HEADER.kod:
                 data['kod'] = cell.value;

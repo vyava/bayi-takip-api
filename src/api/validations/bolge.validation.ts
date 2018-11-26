@@ -4,13 +4,16 @@ import { Bolge } from '../models';
 const {LIMIT_MAX, LIMIT_MIN, LIMIT_DEFAULT} = require("../../config/vars");
 
 const bolgeValidation = {
-    setBolge : {
+    getBolgeById : {
         query : {
-            kod : Joi.number().required().min(100),
-            name : Joi.string().required().uppercase(),
-            distributor : Joi.any().default([])
+            kod : Joi.number().required().min(100)
         }
-    }
+    },
+    getBolgeBySehir : {
+        query : {
+            kod : Joi.number().required().min(100)
+        }
+    },
 };
 
-export const{setBolge} = bolgeValidation
+export const{getBolgeById} = bolgeValidation

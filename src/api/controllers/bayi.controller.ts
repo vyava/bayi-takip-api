@@ -1,48 +1,52 @@
 export {};
 import { NextFunction, Request, Response } from 'express';
 const httpStatus = require('http-status');
-import { Bayi } from '../models/bayi.model';
+const APIError = require('../utils/APIError');
+import { isEmpty } from "lodash";
+import * as mongoose from "mongoose"
+import "../models/bayi.model"
+// import { Bayi } from '../models/bayi.model';
+
+const BayiModel = mongoose.model("Bayi");
 // import { startTimer, apiJson } from 'api/utils/Utils';
 const { handler: errorHandler } = require('../middlewares/error');
 
-/**
- * Load user and append to req.
- * @public
- */
-export async function load (req: Request, res: Response, next: NextFunction, id: any) {
-  try {
-    let user = new Bayi();
-    req.route.meta.user = user;
-    return next();
-  } catch (error) {
-    return errorHandler(error, req, res);
-  }
-};
 
 /**
  * Get user
  * @public
  */
 
-export async function getSehir(req : Request, res : Response, next : NextFunction){
+export async function getBayilerBySehir(req : Request, res : Response, next : NextFunction){
   try {
     let sehir = req.param('sehir')
     let options = req.query || null
-    const user = await Bayi.getBayilerBySehir(sehir, options);
-    res.json(user);
+    let bayiler = await BayiModel.find({ il: sehir }).select(options.select).limit(options.limit);
+    if(isEmpty(bayiler)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    res.send(bayiler);
   } catch (err) {
     next(err)
   }
 };
 
-export async function getIlce(req : Request, res : Response, next : NextFunction){
+export async function getBayilerByIlce(req : Request, res : Response, next : NextFunction){
   try {
     let sehir = req.param('sehir');
     let ilce = req.param('ilce');
     let options = req.query || null;
-    const user = await Bayi.getBayilerByIlce(sehir, ilce, options);
+    let bayi = await BayiModel.find({ 
+      il: sehir,
+      ilce: ilce 
+    }).select(options.select).limit(options.limit)  
     
-    res.json(user);  
+    if(isEmpty(bayi)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    res.send(bayi);
   } catch (err) {
     next(err)
   }
@@ -51,7 +55,7 @@ export async function getIlce(req : Request, res : Response, next : NextFunction
 export async function setBayi(req : Request, res : Response, next : NextFunction){
   try {
     let options = req.query;
-    const bayi = await Bayi.findById("5bec0317ee6fd214c80bf9af");
+    const bayi = await BayiModel.findById("5bec0317ee6fd214c80bf9af");
     res.json(bayi);  
   } catch (err) {
     next(err)
@@ -60,12 +64,13 @@ export async function setBayi(req : Request, res : Response, next : NextFunction
 
 export async function getBayiById(req : Request, res : Response, next : NextFunction){
   try{
-    let ruhsatNo = req.query.ruhsatNo;
-    // let _bayi = await Bayi.findById("5bea83dbaf8c949699482755");
-    const bayi = await Bayi.find({ruhsatNo : ruhsatNo})
-    // bayi.distributor = _bayi._id;
-    // bayi.save();
-    res.json(bayi);
+    let kod = req.query.kod;
+    let bayi = BayiModel.find({ kod: kod }).populate("distributor");
+    if(isEmpty(bayi)) throw new APIError({
+      message : "Bayi bulunamadı",
+      code : httpStatus.NO_CONTENT
+    });
+    res.send(bayi)
   }catch(err) {
     next(err)
   }

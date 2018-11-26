@@ -3,7 +3,7 @@
     "outDir": "./built",
     "allowJs": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "es6",
     "module": "commonjs",
     "baseUrl": "src"

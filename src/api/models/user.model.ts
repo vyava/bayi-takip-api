@@ -1,5 +1,6 @@
 import { Model, Document, Schema, DocumentQuery, model, Types } from "mongoose";
 import { IUserDocument, IBolge, IUser } from "../interface";
+import "../models/distributor.model"
 
 export interface IUserDocumentModel extends Model<IUserDocument> {
     getUser(id: number): any;
@@ -33,7 +34,7 @@ const userSchema: Schema = new Schema({
         type : Schema.Types.ObjectId, ref : 'Dist', default : null
     }
 }, {
-        collection: "user",
+        collection: "users",
         toJSON : {
             transform : (doc, ret) => {
               delete ret._id

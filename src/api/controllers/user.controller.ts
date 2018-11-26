@@ -1,4 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
+import "../models/distributor.model"
+import * as mongoose from "mongoose";
+const DistModel = mongoose.model("Dist")
 import { User, Dist } from '../models';
 import { IUser, IDistributor } from '../interface';
 import { ObjectID } from 'bson';
@@ -25,25 +28,25 @@ export async function getUsers(req: Request, res: Response, next : NextFunction)
 };
 
 export async function setUser(req: Request, res: Response) {
-    let dists = await Dist.getDistAll();
-    dists.map(dist => {
-        let {kod} = dist.toJSON();
+    // let dists = await DistModel.find();
+    // dists.map(dist => {
+    //     let {kod} = dist.toJSON();
 
-        let user = User.setUser({
-            email : {
-                address: "umitozdelice@gmail.com",
-                name: "Ümit ÖZDELİCE"
-            },
-            firstName : "",
-            lastName : "",
-            status : true,
-            level : "dsm",
-            fullName : "Ümit ÖZDELİCE",
-            distributor : "5bec5cb8fb6fc005dcd59a72",
-            _id : new ObjectID()
-        })
+    //     let user = User.setUser({
+    //         email : {
+    //             address: "umitozdelice@gmail.com",
+    //             name: "Ümit ÖZDELİCE"
+    //         },
+    //         firstName : "",
+    //         lastName : "",
+    //         status : true,
+    //         level : "dsm",
+    //         fullName : "Ümit ÖZDELİCE",
+    //         distributor : "5bec5cb8fb6fc005dcd59a72",
+    //         _id : new ObjectID()
+    //     })
         
-    })
-    // const user = await User.setUser(payload);
-    res.json(dists);
+    // })
+    // // const user = await User.setUser(payload);
+    res.json(true);
 };

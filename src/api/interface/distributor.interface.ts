@@ -1,5 +1,6 @@
-import { Document } from "mongoose";
-import { IBolgeDocument } from "./bolge.interface";
+import { Document, Types } from "mongoose";
+import { IBolge } from "./bolge.interface";
+import { IUserDocument } from "./user.interface";
 
 
 export interface IDistributorDocument extends Document, IDistributor { };
@@ -8,13 +9,10 @@ export interface IDistributor {
     kod            : number;
     name           : string;
     status         : boolean;
-    dsm?           : any[];
-    tte?           : any[];
-    operator?      : any[];
-    scope?         : any[];
-    bolge?         : IBolgeDocument;
-    to? : any;
-    cc? : any;
+    users?         : IUserDocument[];
+    bolge?         : IBolge;
+    bolgeKod?      : number;
+    bolgeler?      : string;
 };
 
 export interface IDistributorShort {
