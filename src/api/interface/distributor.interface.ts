@@ -1,15 +1,17 @@
 import { Document, Types } from "mongoose";
 import { IBolge } from "./bolge.interface";
-import { IUserDocument } from "./user.interface";
+import { IUserDocument, IUser } from "./user.interface";
 
 
 export interface IDistributorDocument extends Document, IDistributor { };
 
 export interface IDistributor {
+    _id            : any;
     kod            : number;
     name           : string;
     status         : boolean;
-    users?         : IUserDocument[];
+    users?         : Types.ObjectId[];
+    userData?      : IUser[];
     bolge?         : IBolge;
     bolgeKod?      : number;
     bolgeler?      : string;

@@ -22,7 +22,12 @@ const distributorSchema: Schema = new Schema(
         type : Schema.Types.ObjectId,
         ref : 'User'
       }],
-      scope: { type: String },
+      kod : {
+        type : Number,
+        required : true,
+        unique : true,
+        index : true
+      },
       bolge: { type: String, required : true},
       bolgeData : [
         {
@@ -45,14 +50,13 @@ const distributorSchema: Schema = new Schema(
         transform : (doc, ret) => {
           delete ret._id
         }
+      },
+      timestamps : {
+        createdAt : "created_at",
+        updatedAt : "updated_at"
       }
     }
   );
-
-  distributorSchema.pre("find", function(next){
-    console.log(this.$where(""))
-    next()
-  })
 
   distributorSchema.static('setDist', async (payload: Object) => {
     try {

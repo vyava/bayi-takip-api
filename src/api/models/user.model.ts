@@ -4,42 +4,47 @@ import "../models/distributor.model"
 
 export interface IUserDocumentModel extends Model<IUserDocument> {
     getUser(id: number): any;
-    setUser(payload : IUser) : any;
-    getUsers() : IUserDocument[];
+    setUser(payload: IUser): any;
+    getUsers(): IUserDocument[];
 }
 
 const userSchema: Schema = new Schema({
-    name: {type : String, required : true},
-    email : new Schema({
-        address : {
-            type : String,
-            required : true,
-            unique : true
+    name: { type: String, required: true },
+    email: new Schema({
+        address: {
+            type: String,
+            required: true,
+            unique: true,
+            sparse: true
         },
-        name : {
-            type : String,
-            required : true
+        name: {
+            type: String,
+            required: true
         }
     }),
-    taskName : {
-        type : String,
-        enum : ["rsm", "dsm", "tte", "operator"],
-        required : true
+    taskName: {
+        type: String,
+        enum: ["rsm", "dsm", "tte", "operator"],
+        required: true
     },
-    status : {
-        type : Boolean,
-        default : true
+    status: {
+        type: Boolean,
+        default: true
     },
-    distributor : {
-        type : Schema.Types.ObjectId, ref : 'Dist', default : null
+    distributor: {
+        type: Schema.Types.ObjectId, ref: 'Dist', default: null
     }
 }, {
         collection: "users",
-        toJSON : {
-            transform : (doc, ret) => {
-              delete ret._id
+        toJSON: {
+            transform: (doc, ret) => {
+                delete ret._id
             }
-          }
+        },
+        timestamps : {
+            createdAt : "created_at",
+            updatedAt : "updated_at"
+        }
     });
 
 userSchema.static('getUser', (_id: number) => {
@@ -48,8 +53,8 @@ userSchema.static('getUser', (_id: number) => {
 
 userSchema.static('getUsers', () => {
     return User.find().populate({
-        path : "distributor",
-        select : ["kod", "name"]
+        path: "distributor",
+        select: ["kod", "name"]
     });
 });
 

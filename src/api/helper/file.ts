@@ -20,6 +20,7 @@ function parseData(row: Row) {
 
     let data: any = {}
     data['users'] = []
+    data['userData'] = []
     data['bolgeData'] = []
 
     row.eachCell((cell: any, cellIndex) => {
@@ -43,7 +44,6 @@ function parseData(row: Row) {
                 data['kod'] = cell.value;
                 break
             case HEADER.dsm:
-                let _dsm: any = []
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
                     let matchedData: any = {}
@@ -56,11 +56,10 @@ function parseData(row: Row) {
                         matchedData['taskName'] = "dsm"
                         return m
                     })
-                    data['users'].push(matchedData)
+                    data['userData'].push(matchedData)
                 })
                 break;
             case HEADER.tte:
-                let _tte: any = []
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
                     let matchedData: any = {}
@@ -73,11 +72,10 @@ function parseData(row: Row) {
                         matchedData['taskName'] = "tte"
                         return m
                     })
-                    data['users'].push(matchedData)
+                    data['userData'].push(matchedData)
                 })
                 break;
             case HEADER.operator:
-                let _operator: any = []
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
                     let matchedData: any = {}
@@ -90,7 +88,7 @@ function parseData(row: Row) {
                         matchedData['taskName'] = "operator"
                         return m
                     })
-                    data['users'].push(matchedData)
+                    data['userData'].push(matchedData)
                 })
                 break;
             case HEADER.bolgeSehir:
@@ -98,13 +96,20 @@ function parseData(row: Row) {
                 let result : any = []
                 val.map((v : any, i : number) => {
                     let _v : any[] = v.split("=");
-
-                    _v[1].split(",").map((ilce : string) => {
+                    console.log(_v)
+                    if(_v.length == 1 || _v.length == 0){
                         result.push({
-                            il : _v[0],
-                            ilce : _.trim(ilce)
+                            il : _v[0] || null
                         })
-                    });
+                    }else{
+                        _v[1].split(",").map((ilce : string) => {
+                            result.push({
+                                il : _v[0],
+                                ilce : _.trim(ilce)
+                            })
+                        });
+                    }
+                    
                 })
 
                 // data['sehir'] = (!_.isArray(data['sehir'])) ? [] : data['sehir'];
