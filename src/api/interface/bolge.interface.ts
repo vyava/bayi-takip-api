@@ -7,7 +7,7 @@ export interface IBolgeDocument extends Document, IBolge { };
 export interface IBolge {
     il           : string;
     ilce?        : IIlce[];
-    bolge?       : string;
+    altBolge?       : string;
     bolgeKod?    : number;
 }
 

@@ -10,11 +10,14 @@ const distValidation = {
     },
     setUser : {
         query : {
-            kod :Joi.string().required(),
-            name :Joi.string().required(),
-            bolge : Joi.string().required()
+            name :Joi.string().required()
+        }
+    },
+    getEmails : {
+        query : {
+            name : Joi.string().required().uppercase()
         }
     }
 };
 
-export const{getUser, setUser} = distValidation
+export const{getUser, setUser, getEmails} = distValidation

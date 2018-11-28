@@ -16,7 +16,7 @@ export interface IDistributorDocumentModel extends Model<IDistributorDocument> {
 
 const distributorSchema: Schema = new Schema(
     {
-      name: { type: String, required : true },
+      name: { type: String, default : "TANIMSIZ" },
       status: { type: Boolean, default : true },
       users : [{
         type : Schema.Types.ObjectId,
@@ -28,7 +28,8 @@ const distributorSchema: Schema = new Schema(
         unique : true,
         index : true
       },
-      bolge: { type: String, required : true},
+      bolge: { type: String, default : "TANIMSIZ"},
+      altBolge : { type : String, default : "TANIMSIZ" },
       bolgeData : [
         {
           il : {

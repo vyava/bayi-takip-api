@@ -12,14 +12,14 @@ export interface IDistributor {
     status         : boolean;
     users?         : Types.ObjectId[];
     userData?      : IUser[];
-    bolge?         : IBolge;
+    altBolge?         : IBolge;
     bolgeKod?      : number;
-    bolgeler?      : string;
+    bolge?      : string;
 };
 
 export interface IDistributorShort {
+    altBolge : string;
     bolge : string;
-    bolgeler : string;
     id : number;
     name : string;
 }

@@ -43,6 +43,67 @@ export async function getUsersAll(req: Request, res: Response, next: NextFunctio
     }
 };
 
+export async function getUsersEmailByDist(req: Request, res: Response, next: NextFunction) {
+    try {
+        let distName = req.query.name;
+        let usersEmail = await UserModel.aggregate([
+            {
+                $lookup : {
+                    from : "dist",
+                    localField : "distributor",
+                    foreignField : "_id",
+                    as : "distributorler"
+                }
+            },
+            {
+                $unwind : "$distributorler"
+            },
+            {
+                $project : {
+                    _id : 0,
+                    name : "$email.name",
+                    address : "$email.address",
+                    distName : "$distributorler.name",
+                    bolge : "$distributorler.altBolge",
+                    taskName : "$taskName",
+                    status : "$distributorler.status"
+                }
+            },
+            {
+                $match : {
+                    distName : distName,
+                    status : true
+                }
+            },
+            {
+                $group : {
+                    _id : "$taskName",
+                    users : {
+                        $addToSet : {
+                            name : "$name",
+                            address : "$address",
+                        }
+                    }
+                }
+            },
+            {
+                $project : {
+                    _id : 0,
+                    task : "$_id",
+                    users : "$users"
+                }
+            }
+        ]);
+        if(!usersEmail) throw new APIError({
+            message: "Kullanıcı email listesi bulunamadı",
+            status: httpStatus.NOT_FOUND
+        });
+        res.json(usersEmail);
+    } catch (err) {
+        next(err)
+    }
+};
+
 export async function setUser(req: Request, res: Response) {
     // let dists = await DistModel.find();
     // dists.map(dist => {

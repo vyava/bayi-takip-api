@@ -6,7 +6,8 @@ export interface IBolgeDocumentModel extends Model<IBolgeDocument> { }
 const bolgeSchema: Schema = new Schema({
     il: { type: String },
     ilce: { type : Array},
-    bolge : {
+    bolge : {type : String, default : "TANIMSIZ"},
+    altBolge : {
         type : String,
         default : "TANIMSIZ"
     },

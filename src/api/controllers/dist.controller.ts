@@ -38,7 +38,7 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
     let distData: IDistributor[] = await readExcelFile();
     distData.map(async (dist: IDistributor) => {
       let users = dist.userData;
-      let _distData = _.pick(dist, ["bolgeler", "bolge", "bolgeKod", "name", "kod", "bolgeData", "users"]);
+      let _distData = _.pick(dist, ["bolge", "altBolge", "bolgeKod", "name", "kod", "bolgeData", "users"]);
       let distDoc : any = await DistModel.findOneAndUpdate( { kod: dist.kod }, _distData, { new: true, upsert: true } );
       let userIds : any[] = []
       let userResult : any = users.map(async (user: IUser) => {
@@ -48,7 +48,7 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
         distDoc.users.push(_userDoc._id)
         return _userDoc
       });
-      userResult.then((r : any) => {
+      Promise.all(userResult).then((r : any) => {
         distDoc.save()
       })
     })

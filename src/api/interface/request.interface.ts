@@ -11,9 +11,9 @@ export interface DistRequest {
 };
 
 export interface NewDist {
-    bolge : string;
+    altBolge : string;
     bolgeKod: number;
-    bolgeler : string;
+    bolge : string;
     cc : Mail[];
     to : Mail[];
     kod : number;

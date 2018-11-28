@@ -5,8 +5,8 @@ const path = require("path")
 config.setValue('promise', require("bluebird"));
 
 enum HEADER {
-    bolgeler = 1,
-    bolge,
+    bolge = 1,
+    altBolge,
     bolgeKod,
     distributor,
     kod,
@@ -25,17 +25,14 @@ function parseData(row: Row) {
 
     row.eachCell((cell: any, cellIndex) => {
         switch (cellIndex) {
-            case HEADER.bolgeler:
-                data['bolgeler'] = cell.value;
-                break
             case HEADER.bolge:
                 data['bolge'] = cell.value;
                 break
+            case HEADER.altBolge:
+                data['altBolge'] = cell.value;
+                break
             case HEADER.bolgeKod:
                 data['bolgeKod'] = cell.value;
-                break
-            case HEADER.bolgeler:
-                data['bolgeler'] = cell.value;
                 break
             case HEADER.distributor:
                 data['name'] = cell.value;

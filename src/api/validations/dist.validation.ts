@@ -14,9 +14,9 @@ const distValidation = {
         query : {
             kod :Joi.number().required(),
             name :Joi.string().required(),
-            bolge : Joi.string().required(),
+            altBolge : Joi.string().required(),
             bolgeKod : Joi.number().required(),
-            bolgeler : Joi.string().required(),
+            bolge : Joi.string().required(),
             cc: Joi.any().required(),
             to: Joi.any().required(),
             status : Joi.boolean().required()
