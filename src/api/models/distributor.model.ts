@@ -10,7 +10,7 @@ const APIError = require('../utils/APIError');
 // import * as APIError from "../utils/APIError"
 
 export interface IDistributorDocumentModel extends Model<IDistributorDocument> {
-    setDist(payload : Object) : any
+    getDistsIdByAdres(adres : DistRequest) : any
     toJSON() : any
 }
 
@@ -47,11 +47,11 @@ const distributorSchema: Schema = new Schema(
     },
     {
       collection: "dist",
-      toJSON : {
-        transform : (doc, ret) => {
-          delete ret._id
-        }
-      },
+      // toJSON : {
+      //   transform : (doc, ret) => {
+      //     delete ret._id
+      //   }
+      // },
       timestamps : {
         createdAt : "created_at",
         updatedAt : "updated_at"
@@ -59,11 +59,16 @@ const distributorSchema: Schema = new Schema(
     }
   );
 
-  distributorSchema.static('setDist', async (payload: Object) => {
+  distributorSchema.static('getDistsIdByAdres', async (adres: DistRequest) => {
     try {
-      let dist = new Dist(payload);
-      let result = await dist.save();
-      return result;
+      return await Dist.find({
+        bolgeData: {
+          $elemMatch: {
+            il: adres.il,
+            ilce: adres.ilce
+          }
+        }
+      }).select("_id")
     } catch (err) {
       throw new APIError(err)
     }

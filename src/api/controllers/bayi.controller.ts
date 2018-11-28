@@ -5,6 +5,8 @@ const APIError = require('../utils/APIError');
 import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
+import {Dist} from "../models/distributor.model"
+import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
 
 const BayiModel = mongoose.model("Bayi");
@@ -54,9 +56,15 @@ export async function getBayilerByIlce(req : Request, res : Response, next : Nex
 
 export async function setBayi(req : Request, res : Response, next : NextFunction){
   try {
-    let options = req.query;
-    const bayi = await BayiModel.findById("5bec0317ee6fd214c80bf9af");
-    res.json(bayi);  
+    let bulk = BayiModel.collection.initializeOrderedBulkOp();
+    bulk.find({}).update({
+      $set : {
+        durum : "ONAY BEKLİYOR"
+      }
+    });
+
+    let result = await bulk.execute()
+    res.json(result)
   } catch (err) {
     next(err)
   }
