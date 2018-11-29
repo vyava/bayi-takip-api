@@ -54,19 +54,33 @@ export async function getBayilerByIlce(req : Request, res : Response, next : Nex
   }
 }
 
-export async function setBayi(req : Request, res : Response, next : NextFunction){
+export async function setDistsToBayiler(dist : any){
   try {
-    let bulk = BayiModel.collection.initializeOrderedBulkOp();
-    bulk.find({}).update({
-      $set : {
-        durum : "ONAY BEKLİYOR"
+    let {id, iller, ilceler} = dist
+    let bulk = BayiModel.collection.initializeUnorderedBulkOp();
+    bulk.find({
+      $and : [
+        {
+          il : {
+            $in : iller
+          }
+        },
+        {
+          ilce : {
+            $in : ilceler
+          }
+        }
+      ]
+    }).update({
+      $push : {
+        distributor : id
       }
     });
 
-    let result = await bulk.execute()
-    res.json(result)
+    return await bulk.execute()
+    
   } catch (err) {
-    next(err)
+    throw new Error(err)
   }
 }
 

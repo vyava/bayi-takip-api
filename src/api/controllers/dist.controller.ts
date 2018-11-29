@@ -10,6 +10,8 @@ import { readExcelFile } from '../helper/file';
 import * as httpStatus from "http-status"
 const APIError = require('../utils/APIError');
 
+import { setDistsToBayiler } from "./bayi.controller";
+
 const DistModel = mongoose.model("Dist");
 const UserModel = mongoose.model("User");
 const BolgeModel = mongoose.model("Bolge");
@@ -57,6 +59,37 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
     next(err)
   }
 };
+
+export async function setDistInfoToBayiler(req: Request, res: Response, next: NextFunction){
+  try {
+    let dists = await DistModel.aggregate([
+      {
+        $project : {
+          bolgeData : 1
+        }
+      }
+    ]);
+    let result : any[] = await dists.map(async dist => {
+      let _dist =  {
+        id : dist._id,
+        iller : _.union(_.map(dist['bolgeData'], "il")),
+        ilceler : _.union(_.map(dist['bolgeData'], "ilce"))
+      }
+      // return _dist
+      return await setDistsToBayiler(_dist)
+    });
+
+    Promise.all(result)
+      .then(ok => {
+        res.json(ok)
+      })
+      .catch(err => {
+        throw err
+      })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export async function getDistsByAdres(req: Request, res: Response, next: NextFunction) {
   try {

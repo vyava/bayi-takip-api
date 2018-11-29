@@ -17,7 +17,6 @@ const mongoose = require('./config/mongoose');
 
 // open mongoose connection
 mongoose.connect();
-
 // HTTPS options
 const options = {
   // key: fs.readFileSync('./src/config/https/key.pem'),

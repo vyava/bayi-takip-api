@@ -43,63 +43,38 @@ function parseData(row: Row) {
             case HEADER.dsm:
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
-                    let matchedData: any = {}
-                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
-                        matchedData['email'] = {
-                            name : p1,
-                            address : p2
-                        };
-                        matchedData['name'] = p1;
-                        matchedData['taskName'] = "dsm"
-                        return m
-                    })
-                    data['userData'].push(matchedData)
+                    let result = parseEmail(_v, "dsm")
+                    
+                    data['userData'].push(result)
                 })
                 break;
             case HEADER.tte:
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
-                    let matchedData: any = {}
-                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
-                        matchedData['email'] = {
-                            name : p1,
-                            address : p2
-                        };
-                        matchedData['name'] = p1;
-                        matchedData['taskName'] = "tte"
-                        return m
-                    })
-                    data['userData'].push(matchedData)
+                    let result = parseEmail(_v, "tte")
+                    
+                    data['userData'].push(result)
                 })
                 break;
             case HEADER.operator:
                 cell.value.split(",").map((v: any) => {
                     let _v = _.trim(v);
-                    let matchedData: any = {}
-                    _v.replace(/(.*?)<(\S+@\S+)>/g, function (m, p1, p2) {
-                        matchedData['email'] = {
-                            name : p1,
-                            address : p2
-                        };
-                        matchedData['name'] = p1;
-                        matchedData['taskName'] = "operator"
-                        return m
-                    })
-                    data['userData'].push(matchedData)
+                    let result = parseEmail(_v, "operator")
+                    
+                    data['userData'].push(result)
                 })
                 break;
             case HEADER.bolgeSehir:
-                let val : [] = cell.value.split(";").map(_.trim);
+                let val : any[] = _.compact(cell.value.split(";").map(_.trim));
                 let result : any = []
                 val.map((v : any, i : number) => {
                     let _v : any[] = v.split("=");
-                    console.log(_v)
                     if(_v.length == 1 || _v.length == 0){
                         result.push({
                             il : _v[0] || null
                         })
                     }else{
-                        _v[1].split(",").map((ilce : string) => {
+                        _.compact(_v[1].split(",")).map((ilce : string) => {
                             result.push({
                                 il : _v[0],
                                 ilce : _.trim(ilce)
@@ -118,6 +93,33 @@ function parseData(row: Row) {
     });
 
     return data;
+}
+
+interface IMailData  {
+    email : {
+        name : string,
+        address : string
+    },
+    name : string,
+    taskName : string
+}
+function parseEmail(data : string, taskName : string) : any{
+    let _data = data.toString();
+    try {
+        let matchedData : any = {};
+        _data.replace(/(.*?)<\s?(\S+@\S+)\s?>/g, function (m, p1, p2) {
+            matchedData['email'] = {
+                name : _.trim(p1),
+                address : _.trim(p2)
+            };
+            matchedData['name'] = _.trim(p1);
+            matchedData['taskName'] = taskName
+            return m
+        });
+        return matchedData;
+    } catch (err) {
+        throw err
+    }
 }
 
 export async function readExcelFile() {

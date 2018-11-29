@@ -24,10 +24,6 @@ router
     // })
     .get(validate(getSehir), controller.getBayilerBySehir);
 router
-  .route("/set")
-
-    .get(controller.setBayi)
-router
   .route("/bayi")
   
     .get(validate(getBayi), controller.getBayiById)
