@@ -103,10 +103,6 @@ export const Bayi: IBayiDocumentModel = model<IBayiDocument, IBayiDocumentModel>
 // });
 
 
-// userSchema.static("getSehirById", async (id: string) => {
-//   return await User.find({})
-// })
-
 /**
  * Statics
  */

@@ -13,7 +13,8 @@ export async function getSource(req: Request, res: Response, next: NextFunction)
   try {
     let bayiler : IBayi[] = await getSourceFromExternal()
 
-    res.json(bayiler[0].unvan)
+    // res.json(bayiler[0].unvan)
+    res.json(bayiler)
   } catch (err) {
     next(err)
   }

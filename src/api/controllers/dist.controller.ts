@@ -17,24 +17,6 @@ const UserModel = mongoose.model("User");
 const BolgeModel = mongoose.model("Bolge");
 
 
-/**
- * Get distributor
- * @public
- */
-
-export async function getDist(req: Request, res: Response, next: NextFunction) {
-  try {
-    let dist = await DistModel.findOne({ kod: req.body.kod });
-    if (!dist) throw new APIError({
-      message: "Distributor bulunamadı",
-      status: httpStatus.NOT_FOUND
-    });
-    return dist;
-  } catch (err) {
-    throw new APIError(err)
-  }
-};
-
 export async function setDist(req: Request, res: Response, next: NextFunction) {
   try {
     let distData: IDistributor[] = await readExcelFile();
@@ -91,52 +73,36 @@ export async function setDistInfoToBayiler(req: Request, res: Response, next: Ne
   }
 }
 
-export async function getDistsByAdres(req: Request, res: Response, next: NextFunction) {
-  try {
-    let adres: DistRequest = req.query;
-    let dists = await DistModel.find({
-      bolgeData: {
-        $elemMatch: {
-          il: adres.il,
-          ilce: adres.ilce
-        }
-      }
-    }).populate("users")
-    if (_.isEmpty(dists) || dists.length == 0) throw new APIError({
-      message: "Distributor bulunamadı",
-      status: httpStatus.NOT_FOUND
-    });
-    res.json(dists);
-  } catch (err) {
-    next(err)
-  }
-}
 
-export async function getDistsByIl(req: Request, res: Response, next: NextFunction) {
+export async function getDistIdsByAdres(_il : string, _ilce : string) : Promise<mongoose.Types.ObjectId[]>{
   try {
-    let il: string = req.params.il || null
-    const dists: any = await DistModel.find({
-      bolgeData: {
-        $elemMatch: {
-          il: il
+    let distIds = await DistModel.aggregate([
+      {
+        $unwind : "$bolgeData"
+      },
+      {
+        $match : {
+          "bolgeData.il" : _il.toUpperCase(),
+          "bolgeData.ilce" : _ilce.toUpperCase(),
+        }
+      },
+      {
+        $project : {
+          _id : true
         }
       }
-    });
-    if (_.isEmpty(dists) || dists.length == 0) throw new Error("Distribütör bulunamadı");
-    res.json(dists)
+    ]);
+    return distIds;
   } catch (err) {
-    next(err)
+    throw err;
   }
 }
 
 export async function getDistAll(req: Request, res: Response, next: NextFunction) {
   try {
-    let dists = await DistModel.find({}).select(["kod", "cc", "to"])
-    if (_.isEmpty(dists) || dists.length == 0) throw new APIError({
-      message: "Distributor bulunamadı",
-      status: httpStatus.NOT_FOUND
-    });
-    res.send(dists);
+    let {il, ilce} = req.query
+    let dists = await getDistIdsByAdres(il, ilce);
+    res.json(dists)
   } catch (err) {
     next(err)
   }

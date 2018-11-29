@@ -41,7 +41,7 @@ function parseData(row: Row) {
                 data['kod'] = cell.value;
                 break
             case HEADER.dsm:
-                cell.value.split(",").map((v: any) => {
+            _.compact(cell.value.split(",")).map((v: any) => {
                     let _v = _.trim(v);
                     let result = parseEmail(_v, "dsm")
                     
@@ -49,7 +49,7 @@ function parseData(row: Row) {
                 })
                 break;
             case HEADER.tte:
-                cell.value.split(",").map((v: any) => {
+                _.compact(cell.value.split(",")).map((v: any) => {
                     let _v = _.trim(v);
                     let result = parseEmail(_v, "tte")
                     
@@ -83,8 +83,6 @@ function parseData(row: Row) {
                     }
                     
                 })
-
-                // data['sehir'] = (!_.isArray(data['sehir'])) ? [] : data['sehir'];
                 data['bolgeData'] = result;
                 break;
             default:

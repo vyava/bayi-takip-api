@@ -27,14 +27,6 @@ router
   .route("/bayi")
   
     .get(validate(getBayi), controller.getBayiById)
-router
-  .route('/:sehir')
-
-    .get(validate(getSehir), controller.getBayilerBySehir);
-router
-  .route("/:sehir/:ilce")
-    
-    .get(validate(getIlce), controller.getBayilerByIlce)
 
   /**
    * @api {get} v1/users List Users

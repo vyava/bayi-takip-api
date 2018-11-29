@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { IDistributor, IDistributorDocument } from "./distributor.interface";
 
 
@@ -14,7 +14,7 @@ export interface IBayi {
     sinif?        : string;
     adres?        : string;
     durum?        : string;
-    distributor?  : IDistributorDocument[];
+    distributor?  : Types.ObjectId[];
     timestamp?    : string;
 }
 

@@ -17,11 +17,6 @@ router
 router
     .route('/ayarla')
     // .get(validate(setDist), distController.setDist)
-    .get(distController.setDistInfoToBayiler)
-router
-    .route('/byBolge')
-    .get(validate(getDistsByAdres), distController.getDistsByAdres)
-router
-    .route('/:il')
-    .get(validate(getDistsByIl), distController.getDistsByIl)
+    .get(distController.setDistInfoToBayiler);
+
 module.exports = router;

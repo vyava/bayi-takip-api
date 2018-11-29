@@ -1,6 +1,7 @@
 import { IBayi, IBayiIndex } from "../interface";
+import { getDistIdsByAdres } from "../controllers/dist.controller";
 
-export function parseBayi(chunkArray : any[]) : IBayi{
+export async function parseBayi(chunkArray : any[]) : Promise<IBayi>{
     let bayi : IBayi = {
         il : chunkArray[IBayiIndex.İL],
         ilce : chunkArray[IBayiIndex.İLÇE],
@@ -10,7 +11,8 @@ export function parseBayi(chunkArray : any[]) : IBayi{
         unvan : chunkArray[IBayiIndex.ÜNVAN],
         sinif : chunkArray[IBayiIndex.SINIF],
         adres : chunkArray[IBayiIndex.ADRES],
-        durum : chunkArray[IBayiIndex.DURUM]
+        durum : chunkArray[IBayiIndex.DURUM],
+        distributor : await getDistIdsByAdres(chunkArray[IBayiIndex.İL], chunkArray[IBayiIndex.İLÇE])
     }
     return bayi;
 }
