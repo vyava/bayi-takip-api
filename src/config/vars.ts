@@ -15,12 +15,12 @@ module.exports = {
   mongo: {
     uri: process.env.NODE_ENV === 'test' ? process.env.MONGO_URI_TESTS : process.env.MONGO_URI
   },
-  logs: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
+  // logs: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
 
   // DEFAULT values and limiters
   LIMIT_MAX : 101,
   LIMIT_MIN : 9,
-  LIMIT_DEFAULT : 50,
+  LIMIT_DEFAULT : 500,
 
 
   TAPDK_URL : "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"

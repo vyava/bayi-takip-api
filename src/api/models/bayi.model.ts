@@ -28,7 +28,11 @@ const bayiSchema: Schema = new Schema(
     sinif: { type: String, trim: true },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    distributor : [{type : Schema.Types.ObjectId, ref : 'Test'}]
+    distributor : [{type : Schema.Types.ObjectId, ref : 'Test'}],
+    sended : {
+      type : Boolean,
+      default : false
+    }
   },
   { collection: "bayiler" }
 );

@@ -18,7 +18,7 @@ const router = express.Router();
 // router.param('userId', controller.load);
 
 router
-  .route('/')
+  .route('/:sehir')
     // .get((req, res) => {
     //   res.json("ok")
     // })

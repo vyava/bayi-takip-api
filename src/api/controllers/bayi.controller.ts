@@ -5,13 +5,13 @@ const APIError = require('../utils/APIError');
 import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
-import {Dist} from "../models/distributor.model"
-import { IBayi, IBayiDocument } from 'api/interface';
+// import {Dist} from "../models/distributor.model"
+// import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
 
 const BayiModel = mongoose.model("Bayi");
 // import { startTimer, apiJson } from 'api/utils/Utils';
-const { handler: errorHandler } = require('../middlewares/error');
+// const { handler: errorHandler } = require('../middlewares/error');
 
 
 /**

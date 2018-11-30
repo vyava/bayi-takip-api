@@ -11,7 +11,8 @@ export function parseBayi(chunkArray : any[]) : IBayi{
         unvan : chunkArray[IBayiIndex.ÜNVAN],
         sinif : chunkArray[IBayiIndex.SINIF],
         adres : chunkArray[IBayiIndex.ADRES],
-        durum : chunkArray[IBayiIndex.DURUM]
+        durum : chunkArray[IBayiIndex.DURUM],
+        sended : false
     }
     return bayi;
 }

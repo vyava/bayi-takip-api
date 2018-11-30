@@ -81,7 +81,7 @@ async function getArrayFromSrouce(resultArray : any[]){
     }, []);
     
     return _.map(finalResult, async (bayi : IBayi) => {
-        // if(bayi.il == "İSTANBUL"){
+        // if(bayi.il == "İSTANBUL" && bayi.ilce == "PENDİK"){
             bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
         // }
         return bayi;
