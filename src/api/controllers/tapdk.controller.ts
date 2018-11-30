@@ -11,7 +11,7 @@ const DistModel = mongoose.model("Dist");
 
 export async function getSource(req: Request, res: Response, next: NextFunction) {
   try {
-    let bayiler : IBayi[] = await getSourceFromExternal()
+    let bayiler : any[] = await getSourceFromExternal()
 
     // res.json(bayiler[0].unvan)
     res.json(bayiler)

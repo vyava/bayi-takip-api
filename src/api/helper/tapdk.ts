@@ -1,5 +1,8 @@
 import { ITapdkRequest, TARIH, TARGET } from "./interface/request";
 import * as requestPromise from "request-promise";
+
+import { getDistIdsByAdres } from "../controllers/dist.controller";
+
 import * as _ from "lodash";
 import { parseBayi } from "./bayi";
 import { IBayi } from "api/interface";
@@ -7,11 +10,9 @@ var Iconv = require('iconv').Iconv;
 // const VAR = require("../../config/vars");
 
 const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
-
+const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
 export async function getSourceFromExternal() {
     try {
-        const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
-
         let response = await requestPromise.get(TAPDK_URL);
 
         response = response.replace(/[\r\n\t ]/g, '');
@@ -36,26 +37,63 @@ export async function getSourceFromExternal() {
         })
 
         let resultArray = parseFileString(fileString);
-
-        const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
-
-            if (val.match(ruhsatPattern)) {
-                // Dizi içinde eşleşen `ruhsatNo` indexini alır ve bayi bilgilerinin..
-                // ..tamamını alacak şekilde mevcut diziden ilgili diziyi ayırır.
-                let chunkArray : any = currentArray.slice(i - 2, i + 7);
-
-                let bayi : IBayi = parseBayi(chunkArray);
-                _result.push(bayi)
-            };
-            return _result;
-        }, [])
-
-        return finalResult;
+        let result = await getArrayFromSrouce(resultArray)
+        return Promise.all(result)
+            .then(resp => {
+                return resp
+            })
+            .catch(err => {
+                throw err
+            })
     } catch (err) {
         // console.log(err)
         throw err;
     }
 };
+
+async function getArrayFromSrouce(resultArray : any[]){
+    let bolgeData : any = {};
+    const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
+        if (val.match(ruhsatPattern)) {
+            // Dizi içinde eşleşen `ruhsatNo` indexini alır ve bayi bilgilerinin..
+            // ..tamamını alacak şekilde mevcut diziden ilgili diziyi ayırır.
+            let chunkArray : any = currentArray.slice(i - 2, i + 7);
+
+            let bayi : IBayi = parseBayi(chunkArray);
+            
+
+            // Bölge listesinde il ve ilçeleri tekil olarak push eder..
+            if(_.has(bolgeData, bayi.il) ){
+                if(!_.find(bolgeData[bayi.il], bolge => bolge.ilce == bayi.ilce)){
+                    bolgeData[bayi.il].push({
+                        name : bayi.ilce
+                    })    
+                }                  
+            }else{
+                bolgeData[bayi.il] = [];
+                bolgeData[bayi.il].push({
+                    name : bayi.ilce
+                })
+            }
+            _result.push(bayi)
+        };
+        return _result;
+    }, []);
+    
+    return _.map(finalResult, async (bayi : IBayi) => {
+        // if(bayi.il == "İSTANBUL"){
+            bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
+        // }
+        return bayi;
+    })
+    // let bolge = await getDistIds(bolgeData)
+    // Promise.all(bolge).then(r => console.log)
+    // return finalResult;
+};
+
+async function getDistIds(il : string, ilce : string){
+    return await getDistIdsByAdres(il, ilce);
+}
 
 function getStates(text: string) {
     let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");
@@ -77,7 +115,7 @@ function getStates(text: string) {
 function getForm(state: ITapdkRequest, isFile: boolean = false): ITapdkRequest {
 
     let formData: ITapdkRequest = {
-        dd_tarih: TARIH.SON_7_GÜN,
+        dd_tarih: TARIH.DÜN,
         dd_islem: -1,
         TXT_SICIL: "%PT%",
         dd_il: 0,

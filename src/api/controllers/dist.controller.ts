@@ -24,7 +24,6 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
       let users = dist.userData;
       let _distData = _.pick(dist, ["bolge", "altBolge", "bolgeKod", "name", "kod", "bolgeData", "users"]);
       let distDoc : any = await DistModel.findOneAndUpdate( { kod: dist.kod }, _distData, { new: true, upsert: true } );
-      let userIds : any[] = []
       let userResult : any = users.map(async (user: IUser) => {
         user.distributor = distDoc._id;
         // user.distributor = distId;
