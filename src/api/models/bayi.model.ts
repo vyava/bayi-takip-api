@@ -22,6 +22,8 @@ const bayiSchema: Schema = new Schema(
     il: { type: String },
     ilce: { type: String },
     ruhsatNo: { type: String, index: true, unique: true },
+    adiSoyadi : {
+          },
     adi: { type: String },
     soyadi: { type: String },
     unvan: { type: String, trim: true },

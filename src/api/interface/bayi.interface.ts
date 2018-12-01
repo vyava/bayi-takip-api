@@ -8,6 +8,7 @@ export interface IBayi {
     il?           : string;
     ilce?         : string;
     ruhsatNo?     : string;
+    adiSoyadi?    : string;
     adi?          : string;
     soyadi?       : string;
     unvan?        : string;

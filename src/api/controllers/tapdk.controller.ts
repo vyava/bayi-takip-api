@@ -3,6 +3,7 @@ import { getSourceFromExternal } from "../helper/tapdk";
 import { IBayi } from 'api/interface';
 import "../models/distributor.model"
 import * as mongoose from "mongoose";
+import { updateBayiler } from './bayi.controller';
 const DistModel = mongoose.model("Dist");
 /**
  * Get distributor
@@ -12,7 +13,7 @@ const DistModel = mongoose.model("Dist");
 export async function getSource(req: Request, res: Response, next: NextFunction) {
   try {
     let bayiler : any[] = await getSourceFromExternal()
-
+    await updateBayiler(bayiler);
     // res.json(bayiler[0].unvan)
     res.json(bayiler)
   } catch (err) {

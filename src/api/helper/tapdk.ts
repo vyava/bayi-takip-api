@@ -6,6 +6,7 @@ import { getDistIdsByAdres } from "../controllers/dist.controller";
 import * as _ from "lodash";
 import { parseBayi } from "./bayi";
 import { IBayi } from "api/interface";
+import { removeSpacesFromString } from "./string";
 var Iconv = require('iconv').Iconv;
 // const VAR = require("../../config/vars");
 
@@ -25,11 +26,15 @@ export async function getSourceFromExternal() {
             url: TAPDK_URL,
             form: form
         });
-        response = response.replace(/[\r\n\t ]/g, '');
+
+        // Html etiketleri arasındaki gereksiz yeni satırlar..
+        // .. tab boşluklarını siler
+        response = removeSpacesFromString(response);
 
         let finalStates: ITapdkRequest = getStates(response);
         let finalForm = getForm(finalStates, true);
 
+        // 
         let fileString = await requestPromise.post({
             url: TAPDK_URL,
             form: finalForm,
@@ -37,7 +42,7 @@ export async function getSourceFromExternal() {
         })
 
         let resultArray = parseFileString(fileString);
-        let result = await getArrayFromSrouce(resultArray)
+        let result = await getArrayFromSource(resultArray)
         return Promise.all(result)
             .then(resp => {
                 return resp
@@ -46,12 +51,11 @@ export async function getSourceFromExternal() {
                 throw err
             })
     } catch (err) {
-        // console.log(err)
         throw err;
     }
 };
 
-async function getArrayFromSrouce(resultArray : any[]){
+async function getArrayFromSource(resultArray : any[]){
     let bolgeData : any = {};
     const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
         if (val.match(ruhsatPattern)) {

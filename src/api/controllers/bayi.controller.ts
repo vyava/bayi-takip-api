@@ -1,10 +1,10 @@
-export {};
 import { NextFunction, Request, Response } from 'express';
 const httpStatus = require('http-status');
 const APIError = require('../utils/APIError');
 import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
+import { IBayi } from 'api/interface';
 // import {Dist} from "../models/distributor.model"
 // import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
@@ -61,6 +61,43 @@ export async function setDistsToBayiler(dist : any){
     
   } catch (err) {
     throw new Error(err)
+  }
+};
+
+export async function updateBayiler(bayiler : IBayi[]){
+  try {
+    let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
+    let processCounter : number = 0;
+    bayiler.map((bayi : IBayi, index : number) => {
+      console.log(bayi.ruhsatNo)
+      updateBulk
+      .find({
+        ruhsatNo : bayi.ruhsatNo
+      })
+      .updateOne({...bayi});
+
+      processCounter++;
+
+      if(processCounter % 100 == 0){
+        updateBulk.execute(function(err, result){
+          console.log(result)
+          if(err) throw err;
+            updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
+            processCounter = 0;
+        })
+      }
+    });
+
+    if(processCounter > 0){
+      updateBulk.execute(function(err, result){
+        if(err) throw err;
+          console.log(result)
+          updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
+          processCounter = 0;
+      })
+    }
+  } catch (err) {
+    throw err;
   }
 }
 
