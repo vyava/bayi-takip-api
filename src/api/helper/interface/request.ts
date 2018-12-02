@@ -11,11 +11,11 @@ export interface ITapdkRequest {
 
 export enum TARIH {
     TAMAMI = 0,
-    BUGÜN,
-    DÜN,
-    SON_7_GÜN,
-    SON_15_GÜN,
-    SON_30_GÜN
+    BUGÜN = 1,
+    DÜN = 2,
+    SON_7_GÜN = 3,
+    SON_15_GÜN = 4,
+    SON_30_GÜN = 5
 }
 
 export enum TARGET {

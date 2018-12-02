@@ -68,8 +68,8 @@ export async function updateBayiler(bayiler : IBayi[]){
   try {
     let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
     let processCounter : number = 0;
+    let bulkResult : any[] = [];
     bayiler.map((bayi : IBayi, index : number) => {
-      console.log(bayi.ruhsatNo)
       updateBulk
       .find({
         ruhsatNo : bayi.ruhsatNo
@@ -78,12 +78,12 @@ export async function updateBayiler(bayiler : IBayi[]){
 
       processCounter++;
 
-      if(processCounter % 100 == 0){
+      if(processCounter % 500 == 0){
         updateBulk.execute(function(err, result){
-          console.log(result)
           if(err) throw err;
             updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
             processCounter = 0;
+            bulkResult.push(result)
         })
       }
     });
@@ -91,11 +91,12 @@ export async function updateBayiler(bayiler : IBayi[]){
     if(processCounter > 0){
       updateBulk.execute(function(err, result){
         if(err) throw err;
-          console.log(result)
           updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
           processCounter = 0;
+          bulkResult.push(result)
       })
     }
+    return bulkResult;
   } catch (err) {
     throw err;
   }

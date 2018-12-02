@@ -19,24 +19,35 @@ const roles = ['user', 'admin'];
  */
 const bayiSchema: Schema = new Schema(
   {
-    il: { type: String },
-    ilce: { type: String },
+    il: { type: String, uppercase : true },
+    ilce: { type: String, uppercase : true },
     ruhsatNo: { type: String, index: true, unique: true },
     adiSoyadi : {
-          },
+      type : String,
+      trim : true
+    },
     adi: { type: String },
     soyadi: { type: String },
     unvan: { type: String, trim: true },
-    sinif: { type: String, trim: true },
+    sinif: {
+      type: String,
+      trim: true
+    },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    distributor : [{type : Schema.Types.ObjectId, ref : 'Test'}],
+    distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
     sended : {
       type : Boolean,
       default : false
     }
   },
-  { collection: "bayiler" }
+  {
+    collection: "bayiler",
+    timestamps : {
+      createdAt : "created_at",
+      updatedAt : "updated_at"
+  }
+  }
 );
 
 

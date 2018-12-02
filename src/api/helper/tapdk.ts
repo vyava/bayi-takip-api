@@ -3,6 +3,10 @@ import * as requestPromise from "request-promise";
 
 import { getDistIdsByAdres } from "../controllers/dist.controller";
 
+// const httpStatus = require('http-status');
+import * as  httpStatus from "http-status"
+const APIError = require('../utils/APIError');
+
 import * as _ from "lodash";
 import { parseBayi } from "./bayi";
 import { IBayi } from "api/interface";
@@ -11,8 +15,8 @@ var Iconv = require('iconv').Iconv;
 // const VAR = require("../../config/vars");
 
 const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
-const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
-export async function getSourceFromExternal() {
+export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
+export async function getSourceFromExternal(gun : any) {
     try {
         let response = await requestPromise.get(TAPDK_URL);
 
@@ -32,23 +36,33 @@ export async function getSourceFromExternal() {
         response = removeSpacesFromString(response);
 
         let finalStates: ITapdkRequest = getStates(response);
-        let finalForm = getForm(finalStates, true);
+        let finalForm = getForm(finalStates, true, gun);
 
         // 
-        let fileString = await requestPromise.post({
-            url: TAPDK_URL,
-            form: finalForm,
-            encoding: "binary"
-        })
-
+        let fileString;
+        try {
+            fileString = await requestPromise.post({
+                url: TAPDK_URL,
+                form: finalForm,
+                encoding: "binary"
+            })   
+        } catch (fileArray) {
+            throw new APIError({
+                message : "Yeni bayi yok ya da sistem hatası",
+                code : httpStatus.NO_CONTENT
+            })
+        }
         let resultArray = parseFileString(fileString);
         let result = await getArrayFromSource(resultArray)
         return Promise.all(result)
-            .then(resp => {
-                return resp
+            .then(bayiler => {
+                return bayiler
             })
             .catch(err => {
-                throw err
+                throw new APIError({
+                    message : "Son anda hata",
+                    detail : err
+                })
             })
     } catch (err) {
         throw err;
@@ -116,7 +130,7 @@ function getStates(text: string) {
 };
 
 
-function getForm(state: ITapdkRequest, isFile: boolean = false): ITapdkRequest {
+function getForm(state: ITapdkRequest, isFile: boolean = false, gun : string = "DÜN"): ITapdkRequest {
 
     let formData: ITapdkRequest = {
         dd_tarih: TARIH.DÜN,
@@ -133,6 +147,7 @@ function getForm(state: ITapdkRequest, isFile: boolean = false): ITapdkRequest {
 };
 
 function parseFileString(binaryData: string): any[] {
+    console.log("parse başladı")
     const parsePattern = new RegExp("(<([^>]+)>)", "ig");
     const tagPattern = new RegExp("(?=>([^<]+)\r?\n?|\r?$)(.*?|\r?\n|\r)(?=<)", "g");
 
