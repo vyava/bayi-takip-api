@@ -16,7 +16,7 @@ var Iconv = require('iconv').Iconv;
 
 const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
 export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
-export async function getSourceFromExternal(gun : any) {
+export async function getSourceFromExternal(gun : string) {
     try {
         let response = await requestPromise.get(TAPDK_URL);
 
@@ -130,10 +130,10 @@ function getStates(text: string) {
 };
 
 
-function getForm(state: ITapdkRequest, isFile: boolean = false, gun : string = "DÜN"): ITapdkRequest {
+function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITapdkRequest {
 
     let formData: ITapdkRequest = {
-        dd_tarih: TARIH.DÜN,
+        dd_tarih: <any>TARIH[gun],
         dd_islem: -1,
         TXT_SICIL: "%PT%",
         dd_il: 0,
