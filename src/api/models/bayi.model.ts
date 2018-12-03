@@ -42,11 +42,7 @@ const bayiSchema: Schema = new Schema(
     }
   },
   {
-    collection: "bayiler",
-    timestamps : {
-      createdAt : "created_at",
-      updatedAt : "updated_at"
-  }
+    collection: "bayiler"
   }
 );
 

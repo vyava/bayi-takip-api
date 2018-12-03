@@ -5,6 +5,7 @@ import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
 import { IBayi } from 'api/interface';
+import * as moment from "moment"
 // import {Dist} from "../models/distributor.model"
 // import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
@@ -33,6 +34,55 @@ export async function getBayilerBySehir(req : Request, res : Response, next : Ne
     next(err)
   }
 };
+
+export async function getBayilerByUpdatedAt(req : Request, res : Response, next : NextFunction){
+  try {
+    let today = moment().valueOf();
+    let yesterday = moment().subtract(1, "days").hours(0).valueOf();
+
+    let bayiler = await BayiModel.find({
+      updatedAt : {
+        $gte : yesterday
+      },
+      // updatedAt : today,
+      sended : false
+    });
+    res.json(bayiler);
+  } catch (err) {
+    throw new APIError({
+      message : "Belirtilen tarih ile bayi bulunamadı",
+      detail : err
+    })
+  }
+}
+
+export async function setValueToBayiler(req : Request, res : Response, next : NextFunction){
+  try {
+    let bulk = BayiModel.collection.initializeUnorderedBulkOp();
+    let today = moment().valueOf();
+    let yesterday = moment().subtract(1, "days").hours(21).valueOf();
+
+    bulk.find({
+      ilce : "KARTAL"
+    })
+      .update({
+        $set : {
+          createdAt : today,
+          updatedAt : today,
+          sended : false
+        }
+      });
+    bulk.execute((err, result) => {
+      if(err) throw new APIError({
+        message : "bulk işlemi başarısız",
+        detail : err
+      })
+      res.json(result)
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export async function setDistsToBayiler(dist : any){
   try {

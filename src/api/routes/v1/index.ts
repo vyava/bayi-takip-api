@@ -5,6 +5,7 @@ const bolgeRoute = require('./bolge.route');
 const distRoute = require('./dist.route');
 const userRoute = require('./user.route');
 const tapdkRoute = require('./tapdk.route');
+const mailRoute = require('./mail.route');
 // import {} from "./user.route";
 // const authRoutes = require('./auth.route');
 
@@ -25,4 +26,5 @@ router.use('/bolge', bolgeRoute);
 router.use('/dist', distRoute);
 router.use('/user', userRoute);
 router.use('/tapdk', tapdkRoute)
+router.use('/mail', mailRoute)
 module.exports = router;

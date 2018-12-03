@@ -1,6 +1,6 @@
 import * as express from "express";
 const validate = require('express-validation');
-import * as userController from "../../controllers/"
+import * as userController from "../../controllers/user.controller"
 import { getUser, setUser, getEmails } from "../../validations"
 const router = express.Router();
 

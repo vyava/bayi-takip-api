@@ -16,7 +16,13 @@ const router = express.Router();
  * Load user when API with userId route parameter is hit
  */
 // router.param('userId', controller.load);
+router
+  .route("/set")
+    .get(controller.setValueToBayiler);;
 
+router
+  .route("/get")
+    .get(controller.getBayilerByUpdatedAt)
 router
   .route('/:sehir')
     // .get((req, res) => {
