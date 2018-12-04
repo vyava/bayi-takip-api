@@ -24,12 +24,20 @@ export async function getSourceFromExternal(gun : string) {
 
         let requestStates: ITapdkRequest = getStates(response.toString());
 
-        let form = getForm(requestStates);
+        let form = getForm(requestStates, false, gun);
 
-        response = await requestPromise.post({
-            url: TAPDK_URL,
-            form: form
-        });
+        try {
+            response = await requestPromise.post({
+                url: TAPDK_URL,
+                form: form
+            });    
+        } catch (err) {
+            throw new APIError({
+                message : "İlk istek başarısız",
+                detail : err
+            })
+        }
+        
 
         // Html etiketleri arasındaki gereksiz yeni satırlar..
         // .. tab boşluklarını siler
@@ -45,15 +53,16 @@ export async function getSourceFromExternal(gun : string) {
                 url: TAPDK_URL,
                 form: finalForm,
                 encoding: "binary"
-            })   
+            });
         } catch (fileArray) {
             throw new APIError({
                 message : "Yeni bayi yok ya da sistem hatası",
                 code : httpStatus.NO_CONTENT
             })
         }
+        
         let resultArray = parseFileString(fileString);
-        let result = await getArrayFromSource(resultArray)
+        let result = getArrayFromSource(resultArray)
         return Promise.all(result)
             .then(bayiler => {
                 return bayiler
@@ -69,7 +78,7 @@ export async function getSourceFromExternal(gun : string) {
     }
 };
 
-async function getArrayFromSource(resultArray : any[]){
+function getArrayFromSource(resultArray : any[]){
     let bolgeData : any = {};
     const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
         if (val.match(ruhsatPattern)) {
@@ -117,7 +126,7 @@ function getStates(text: string) {
     let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");
     let eventPattern = new RegExp(/(?:")(__EVENTVALIDATION)(?:"value=")(.*?)(?:"\/>)/, "g");
 
-    var validate: any = {}
+    var validate: any = {};
     var match;
 
     while ((match = viewPattern.exec(text)) !== null) {
@@ -131,7 +140,7 @@ function getStates(text: string) {
 
 
 function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITapdkRequest {
-
+    if(gun) console.log(gun)
     let formData: ITapdkRequest = {
         dd_tarih: <any>TARIH[gun],
         dd_islem: -1,
@@ -143,11 +152,11 @@ function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITa
         formData['__EVENTTARGET'] = TARGET.FILE
     }
     let form = _.assign({}, state, formData);
+    console.log(form)
     return form;
 };
 
 function parseFileString(binaryData: string): any[] {
-    console.log("parse başladı")
     const parsePattern = new RegExp("(<([^>]+)>)", "ig");
     const tagPattern = new RegExp("(?=>([^<]+)\r?\n?|\r?$)(.*?|\r?\n|\r)(?=<)", "g");
 

@@ -35,14 +35,14 @@ const bayiSchema: Schema = new Schema(
     },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
-    sended : {
-      type : Boolean,
-      default : false
-    }
+    distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}]
   },
   {
-    collection: "bayiler"
+    collection: "bayiler",
+    timestamps : {
+      createdAt : "createdAt",
+      updatedAt : "updatedAt"
+    }
   }
 );
 
