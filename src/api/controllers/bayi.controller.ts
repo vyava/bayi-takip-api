@@ -4,7 +4,9 @@ const APIError = require('../utils/APIError');
 import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
+import "../models/distributor.model"
 import { IBayi, IBayiDocument } from 'api/interface';
+const DistModel = mongoose.model("Dist");
 import * as moment from "moment"
 // import {Dist} from "../models/distributor.model"
 // import { IBayi, IBayiDocument } from 'api/interface';
@@ -61,26 +63,60 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
     let today = moment().toDate();
     const bayiler = await BayiModel.aggregate([
       {
-        $lookup: {
-          from: "distributor",
-          localField: "distributor",
-          foreignField: "_id",
-          as: "distributorler"
+        $match: {
+          ruhsatNo: "34313303PT",
+          distributor: {
+            $exists: true
+          },
+          // updatedAt: {
+          //   $gte: yesterday
+          // }
         }
       },
       {
-        $unwind : "$distributorler"
+        $unwind: "$distributor"
       },
       {
-        $match: {
-          // distributor : {
-          //   $exists : true
-          // },
-          updatedAt: {
-            $gte: yesterday
+        $lookup: {
+          from: "dist",
+          localField: "distributor._id",
+          foreignField: "_id",
+          as: "distributor"
+        }
+      },
+      {
+        $project : {
+          ruhsatNo : 1,
+          unvan : 1,
+          "distributor.altBolge" : 1,
+          "distributor.name" : {
+            $cond : {
+              if: { $eq: [ true, "$distributor.status" ] },
+               then: "$$REMOVE",
+               else: "$distributor.name"
+            }
           }
         }
-      },
+      }
+      // {
+      //   $unwind: "$_distributor"
+      // },
+      // {
+      //   $match: { "_distributor": { $ne: [] } }
+      // }
+      // {
+      //   $unwind : "$_distributor"
+      // },
+      // {
+      //   $match: {
+      //     // distributor : {
+      //     //   $exists : true
+      //     // },
+      //     updatedAt: {
+      //       $gte: yesterday
+      //     }
+      //   }
+      // },
       // {
       //   $project : {
       //     ruhsatNo : 1,
