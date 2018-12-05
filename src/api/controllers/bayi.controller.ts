@@ -84,46 +84,44 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           as: "distributor"
         }
       },
-      {
-        $project : {
-          ruhsatNo : 1,
-          unvan : 1,
-          "distributor.altBolge" : 1,
-          "distributor.name" : {
-            $cond : {
-              if: { $eq: [ true, "$distributor.status" ] },
-               then: "$$REMOVE",
-               else: "$distributor.name"
-            }
-          }
-        }
-      }
       // {
-      //   $unwind: "$_distributor"
-      // },
-      // {
-      //   $match: { "_distributor": { $ne: [] } }
-      // }
-      // {
-      //   $unwind : "$_distributor"
-      // },
-      // {
-      //   $match: {
-      //     // distributor : {
-      //     //   $exists : true
-      //     // },
-      //     updatedAt: {
-      //       $gte: yesterday
+      //   $project : {
+      //     il : 1,
+      //     ilce : 1,
+      //     ruhsatNo : 1,
+      //     adiSoyadi : 1,
+      //     unvan : 1,
+      //     sinif : 1,
+      //     adres : 1,
+      //     durum : 1,
+      //     altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
+      //     distributor : { $arrayElemAt : ["$distributor.name", 0] },
+      //     users : {
+      //       $arrayElemAt : ["$distributor.users", 0]
       //     }
+      //     // bolge : { $arrayElemAt : ["$distributor", 0] }
       //   }
       // },
       // {
-      //   $project : {
-      //     ruhsatNo : 1,
-      //     distributor : 1,
-      //     length : {
-      //       $size : "$distributor"
-      //     }
+      //   $group : {
+      //     _id : {
+      //       altBolge : "$altBolge"
+      //     },
+      //     bayiler : {
+      //       $push : {
+      //         il : "$il",
+      //         ilce : "$ilce",
+      //         ruhsatNo : "$ruhsatNo",
+      //         unvan : "$unvan",
+      //       }
+      //     },
+      //     // users : {
+      //     //   $reduce: {
+      //     //       input: "$users",
+      //     //       initialValue: [],
+      //     //       in: { $setUnion: ["$$value", "$$this"] }
+      //     //   }
+      //     // }
       //   }
       // }
     ]);
