@@ -65,7 +65,14 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
       {
         $match: {
           // ruhsatNo: "34313303PT",
-          ilce: "PENDİK",
+          $or: [
+            {
+              ilce: "PENDİK",
+            },
+            {
+              ilce: "ŞİLE"
+            }
+          ],
           distributor: {
             $exists: true
           },
@@ -74,7 +81,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           // }
         }
       },
-      { $limit: 5 },
+      { $limit: 400 },
       // {
       //   $unwind: "$distributor"
       // },
@@ -97,7 +104,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
                 from: "users",
                 let: { "users": "$users" },
                 pipeline: [
-                  { "$match": { "$expr": { "$in": ["$_id", "$$users"] } } },
+                  { $match: { $expr: { $in: ["$_id", "$$users"] } } },
                 ],
                 as: "users"
               }
@@ -118,9 +125,27 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           durum: 1,
           // altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
           // altBolge : ["$distributor.altBolge"],
-          altBolge: ["$distributor.altBolge"],
-          // distributor : { $arrayElemAt : ["$distributor.name", 0] },
-          distributor: ["$distributor.name"],
+          altBolge: "$distributor.altBolge",
+          distributorr : "$distributor.name",
+          distributor: {
+            $reduce: {
+              input: "$distributor.name",
+              initialValue: "",
+              in: {
+                $cond: {
+                  if: { $eq: ["$$value", ""] },
+                  then: "$$this",
+                  else: {
+                    $concat: ["$$value", ", ", "$$this"]
+                  }
+                }
+              }
+            }
+          },
+          // distributor: ["$distributor.name"],
+          // users : {
+          //    $zip : "$distributor.users"
+          // }
           users: {
             $reduce: {
               input: "$distributor.users",
@@ -131,77 +156,25 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
         }
       },
       {
-          $group : {
-            _id : {
-              altBolge : "$altBolge"
-            },
-            bayiler : {
-              $push : {
-                il : "$il",
-                ilce : "$ilce",
-                ruhsatNo : "$ruhsatNo",
-                unvan : "$unvan",
-              }
-            },
-            // users : {
-            //   $reduce: {
-            //       input: "$users",
-            //       initialValue: [],
-            //       in: { $setUnion: ["$$value", "$$this"] }
-            //   }
-            // }
+        $unwind: "$altBolge"
+      },
+      {
+        $group : {
+          _id : {
+            altBolge : "$altBolge",
+            distributor : "$distributorr"
+          },
+          bayiler : {
+            $push : {
+              il : "$il",
+              ruhsatNo : "$ruhsatNo"
+            }
+          },
+          users : {
+            $push : "$users"
           }
         }
-      // {
-      //   $lookup: {
-      //     from: "dist",
-      //     let : {"users" : "$users"},
-      //     pipeline : [
-      //       { "$match": { "$expr": { "$in": [ "$_id", "$$users" ] } } },
-      //     ],
-      //     as: "distributor"
-      //   }
-      // },
-      // {
-      //   $project : {
-      //     il : 1,
-      //     ilce : 1,
-      //     ruhsatNo : 1,
-      //     adiSoyadi : 1,
-      //     unvan : 1,
-      //     sinif : 1,
-      //     adres : 1,
-      //     durum : 1,
-      //     altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
-      //     distributor : { $arrayElemAt : ["$distributor.name", 0] },
-      //     users : {
-      //       $arrayElemAt : ["$distributor.users", 0]
-      //     }
-      //     // bolge : { $arrayElemAt : ["$distributor", 0] }
-      //   }
-      // },
-      // {
-      //   $group : {
-      //     _id : {
-      //       altBolge : "$altBolge"
-      //     },
-      //     bayiler : {
-      //       $push : {
-      //         il : "$il",
-      //         ilce : "$ilce",
-      //         ruhsatNo : "$ruhsatNo",
-      //         unvan : "$unvan",
-      //       }
-      //     },
-      //     // users : {
-      //     //   $reduce: {
-      //     //       input: "$users",
-      //     //       initialValue: [],
-      //     //       in: { $setUnion: ["$$value", "$$this"] }
-      //     //   }
-      //     // }
-      //   }
-      // }
+      }
     ]);
     res.json(bayiler);
   } catch (err) {
