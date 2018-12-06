@@ -28,7 +28,9 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
         user.distributor = distDoc._id;
         // user.distributor = distId;
         let _userDoc = await UserModel.findOneAndUpdate({ "email.address": user.email.address }, user, { new: true, upsert: true })
-        distDoc.users.push(_userDoc._id)
+        distDoc.users.push({
+          "_id" : _userDoc._id}
+          )
         return _userDoc
       });
       Promise.all(userResult).then((r : any) => {

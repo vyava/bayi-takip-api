@@ -64,7 +64,8 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
-          ruhsatNo: "34313303PT",
+          // ruhsatNo: "34313303PT",
+          ilce: "PENDİK",
           distributor: {
             $exists: true
           },
@@ -73,17 +74,94 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           // }
         }
       },
-      {
-        $unwind: "$distributor"
-      },
+      { $limit: 5 },
+      // {
+      //   $unwind: "$distributor"
+      // },
+      // {
+      //   $lookup : {
+      //     from : "dist",
+      //     localField : "distributor._id",
+      //     foreignField : "_id",
+      //     as : "distributor"
+      //   }
+      // },
       {
         $lookup: {
           from: "dist",
-          localField: "distributor._id",
-          foreignField: "_id",
+          let: { "distributor": "$distributor._id" },
+          pipeline: [
+            { "$match": { "$expr": { "$in": ["$_id", "$$distributor"] } } },
+            {
+              $lookup: {
+                from: "users",
+                let: { "users": "$users" },
+                pipeline: [
+                  { "$match": { "$expr": { "$in": ["$_id", "$$users"] } } },
+                ],
+                as: "users"
+              }
+            }
+          ],
           as: "distributor"
         }
       },
+      {
+        $project: {
+          il: 1,
+          ilce: 1,
+          ruhsatNo: 1,
+          adiSoyadi: 1,
+          unvan: 1,
+          sinif: 1,
+          adres: 1,
+          durum: 1,
+          // altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
+          // altBolge : ["$distributor.altBolge"],
+          altBolge: ["$distributor.altBolge"],
+          // distributor : { $arrayElemAt : ["$distributor.name", 0] },
+          distributor: ["$distributor.name"],
+          users: {
+            $reduce: {
+              input: "$distributor.users",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this.email"] }
+            }
+          }
+        }
+      },
+      {
+          $group : {
+            _id : {
+              altBolge : "$altBolge"
+            },
+            bayiler : {
+              $push : {
+                il : "$il",
+                ilce : "$ilce",
+                ruhsatNo : "$ruhsatNo",
+                unvan : "$unvan",
+              }
+            },
+            // users : {
+            //   $reduce: {
+            //       input: "$users",
+            //       initialValue: [],
+            //       in: { $setUnion: ["$$value", "$$this"] }
+            //   }
+            // }
+          }
+        }
+      // {
+      //   $lookup: {
+      //     from: "dist",
+      //     let : {"users" : "$users"},
+      //     pipeline : [
+      //       { "$match": { "$expr": { "$in": [ "$_id", "$$users" ] } } },
+      //     ],
+      //     as: "distributor"
+      //   }
+      // },
       // {
       //   $project : {
       //     il : 1,
@@ -142,9 +220,7 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
     })
       .update({
         $unset: {
-          createdAt: 1,
-          updatedAt: 1,
-          sended: 1
+          distributor: 1
         }
       });
     bulk.execute((err, result) => {
@@ -178,7 +254,9 @@ export async function setDistsToBayiler(dist: any) {
       ]
     }).update({
       $push: {
-        distributor: id
+        distributor: {
+          "_id": id
+        }
       }
     });
 
