@@ -56,7 +56,8 @@ export async function setDistInfoToBayiler(req: Request, res: Response, next: Ne
       let _dist =  {
         id : dist._id,
         iller : _.union(_.map(dist['bolgeData'], "il")),
-        ilceler : _.union(_.map(dist['bolgeData'], "ilce"))
+        ilceler : _.union(_.map(dist['bolgeData'], "ilce")),
+        altBolge : _.union(_.map(dist['bolgeData'], "altBolge"))
       }
       // return _dist
       return await setDistsToBayiler(_dist)

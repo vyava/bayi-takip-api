@@ -64,7 +64,6 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
-          // ruhsatNo: "34313303PT",
           $or: [
             {
               ilce: "PENDİK",
@@ -81,100 +80,170 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           // }
         }
       },
-      { $limit: 400 },
-      // {
-      //   $unwind: "$distributor"
-      // },
-      // {
-      //   $lookup : {
-      //     from : "dist",
-      //     localField : "distributor._id",
-      //     foreignField : "_id",
-      //     as : "distributor"
-      //   }
-      // },
+      { $limit: 100 },
       {
-        $lookup: {
-          from: "dist",
-          let: { "distributor": "$distributor._id" },
-          pipeline: [
-            { "$match": { "$expr": { "$in": ["$_id", "$$distributor"] } } },
-            {
-              $lookup: {
-                from: "users",
-                let: { "users": "$users" },
-                pipeline: [
-                  { $match: { $expr: { $in: ["$_id", "$$users"] } } },
-                ],
-                as: "users"
+        $group: {
+          _id: "$altBolge",
+          bayiler: {
+            $push: {
+              il: "$il",
+              ilce: "$ilce",
+              ruhsatNo: "$ruhsatNo",
+              adiSoyadi: "$adiSoyadi",
+              unvan: "$unvan",
+              sinif: "$sinif",
+              adres: "$adres",
+              durum: "$durum",
+              distributor: {
+                $setUnion: ["$distributor"]
               }
             }
-          ],
-          as: "distributor"
+          }
         }
       },
       {
         $project: {
-          il: 1,
-          ilce: 1,
-          ruhsatNo: 1,
-          adiSoyadi: 1,
-          unvan: 1,
-          sinif: 1,
-          adres: 1,
-          durum: 1,
-          // altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
-          // altBolge : ["$distributor.altBolge"],
-          altBolge: "$distributor.altBolge",
-          distributorr : "$distributor.name",
+          bayiler: {
+            il: 1,
+            ilce: 1,
+            ruhsatNo: 1,
+            adiSoyadi: 1,
+            unvan: 1,
+            sinif: 1,
+            adres: 1,
+            durum: 1,
+            distributor: 1
+          },
           distributor: {
             $reduce: {
-              input: "$distributor.name",
-              initialValue: "",
+              input: "$bayiler.distributor",
+              initialValue: [],
               in: {
-                $cond: {
-                  if: { $eq: ["$$value", ""] },
-                  then: "$$this",
-                  else: {
-                    $concat: ["$$value", ", ", "$$this"]
-                  }
-                }
+                $setUnion: ["$$value", "$$this"]
               }
             }
-          },
-          // distributor: ["$distributor.name"],
-          // users : {
-          //    $zip : "$distributor.users"
-          // }
-          users: {
-            $reduce: {
-              input: "$distributor.users",
-              initialValue: [],
-              in: { $concatArrays: ["$$value", "$$this.email"] }
-            }
           }
         }
       },
-      {
-        $unwind: "$altBolge"
-      },
-      {
-        $group : {
-          _id : {
-            altBolge : "$altBolge",
-            distributor : "$distributorr"
-          },
-          bayiler : {
-            $push : {
-              il : "$il",
-              ruhsatNo : "$ruhsatNo"
-            }
-          },
-          users : {
-            $push : "$users"
-          }
-        }
-      }
+      // {
+      //   $lookup: {
+      //     from: "dist",
+      //     let: { "distributor": "$distributor._id" },
+      //     pipeline: [
+      //       { $match: { $expr: { $in: ["$_id", "$$distributor"] } } },
+      //       {
+      //         $lookup: {
+      //           from: "users",
+      //           let: { "users": "$users" },
+      //           pipeline: [
+      //             { $match: { $expr: { $in: ["$_id", "$$users"] } } },
+      //           ],
+      //           as: "users"
+      //         }
+      //       }
+      //     ],
+      //     as: "mailData"
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     _id: 1,
+      //     bayiler: {
+      //       il: 1,
+      //       ilce: 1,
+      //       ruhsatNo: 1,
+      //       adiSoyadi: 1,
+      //       unvan: 1,
+      //       sinif: 1,
+      //       adres: 1,
+      //       durum: 1,
+      //       distributor: {
+      //         $reduce: {
+      //           input: "$mailData.name",
+      //           initialValue: "",
+      //           in: {
+      //             $cond: {
+      //               if: { $eq: ["$$value", ""] },
+      //               then: "$$this",
+      //               else: {
+      //                 $concat: ["$$value", ", ", "$$this"]
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     },
+      //     users: {
+      //       $reduce: {
+      //         input: "$mailData.users",
+      //         initialValue: [],
+      //         in: { $concatArrays: ["$$value", "$$this.email"] }
+      //       }
+      //     }
+      //   }
+      // }
+      // {
+      //   $project: {
+      //     il: 1,
+      //     ilce: 1,
+      //     ruhsatNo: 1,
+      //     adiSoyadi: 1,
+      //     unvan: 1,
+      //     sinif: 1,
+      //     adres: 1,
+      //     durum: 1,
+      //     // altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
+      //     // altBolge : ["$distributor.altBolge"],
+      //     altBolge: "$distributor.altBolge",
+      //     distributorr : "$distributor.name",
+      //     distributor: {
+      //       $reduce: {
+      //         input: "$distributor.name",
+      //         initialValue: "",
+      //         in: {
+      //           $cond: {
+      //             if: { $eq: ["$$value", ""] },
+      //             then: "$$this",
+      //             else: {
+      //               $concat: ["$$value", ", ", "$$this"]
+      //             }
+      //           }
+      //         }
+      //       }
+      //     },
+      //     // distributor: ["$distributor.name"],
+      //     // users : {
+      //     //    $zip : "$distributor.users"
+      //     // }
+      //     users: {
+      //       $reduce: {
+      //         input: "$distributor.users",
+      //         initialValue: [],
+      //         in: { $concatArrays: ["$$value", "$$this.email"] }
+      //       }
+      //     }
+      //   }
+      // },
+      // {
+      //   $unwind: "$altBolge"
+      // },
+      // {
+      //   $group : {
+      //     _id : {
+      //       altBolge : "$altBolge",
+      //       distributor : "$distributorr"
+      //     },
+      //     bayiler : {
+      //       $push : {
+      //         il : "$il",
+      //         ruhsatNo : "$ruhsatNo"
+      //       }
+      //     },
+      //     users : {
+      //       $push : "$users"
+      //     }
+      //   }
+      // }
     ]);
     res.json(bayiler);
   } catch (err) {
@@ -210,7 +279,7 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
 
 export async function setDistsToBayiler(dist: any) {
   try {
-    let { id, iller, ilceler } = dist
+    let { id, iller, ilceler, altBolge } = dist
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
     bulk.find({
       $and: [
@@ -230,6 +299,9 @@ export async function setDistsToBayiler(dist: any) {
         distributor: {
           "_id": id
         }
+      },
+      $set: {
+        altBolge: altBolge[0]
       }
     });
 

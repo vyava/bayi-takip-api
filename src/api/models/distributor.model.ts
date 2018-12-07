@@ -41,6 +41,11 @@ const distributorSchema: Schema = new Schema(
             type : String,
             uppercase : true,
             require : true
+          },
+          altBolge : {
+            type : String,
+            uppercase : true,
+            require : true
           }
         }
       ]
