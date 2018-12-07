@@ -80,7 +80,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           // }
         }
       },
-      { $limit: 100 },
+      { $limit: 3 },
       {
         $group: {
           _id: "$altBolge",
@@ -95,7 +95,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
               adres: "$adres",
               durum: "$durum",
               distributor: {
-                $setUnion: ["$distributor"]
+                $setUnion: ["$distributor._id"]
               }
             }
           }
@@ -114,7 +114,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
             durum: 1,
             distributor: 1
           },
-          distributor: {
+          distributorData: {
             $reduce: {
               input: "$bayiler.distributor",
               initialValue: [],
@@ -125,63 +125,87 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           }
         }
       },
-      // {
-      //   $lookup: {
-      //     from: "dist",
-      //     let: { "distributor": "$distributor._id" },
-      //     pipeline: [
-      //       { $match: { $expr: { $in: ["$_id", "$$distributor"] } } },
-      //       {
-      //         $lookup: {
-      //           from: "users",
-      //           let: { "users": "$users" },
-      //           pipeline: [
-      //             { $match: { $expr: { $in: ["$_id", "$$users"] } } },
-      //           ],
-      //           as: "users"
-      //         }
-      //       }
-      //     ],
-      //     as: "mailData"
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     _id: 1,
-      //     bayiler: {
-      //       il: 1,
-      //       ilce: 1,
-      //       ruhsatNo: 1,
-      //       adiSoyadi: 1,
-      //       unvan: 1,
-      //       sinif: 1,
-      //       adres: 1,
-      //       durum: 1,
-      //       distributor: {
-      //         $reduce: {
-      //           input: "$mailData.name",
-      //           initialValue: "",
-      //           in: {
-      //             $cond: {
-      //               if: { $eq: ["$$value", ""] },
-      //               then: "$$this",
-      //               else: {
-      //                 $concat: ["$$value", ", ", "$$this"]
-      //               }
-      //             }
-      //           }
-      //         }
-      //       }
-      //     },
-      //     users: {
-      //       $reduce: {
-      //         input: "$mailData.users",
-      //         initialValue: [],
-      //         in: { $concatArrays: ["$$value", "$$this.email"] }
-      //       }
-      //     }
-      //   }
-      // }
+      {
+        $lookup: {
+          from: "dist",
+          let: { "distId": "$distributorData" },
+          pipeline: [
+            { $match: { $expr: { $in: ["$_id", "$$distId"] } } },
+            {
+              $lookup: {
+                from: "users",
+                let: { "users": "$users" },
+                pipeline: [
+                  { $match: { $expr: { $in: ["$_id", "$$users"] } } },
+                ],
+                as: "users"
+              }
+            }
+          ],
+          as: "mailData"
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          bayiler: {
+            il: 1,
+            ilce: 1,
+            ruhsatNo: 1,
+            adiSoyadi: 1,
+            unvan: 1,
+            sinif: 1,
+            adres: 1,
+            durum: 1,
+            distributor: {
+              $map: {
+                input: "$mailData",
+                as: "dist",
+                in: {
+                  $cond: {
+                    if: { $in: ["$$dist._id", "$bayiler.distributor"] },
+                    then : "$$dist.name",
+                    // then: {
+                    //   $cond : {
+                    //     if : { $eq : ["$$value", ""]},
+                    //     then : "$$dist_.name",
+                    //     else : {
+                    //       $concat: ["$$value", ", ", "$$dist_.name"]
+                    //     }
+                    //   }
+                    // },
+                    else: {
+                      $concat: []
+                    }
+                  }
+                }
+              }
+            }
+            // distributor: {
+            //   $reduce: {
+            //     input: "$mailData",
+            //     initialValue: "",
+            //     in: {
+            //       $cond: {
+            //         if: { $eq: ["$$value", ""] },
+            //         then: "$$this.name",
+            //         else: {
+            //           $concat: ["$$value", ", ", "$$this.name"]
+            //         }
+            //       }
+            //     }
+            //   }
+            // }
+          },
+          users: {
+            $reduce: {
+              input: "$mailData.users",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this.email"] }
+            }
+          }
+        }
+      }
       // {
       //   $project: {
       //     il: 1,
