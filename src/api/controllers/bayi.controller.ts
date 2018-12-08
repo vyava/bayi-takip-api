@@ -157,30 +157,6 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
             sinif: 1,
             adres: 1,
             durum: 1,
-            distributor: {
-              $map: {
-                input: "$mailData",
-                as: "dist",
-                in: {
-                  $cond: {
-                    if: { $in: ["$$dist._id", "$bayiler.distributor"] },
-                    then : "$$dist.name",
-                    // then: {
-                    //   $cond : {
-                    //     if : { $eq : ["$$value", ""]},
-                    //     then : "$$dist_.name",
-                    //     else : {
-                    //       $concat: ["$$value", ", ", "$$dist_.name"]
-                    //     }
-                    //   }
-                    // },
-                    else: {
-                      $concat: []
-                    }
-                  }
-                }
-              }
-            }
             // distributor: {
             //   $reduce: {
             //     input: "$mailData",
