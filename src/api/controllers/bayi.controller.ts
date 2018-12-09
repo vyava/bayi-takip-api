@@ -69,7 +69,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
               ilce: "PENDİK",
             },
             {
-              ilce: "ŞİLE"
+              ilce: "MERKEZ"
             }
           ],
           distributor: {
@@ -80,7 +80,7 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
           // }
         }
       },
-      { $limit: 3 },
+      { $limit: 100 },
       {
         $group: {
           _id: "$altBolge",
@@ -157,93 +157,44 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
             sinif: 1,
             adres: 1,
             durum: 1,
-            // distributor: {
-            //   $reduce: {
-            //     input: "$mailData",
-            //     initialValue: "",
-            //     in: {
-            //       $cond: {
-            //         if: { $eq: ["$$value", ""] },
-            //         then: "$$this.name",
-            //         else: {
-            //           $concat: ["$$value", ", ", "$$this.name"]
-            //         }
-            //       }
-            //     }
-            //   }
-            // }
+            distributor: {
+              $reduce: {
+                input: "$mailData",
+                initialValue: "",
+                in: {
+                  $cond: {
+                    if: { $eq: ["$$value", ""] },
+                    then: "$$this.name",
+                    else: {
+                      $concat: ["$$value", ", ", "$$this.name"]
+                    }
+                  }
+                }
+              }
+            }
           },
           users: {
             $reduce: {
               input: "$mailData.users",
               initialValue: [],
-              in: { $concatArrays: ["$$value", "$$this.email"] }
+              in: { $concatArrays: ["$$value", "$$this"] }
             }
           }
         }
+      },
+      {
+        $project : {
+          _id : 1,
+          bayiler : 1,
+          users : {
+            email : {
+              name : 1,
+              address : 1
+            },
+            taskName : 1
+          }
+        }
       }
-      // {
-      //   $project: {
-      //     il: 1,
-      //     ilce: 1,
-      //     ruhsatNo: 1,
-      //     adiSoyadi: 1,
-      //     unvan: 1,
-      //     sinif: 1,
-      //     adres: 1,
-      //     durum: 1,
-      //     // altBolge : { $arrayElemAt : ["$distributor.altBolge", 0] },
-      //     // altBolge : ["$distributor.altBolge"],
-      //     altBolge: "$distributor.altBolge",
-      //     distributorr : "$distributor.name",
-      //     distributor: {
-      //       $reduce: {
-      //         input: "$distributor.name",
-      //         initialValue: "",
-      //         in: {
-      //           $cond: {
-      //             if: { $eq: ["$$value", ""] },
-      //             then: "$$this",
-      //             else: {
-      //               $concat: ["$$value", ", ", "$$this"]
-      //             }
-      //           }
-      //         }
-      //       }
-      //     },
-      //     // distributor: ["$distributor.name"],
-      //     // users : {
-      //     //    $zip : "$distributor.users"
-      //     // }
-      //     users: {
-      //       $reduce: {
-      //         input: "$distributor.users",
-      //         initialValue: [],
-      //         in: { $concatArrays: ["$$value", "$$this.email"] }
-      //       }
-      //     }
-      //   }
-      // },
-      // {
-      //   $unwind: "$altBolge"
-      // },
-      // {
-      //   $group : {
-      //     _id : {
-      //       altBolge : "$altBolge",
-      //       distributor : "$distributorr"
-      //     },
-      //     bayiler : {
-      //       $push : {
-      //         il : "$il",
-      //         ruhsatNo : "$ruhsatNo"
-      //       }
-      //     },
-      //     users : {
-      //       $push : "$users"
-      //     }
-      //   }
-      // }
     ]);
     res.json(bayiler);
   } catch (err) {
