@@ -38,12 +38,11 @@ export async function getBayilerBySehir(req: Request, res: Response, next: NextF
 
 export async function getBayilerByUpdatedAt(req: Request, res: Response, next: NextFunction) {
   try {
-    let today = getDate("BUGÜN");
-    let yesterday = getDate("DÜN")
+    let { start } = getDate("BUGÜN");
 
     let bayiler = await BayiModel.find({
       updatedAt: {
-        $gte: yesterday
+        $gte: start
       },
       // updatedAt : today,
       sended: false
@@ -57,31 +56,42 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
   }
 }
 
-export async function getBayilerByGroup(gun : any = "BUGÜN") {
+export async function getBayilerByGroup(gun: any = "BUGÜN") {
   try {
-    let _gun = getDate(gun)
+    let { start, end } = getDate(gun)
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
-          "distributor.0": {
-            $exists: true
-          },
-          updatedAt: {
-            $gte: _gun
-          }
+          $and : [
+            {
+              updatedAt : {
+                $gte : start
+              }
+            },
+            {
+              updatedAt : {
+                $lte : end
+              }
+            },
+            {
+              altBolge : {
+                $exists : true
+              }
+            }
+          ]
         }
       },
       { $limit: 100 },
       {
-        $lookup : {
-          from : "dist",
-          let : {"distId" : "$distributor._id"},
-          pipeline : [
+        $lookup: {
+          from: "dist",
+          let: { "distId": "$distributor._id" },
+          pipeline: [
             {
-              $match : { $expr : { $in : ["$_id", "$$distId"]} },
+              $match: { $expr: { $in: ["$_id", "$$distId"] } },
             }
           ],
-          as : "distributor"
+          as: "distributor"
         }
       },
       {
@@ -97,17 +107,17 @@ export async function getBayilerByGroup(gun : any = "BUGÜN") {
               sinif: "$sinif",
               adres: "$adres",
               durum: "$durum",
-              createdAt : "$createdAt",
-              updatedAt : "$updatedAt",
+              createdAt: "$createdAt",
+              updatedAt: "$updatedAt",
               distributor: {
                 $setUnion: ["$distributor"]
               },
-              altBolge : "$altBolge"
+              altBolge: "$altBolge"
             }
           }
         }
       },
-      
+
       {
         $project: {
           bayiler: {
@@ -119,13 +129,13 @@ export async function getBayilerByGroup(gun : any = "BUGÜN") {
             sinif: 1,
             adres: 1,
             durum: 1,
-            createdAt : 1,
-            updatedAt : 1,
+            createdAt: 1,
+            updatedAt: 1,
             distributor: {
-              _id : 1,
-              name : 1
+              _id: 1,
+              name: 1
             },
-            altBolge : 1
+            altBolge: 1
           },
           distributorData: {
             $reduce: {
@@ -170,9 +180,9 @@ export async function getBayilerByGroup(gun : any = "BUGÜN") {
             sinif: 1,
             adres: 1,
             durum: 1,
-            createdAt : 1,
-            updatedAt : 1,
-            altBolge : 1,
+            createdAt: 1,
+            updatedAt: 1,
+            altBolge: 1,
             // distributor: {
             //   name : 1
             // }
@@ -202,15 +212,15 @@ export async function getBayilerByGroup(gun : any = "BUGÜN") {
         }
       },
       {
-        $project : {
-          _id : 1,
-          bayiler : 1,
-          users : {
-            email : {
-              name : 1,
-              address : 1
+        $project: {
+          _id: 1,
+          bayiler: 1,
+          users: {
+            email: {
+              name: 1,
+              address: 1
             },
-            taskName : 1
+            taskName: 1
           }
         }
       }
@@ -224,16 +234,14 @@ export async function getBayilerByGroup(gun : any = "BUGÜN") {
 export async function setValueToBayiler(req: Request, res: Response, next: NextFunction) {
   try {
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
-    let today = getDate("BUGÜN");
-    let yesterday = getDate("DÜN")
+    let { start } = getDate("BUGÜN");
 
     bulk.find({
       // ilce : "KARTAL"
     })
       .update({
-        $set: {
-          createdAt: yesterday,
-          updatedAt: yesterday
+        $unset: {
+          distributor: 1
         }
       });
     bulk.execute((err, result) => {
@@ -283,8 +291,10 @@ export async function setDistsToBayiler(dist: any) {
   }
 };
 
-export async function updateBayiler(bayiler: IBayi[]) {
+export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
   try {
+
+    let { start } = getDate(gun);
     let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
     // let processCounter : number = 0;
     bayiler.map((bayi: IBayi) => {
@@ -295,8 +305,10 @@ export async function updateBayiler(bayiler: IBayi[]) {
         .upsert()
         .update({
           $setOnInsert: {
-            distributor: bayi.distributor,
-            createdAt: getDate("BUGÜN")
+            createdAt: start
+          },
+          $addToSet: {
+            distributor: bayi.distributor[0]
           },
           $set: {
             il: bayi.il,
@@ -308,7 +320,7 @@ export async function updateBayiler(bayiler: IBayi[]) {
             sinif: bayi.sinif,
             adres: bayi.adres,
             durum: bayi.durum,
-            updatedAt: getDate("BUGÜN")
+            updatedAt: start
           }
         })
 

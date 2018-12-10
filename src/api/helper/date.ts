@@ -7,8 +7,9 @@ enum GÜN {
 }
 
 export function getDate(gun : any = "BUGÜN"){
-    var date = moment().tz("Europe/Istanbul").subtract(GÜN[gun], "days").hour(7).toDate();
-    return date;
+    var start = moment().tz("Europe/Istanbul").subtract(GÜN[gun], "days").startOf("day").toDate();
+    var end = moment().tz("Europe/Istanbul").subtract(GÜN[gun], "days").endOf("day").toDate();
+    return {start, end};
 }
 
 export function getDateTS(gun : any = "BUGÜN"){

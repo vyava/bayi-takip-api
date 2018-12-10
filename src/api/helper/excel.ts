@@ -17,6 +17,8 @@ enum HEADER {
     durum = "Durum"
 }
 
+const FILE_EXTENSION = "xlsx"
+
 export function addValuesToWorksheet(columns : string[], values : any[], options? : any){
     try {
         let _workbook = new Excel.Workbook();
@@ -29,15 +31,24 @@ export function addValuesToWorksheet(columns : string[], values : any[], options
             }
         });
         _worksheet.columns = _column;
+
+        let bolgeName = values[0]["altBolge"];
+
         values.map(value => {
             _worksheet.addRow(value);
         })
         
-        let tempPath = tempfile(".xlsx");
-        return _workbook.xlsx.writeFile(tempPath)
+        let options : any = {
+            filename: './streamed-workbook.xlsx',
+            useStyles: true,
+            useSharedStrings: true
+        };
+
+        // let tempPath = tempfile(".xlsx");
+        return _workbook.xlsx.writeFile(`${bolgeName}.${FILE_EXTENSION}`)
             .then(data => {
-                console.log(tempPath)
-                return tempPath
+                console.log(options)
+                return options
             })
             .catch(err => {
                 throw err

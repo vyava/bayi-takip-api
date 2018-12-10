@@ -4,6 +4,6 @@ import * as mailController from "../../controllers/mail.controller"
 
 router
     .route("/")
-    .get(mailController.getFile)
+    .get(mailController.send)
 
 module.exports = router;
