@@ -7,7 +7,7 @@ import "../models/bayi.model"
 import "../models/distributor.model"
 import { IBayi, IBayiDocument } from 'api/interface';
 const DistModel = mongoose.model("Dist");
-import * as moment from "moment"
+import { getDate, getDateTS } from "../helper/date";
 // import {Dist} from "../models/distributor.model"
 // import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
@@ -38,8 +38,8 @@ export async function getBayilerBySehir(req: Request, res: Response, next: NextF
 
 export async function getBayilerByUpdatedAt(req: Request, res: Response, next: NextFunction) {
   try {
-    let today = moment().valueOf();
-    let yesterday = moment().subtract(1, "days").hours(0).valueOf();
+    let today = getDate("BUGÜN");
+    let yesterday = getDate("DÜN")
 
     let bayiler = await BayiModel.find({
       updatedAt: {
@@ -57,30 +57,33 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
   }
 }
 
-export async function getBayilerByGroup(req: Request, res: Response, next: NextFunction) {
+export async function getBayilerByGroup(gun : any = "BUGÜN") {
   try {
-    let yesterday = moment().subtract(1, "days").hours(0).toDate();
-    let today = moment().toDate();
+    let _gun = getDate(gun)
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
-          $or: [
-            {
-              ilce: "PENDİK",
-            },
-            {
-              ilce: "MERKEZ"
-            }
-          ],
-          distributor: {
+          "distributor.0": {
             $exists: true
           },
-          // updatedAt: {
-          //   $gte: yesterday
-          // }
+          updatedAt: {
+            $gte: _gun
+          }
         }
       },
       { $limit: 100 },
+      {
+        $lookup : {
+          from : "dist",
+          let : {"distId" : "$distributor._id"},
+          pipeline : [
+            {
+              $match : { $expr : { $in : ["$_id", "$$distId"]} },
+            }
+          ],
+          as : "distributor"
+        }
+      },
       {
         $group: {
           _id: "$altBolge",
@@ -94,13 +97,17 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
               sinif: "$sinif",
               adres: "$adres",
               durum: "$durum",
+              createdAt : "$createdAt",
+              updatedAt : "$updatedAt",
               distributor: {
-                $setUnion: ["$distributor._id"]
-              }
+                $setUnion: ["$distributor"]
+              },
+              altBolge : "$altBolge"
             }
           }
         }
       },
+      
       {
         $project: {
           bayiler: {
@@ -112,14 +119,20 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
             sinif: 1,
             adres: 1,
             durum: 1,
-            distributor: 1
+            createdAt : 1,
+            updatedAt : 1,
+            distributor: {
+              _id : 1,
+              name : 1
+            },
+            altBolge : 1
           },
           distributorData: {
             $reduce: {
               input: "$bayiler.distributor",
               initialValue: [],
               in: {
-                $setUnion: ["$$value", "$$this"]
+                $setUnion: ["$$value", "$$this._id"]
               }
             }
           }
@@ -157,21 +170,27 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
             sinif: 1,
             adres: 1,
             durum: 1,
-            distributor: {
-              $reduce: {
-                input: "$mailData",
-                initialValue: "",
-                in: {
-                  $cond: {
-                    if: { $eq: ["$$value", ""] },
-                    then: "$$this.name",
-                    else: {
-                      $concat: ["$$value", ", ", "$$this.name"]
-                    }
-                  }
-                }
-              }
-            }
+            createdAt : 1,
+            updatedAt : 1,
+            altBolge : 1,
+            // distributor: {
+            //   name : 1
+            // }
+            // distributor: {
+            //   $reduce: {
+            //     input: "$bayiler.distributor",
+            //     initialValue: "",
+            //     in: {
+            //       $cond: {
+            //         if: { $eq: ["$$value", ""] },
+            //         then: "$$this.name",
+            //         else: {
+            //           $concat: ["$$value", ", ", "$$this.name"]
+            //         }
+            //       }
+            //     }
+            //   }
+            // }
           },
           users: {
             $reduce: {
@@ -196,24 +215,25 @@ export async function getBayilerByGroup(req: Request, res: Response, next: NextF
         }
       }
     ]);
-    res.json(bayiler);
+    return bayiler;
   } catch (err) {
-    next(err)
+    throw err;
   }
 }
 
 export async function setValueToBayiler(req: Request, res: Response, next: NextFunction) {
   try {
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
-    let today = moment().valueOf();
-    let yesterday = moment().subtract(1, "days").hours(21).valueOf();
+    let today = getDate("BUGÜN");
+    let yesterday = getDate("DÜN")
 
     bulk.find({
       // ilce : "KARTAL"
     })
       .update({
-        $unset: {
-          distributor: 1
+        $set: {
+          createdAt: yesterday,
+          updatedAt: yesterday
         }
       });
     bulk.execute((err, result) => {
@@ -276,7 +296,7 @@ export async function updateBayiler(bayiler: IBayi[]) {
         .update({
           $setOnInsert: {
             distributor: bayi.distributor,
-            createdAt: moment().tz("Europe/Istanbul").toDate()
+            createdAt: getDate("BUGÜN")
           },
           $set: {
             il: bayi.il,
@@ -288,7 +308,7 @@ export async function updateBayiler(bayiler: IBayi[]) {
             sinif: bayi.sinif,
             adres: bayi.adres,
             durum: bayi.durum,
-            updatedAt: moment().tz("Europe/Istanbul").toDate()
+            updatedAt: getDate("BUGÜN")
           }
         })
 

@@ -122,6 +122,7 @@
     "@types/mongoose": "^5.3.1",
     "@types/node": "^8.10.30",
     "@types/request-promise": "^4.1.42",
+    "@types/tempfile": "^2.0.0",
     "apidoc": "^0.17.5",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

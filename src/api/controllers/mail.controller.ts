@@ -1,7 +1,18 @@
-import { NextFunction, Request, Response, Router } from 'express';
-import * as Excel from "../helper/excel"
+import { NextFunction, Request, Response } from 'express';
+import { getBayilerByGroup } from "../controllers/bayi.controller";
+import { addValuesToWorksheet } from "../helper/excel";
+
 
 export async function getFile(req : Request, res : Response, next : NextFunction){
-    let _worksheet = Excel.addValuesToWorksheet(["test1", "test2", "test3"], [1,2,3]);
-    res.json(_worksheet.model)
+    try {
+        let gun = req.query.gun;
+        let payload : any[] = await getBayilerByGroup(gun)
+        let header = Object.keys(payload[0]["bayiler"][0]);
+        let _result = payload.map((altBolge : any) => {
+            return addValuesToWorksheet(header, altBolge["bayiler"]);
+        })
+        res.json(_result)
+    } catch (err) {
+        next(err)
+    }    
 }
