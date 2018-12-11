@@ -1,24 +1,66 @@
 import { NextFunction, Request, Response } from 'express';
 import { getBayilerByGroup } from "../controllers/bayi.controller";
-import { addValuesToWorksheet } from "../helper/excel";
+import { addValuesToWorksheet, newWorkbook, newWorksheet, saveFile } from "../helper/excel";
 import { IBayi } from 'api/interface';
+import { TapdkHeader } from '../helper/interface/file.interface';
 
+const APIError = require("../utils/APIError");
+import * as httpStatus from "http-status"
+
+import * as fs from "fs"
+import moment = require('moment');
+
+const BASE_DIR = "files"
 
 export async function send(req: Request, res: Response, next: NextFunction) {
     try {
-        let gun = req.query.gun;
 
+        // Get date from request query. if null, Joi will set `DÜN` as default
+        const gun = req.query.gun;
 
+        // Get bayiler from DB by date
         let payload: any[] = await getBayilerByGroup(gun);
 
-        if(payload.length < 1) throw new Error("Bayi bulunamadı")
+        // If bolge length less than 1 then throw
+        if (payload.length < 1) throw new APIError({
+            message : "Bayi bulunamadı",
+            status : httpStatus.NO_CONTENT
+        })
 
         // Get keys of object to set Header
-        let header = Object.keys(payload[0]["bayiler"][0]);
+        let header = TapdkHeader;
 
         // Iterate each altBolge to get file
         let resultPromise = payload.map(async (bolgeData: any) => {
-            return getFilePath(header, bolgeData);
+
+            // Set default options for worksheeet
+            let options = {
+                // Bolge name
+                sheetName: bolgeData["_id"],
+                views: [
+                    {
+                        zoomScale: 90,
+                        state: 'frozen',
+                        xSplit: 2,
+                        ySplit: 1
+                    }
+                ]
+            }
+            // Create new Workbook
+            let _workbook = newWorkbook();
+            // Create new Worksheet
+            let _worksheet = newWorksheet(_workbook, options);
+            // Set default options to write
+            let writeOptions = {
+                path: getFilePath(),
+                fileName: moment().format("DD-MM-YYYY")+"-"+moment().unix()+"-"+options.sheetName,
+                fileExt: "xlsx"
+            }
+            // Insert bayiler to worksheet. Returns void. If error then throw
+            addValuesToWorksheet(_worksheet, header, bolgeData["bayiler"]);
+
+            // Returns saved file path
+            return saveFile(_workbook, writeOptions)
         })
 
         Promise.all(resultPromise)
@@ -28,16 +70,17 @@ export async function send(req: Request, res: Response, next: NextFunction) {
             .catch(err => {
                 next(err)
             })
+
     } catch (err) {
         next(err)
     }
 }
 
 
-export async function getFilePath(header: string[], payload: any): Promise<any> {
-    try {
-        return addValuesToWorksheet(header, payload["bayiler"])
-    } catch (err) {
-        throw err
-    }
+function getFilePath() {
+    if (!fs.existsSync(BASE_DIR)) {
+        fs.mkdirSync(BASE_DIR);
+    };
+
+    return BASE_DIR;
 }

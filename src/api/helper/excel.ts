@@ -1,6 +1,10 @@
 // import * as tempfile from 'tempfile';
 import * as Excel from "exceljs";
-import * as tempfile from "tempfile"
+const APIError = require("../utils/APIError");
+import * as httpStatus from "http-status"
+
+import * as tempfile from "tempfile";
+import { IBayi } from "api/interface";
 
 enum HEADER {
     altBolge = "Bölge",
@@ -17,43 +21,78 @@ enum HEADER {
     durum = "Durum"
 }
 
-const FILE_EXTENSION = "xlsx"
-
-export function addValuesToWorksheet(columns : string[], values : any[], options? : any){
+export function newWorkbook(options?: any) {
     try {
-        let _workbook = new Excel.Workbook();
-        let _worksheet = _workbook.addWorksheet("Sayfa 1");
-        _worksheet.columns = []
-        let _column = columns.map((key : any) => {
-            return {
-                header : HEADER[key],
-                key : key
-            }
-        });
-        _worksheet.columns = _column;
-
-        let bolgeName = values[0]["altBolge"];
-
-        values.map(value => {
-            _worksheet.addRow(value);
-        })
-        
-        let options : any = {
-            filename: './streamed-workbook.xlsx',
-            useStyles: true,
-            useSharedStrings: true
-        };
-
-        // let tempPath = tempfile(".xlsx");
-        return _workbook.xlsx.writeFile(`${bolgeName}.${FILE_EXTENSION}`)
-            .then(data => {
-                console.log(options)
-                return options
-            })
-            .catch(err => {
-                throw err
-            })
+        let _wb = new Excel.Workbook();
+        _wb.creator = "net.asstan";
+        return _wb;
     } catch (err) {
-        throw new Error(err)
+        throw new APIError({
+            message : "Workbook oluşturulamadı.",
+            status : httpStatus.NO_CONTENT
+        });
     }
 }
+
+export function newWorksheet(_wb: Excel.Workbook, options?: any) {
+    let _ws = _wb.addWorksheet(options.sheetName);
+    _ws.views = options.views;
+    _ws.columns = [];
+    return _ws;
+}
+
+export function addValuesToWorksheet(_ws: Excel.Worksheet, columns: string[], values: any[], options?: any) {
+    try {
+
+        let _column = columns.map((key: any) => {
+            return {
+                header: HEADER[key],
+                key: key
+            }
+        });
+        _ws.columns = _column;
+
+
+        values.map((values: any, indexRow: number) => {
+            if (indexRow !== 1) {
+                let _row = _ws.getRow(indexRow);
+                let keys = Object.keys(values);
+
+                keys.map((key: any) => {
+                    _row.getCell(key).value = {
+                        'richText': [
+                            {
+                                font: {
+                                    size: 11
+                                },
+                                text: values[key]
+                            }
+                        ]
+                    }
+                })
+            }
+
+
+            _ws.addRow(values);
+        })
+    } catch (err) {
+        throw new APIError({
+            message : err,
+            status : httpStatus.NOT_MODIFIED
+        })
+    }
+};
+
+export function saveFile(_wb: Excel.Workbook, options?: any) {
+
+    let path = `${options.path}/${options.fileName}.${options.fileExt}`
+
+    return _wb.xlsx.writeFile(path)
+        .then(resolve => {
+            return path
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
