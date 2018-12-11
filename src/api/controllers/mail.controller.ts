@@ -28,7 +28,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         })
 
         // Get keys of object to set Header
-        let header = TapdkHeader;
+        let HEADER = TapdkHeader;
 
         // Iterate each altBolge to get file
         let resultPromise = payload.map(async (bolgeData: any) => {
@@ -57,7 +57,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
                 fileExt: "xlsx"
             }
             // Insert bayiler to worksheet. Returns void. If error then throw
-            addValuesToWorksheet(_worksheet, header, bolgeData["bayiler"]);
+            addValuesToWorksheet(_worksheet, HEADER, bolgeData["bayiler"]);
 
             // Returns saved file path
             return saveFile(_workbook, writeOptions)

@@ -20,7 +20,7 @@ export async function getSourceFromExternal(gun : string) {
     try {
         let response = await requestPromise.get(TAPDK_URL);
 
-        response = response.replace(/[\r\n\t ]/g, '');
+        response = response.replace(/(\r\n\t|\n|\r\t)/gm, '');
 
         let requestStates: ITapdkRequest = getStates(response.toString());
 
@@ -57,7 +57,8 @@ export async function getSourceFromExternal(gun : string) {
         } catch (fileArray) {
             throw new APIError({
                 message : "Yeni bayi yok ya da sistem hatası",
-                code : httpStatus.NO_CONTENT
+                err : fileArray,
+                status : httpStatus.NO_CONTENT
             })
         }
         
@@ -74,7 +75,7 @@ export async function getSourceFromExternal(gun : string) {
                 })
             })
     } catch (err) {
-        throw err;
+        throw err
     }
 };
 
@@ -140,7 +141,6 @@ function getStates(text: string) {
 
 
 function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITapdkRequest {
-    if(gun) console.log(gun)
     let formData: ITapdkRequest = {
         dd_tarih: <any>TARIH[gun],
         dd_islem: -1,
@@ -152,7 +152,6 @@ function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITa
         formData['__EVENTTARGET'] = TARGET.FILE
     }
     let form = _.assign({}, state, formData);
-    console.log(form)
     return form;
 };
 
