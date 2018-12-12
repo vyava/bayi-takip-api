@@ -71,6 +71,7 @@ const distributorSchema: Schema = new Schema(
     }
   })
 
+  
   distributorSchema.static('getDistsIdByAdres', async (adres: DistRequest) => {
     try {
       return await Dist.find({
