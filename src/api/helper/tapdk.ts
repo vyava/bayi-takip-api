@@ -1,6 +1,8 @@
 import { ITapdkRequest, TARIH, TARGET } from "./interface/request";
 import * as requestPromise from "request-promise";
 
+import * as cheerio from "cheerio";
+
 import { getDistIdsByAdres } from "../controllers/dist.controller";
 
 // const httpStatus = require('http-status');
@@ -20,9 +22,9 @@ export async function getSourceFromExternal(gun : string) {
     try {
         let response = await requestPromise.get(TAPDK_URL);
 
-        response = response.replace(/(\r\n\t|\n|\r\t)/gm, '');
-
-        let requestStates: ITapdkRequest = getStates(response.toString());
+        // response = _.trim(response.replace(/(\r\n\t|\n|\r\t)/gm, ''));
+        response = removeSpacesFromString(response);
+        let requestStates: ITapdkRequest = getStates(response);
 
         let form = getForm(requestStates, false, gun);
 
@@ -33,15 +35,14 @@ export async function getSourceFromExternal(gun : string) {
             });    
         } catch (err) {
             throw new APIError({
-                message : "İlk istek başarısız",
-                detail : err
+                message : "İlk istek başarısız"
             })
         }
         
 
         // Html etiketleri arasındaki gereksiz yeni satırlar..
         // .. tab boşluklarını siler
-        response = removeSpacesFromString(response);
+        
 
         let finalStates: ITapdkRequest = getStates(response);
         let finalForm = getForm(finalStates, true, gun);
@@ -56,9 +57,8 @@ export async function getSourceFromExternal(gun : string) {
             });
         } catch (fileArray) {
             throw new APIError({
-                message : "Yeni bayi yok ya da sistem hatası",
-                err : fileArray,
-                status : httpStatus.NO_CONTENT
+                message : fileArray,
+                err : fileArray
             })
         }
         
@@ -69,10 +69,7 @@ export async function getSourceFromExternal(gun : string) {
                 return bayiler
             })
             .catch(err => {
-                throw new APIError({
-                    message : "Son anda hata",
-                    detail : err
-                })
+                throw err
             })
     } catch (err) {
         throw err
@@ -80,43 +77,48 @@ export async function getSourceFromExternal(gun : string) {
 };
 
 function getArrayFromSource(resultArray : any[]){
-    let bolgeData : any = {};
-    const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
-        if (val.match(ruhsatPattern)) {
-            // Dizi içinde eşleşen `ruhsatNo` indexini alır ve bayi bilgilerinin..
-            // ..tamamını alacak şekilde mevcut diziden ilgili diziyi ayırır.
-            let chunkArray : any = currentArray.slice(i - 2, i + 7);
-
-            let bayi : IBayi = parseBayi(chunkArray);
-            
-
-            // Bölge listesinde il ve ilçeleri tekil olarak push eder..
-            if(_.has(bolgeData, bayi.il) ){
-                if(!_.find(bolgeData[bayi.il], bolge => bolge.ilce == bayi.ilce)){
+    try {
+        let bolgeData : any = {};
+        const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
+            if (val.match(ruhsatPattern)) {
+                // Dizi içinde eşleşen `ruhsatNo` indexini alır ve bayi bilgilerinin..
+                // ..tamamını alacak şekilde mevcut diziden ilgili diziyi ayırır.
+                let chunkArray : any = currentArray.slice(i - 2, i + 7);
+    
+                let bayi : IBayi = parseBayi(chunkArray);
+                
+    
+                // Bölge listesinde il ve ilçeleri tekil olarak push eder..
+                if(_.has(bolgeData, bayi.il) ){
+                    if(!_.find(bolgeData[bayi.il], bolge => bolge.ilce == bayi.ilce)){
+                        bolgeData[bayi.il].push({
+                            name : bayi.ilce
+                        })    
+                    }                  
+                }else{
+                    bolgeData[bayi.il] = [];
                     bolgeData[bayi.il].push({
                         name : bayi.ilce
-                    })    
-                }                  
-            }else{
-                bolgeData[bayi.il] = [];
-                bolgeData[bayi.il].push({
-                    name : bayi.ilce
-                })
-            }
-            _result.push(bayi)
-        };
-        return _result;
-    }, []);
+                    })
+                }
+                _result.push(bayi)
+            };
+            return _result;
+        }, []);
+        
+        return _.map(finalResult, async (bayi : IBayi) => {
+            // if(bayi.il == "İSTANBUL" && bayi.ilce == "PENDİK"){
+                bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
+            // }
+            return bayi;
+        })
+        // let bolge = await getDistIds(bolgeData)
+        // Promise.all(bolge).then(r => console.log)
+        // return finalResult;    
+    } catch (err) {
+        throw err
+    }
     
-    return _.map(finalResult, async (bayi : IBayi) => {
-        // if(bayi.il == "İSTANBUL" && bayi.ilce == "PENDİK"){
-            bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
-        // }
-        return bayi;
-    })
-    // let bolge = await getDistIds(bolgeData)
-    // Promise.all(bolge).then(r => console.log)
-    // return finalResult;
 };
 
 async function getDistIds(il : string, ilce : string){
@@ -124,19 +126,37 @@ async function getDistIds(il : string, ilce : string){
 }
 
 function getStates(text: string) {
-    let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");
-    let eventPattern = new RegExp(/(?:")(__EVENTVALIDATION)(?:"value=")(.*?)(?:"\/>)/, "g");
+    try {
+        let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");
+        let eventPattern = new RegExp(/(?:")(__EVENTVALIDATION)(?:"value=")(.*?)(?:"\/>)/, "g");
+        let $ = cheerio.load(text);
+        // console.log(text)
+        
 
-    var validate: any = {};
-    var match;
+        var validate: any = {};
+        var match;
 
-    while ((match = viewPattern.exec(text)) !== null) {
-        validate['__VIEWSTATE'] = match[2];
+        validate['__VIEWSTATE'] = $("#__VIEWSTATE").attr("value");
+        validate['__EVENTVALIDATION'] = $("#__EVENTVALIDATION").attr("value");
+    
+        // while ((match = viewPattern.exec(text)) !== null) {
+        //     validate['__VIEWSTATE'] = match[2];
+        // }
+        // while ((match = eventPattern.exec(text)) !== null) {
+        //     validate['__EVENTVALIDATION'] = match[2];
+        // }
+        console.log(validate);
+        console.log("******************************")
+        if(_.isEmpty(validate['__EVENTVALIDATION']) || _.isEmpty(validate['__VIEWSTATE'])){
+            throw new Error("Validate Hatası")
+        }
+        return validate     
+    } catch (err) {
+        throw new APIError({
+            message : "VALIDATE Parse hatası"
+        })
     }
-    while ((match = eventPattern.exec(text)) !== null) {
-        validate['__EVENTVALIDATION'] = match[2];
-    }
-    return validate
+    
 };
 
 
@@ -156,21 +176,29 @@ function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITa
 };
 
 function parseFileString(binaryData: string): any[] {
-    const parsePattern = new RegExp("(<([^>]+)>)", "ig");
-    const tagPattern = new RegExp("(?=>([^<]+)\r?\n?|\r?$)(.*?|\r?\n|\r)(?=<)", "g");
-
-    let binary = new Buffer(binaryData, 'binary');
-    var iconv = new Iconv('windows-1254', 'utf-8')
-
-    let fileString = iconv.convert(binary).toString();
-
-    var dataArray = [];
-    var match;
-
-    while ((match = tagPattern.exec(fileString)) !== null) {
-        let clear = match[1].trim().replace(parsePattern, '');
-        dataArray.push(clear)
+    try {
+        const parsePattern = new RegExp("(<([^>]+)>)", "ig");
+        const tagPattern = new RegExp("(?=>([^<]+)\r?\n?|\r?$)(.*?)(?=<)", "g");
+    
+        let binary = new Buffer(binaryData, 'binary');
+        var iconv = new Iconv('windows-1254', 'utf-8')
+    
+        let fileString = iconv.convert(binary).toString();
+    
+        var dataArray = [];
+        var match;
+    
+        while ((match = tagPattern.exec(fileString)) !== null) {
+            let clear = match[1].trim().replace(parsePattern, '');
+            dataArray.push(clear)
+        }
+    
+        return dataArray      
+    } catch (err) {
+        throw new APIError({
+            message : "Parse hatası",
+            status : httpStatus.NOT_MODIFIED
+        })
     }
-
-    return dataArray
+    
 }

@@ -96,7 +96,9 @@ export async function getDistIdsByAdres(_il : string, _ilce : string) : Promise<
     ]);
     return distIds;
   } catch (err) {
-    throw err;
+    throw new APIError({
+      message : "Bayi bilgileri alınamadı"
+    });
   }
 }
 
