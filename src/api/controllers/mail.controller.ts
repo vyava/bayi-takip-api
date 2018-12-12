@@ -21,7 +21,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // Get bayiler from DB by date
         let payload: any[] = await getBayilerByGroup(gun);
 
-        // If bolge length less than 1 then throw
+        // If bolge length less than 1 throw error
         if (payload.length < 1) throw new APIError({
             message : "Bayi bulunamadı",
             status : httpStatus.NO_CONTENT
@@ -33,8 +33,12 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // Iterate each altBolge to get file
         let resultPromise = payload.map(async (bolgeData: any) => {
 
+            bolgeData['bayiler'].map((bayi : any) => {
+                bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ")
+            })
             // Set default options for worksheeet
             let options = {
+
                 // Bolge name
                 sheetName: bolgeData["_id"],
                 views: [
@@ -48,18 +52,21 @@ export async function send(req: Request, res: Response, next: NextFunction) {
             }
             // Create new Workbook
             let _workbook = newWorkbook();
+
             // Create new Worksheet
             let _worksheet = newWorksheet(_workbook, options);
+
             // Set default options to write
             let writeOptions = {
                 path: getFilePath(),
                 fileName: moment().format("DD-MM-YYYY")+"-"+moment().unix()+"-"+options.sheetName,
                 fileExt: "xlsx"
             }
+
             // Insert bayiler to worksheet. Returns void. If error then throw
             addValuesToWorksheet(_worksheet, HEADER, bolgeData["bayiler"]);
 
-            // Returns saved file path
+            // Return saved file path
             return saveFile(_workbook, writeOptions)
         })
 

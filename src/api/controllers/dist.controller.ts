@@ -73,6 +73,17 @@ export async function setDistInfoToBayiler(req: Request, res: Response, next: Ne
   } catch (err) {
     next(err)
   }
+};
+
+export async function getBolgeNameByAdres(distId){
+  try {
+    let data =  await <any>DistModel.findOne({
+      _id : distId
+    }).select("altBolge");
+    return data['altBolge']
+  } catch (err) {
+    return null
+  }
 }
 
 

@@ -17,6 +17,7 @@ export interface IBayi {
     durum?        : string;
     distributor?  : Types.ObjectId[];
     timestamp?    : string;
+    altBolge?     : string;
 }
 
 export enum IBayiIndex {

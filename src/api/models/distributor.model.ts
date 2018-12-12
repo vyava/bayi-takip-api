@@ -64,6 +64,13 @@ const distributorSchema: Schema = new Schema(
     }
   );
 
+  distributorSchema.set('toJSON', {
+    virtuals : true,
+    transform : (doc : any, ret : any, options : any) => {
+      delete ret._id
+    }
+  })
+
   distributorSchema.static('getDistsIdByAdres', async (adres: DistRequest) => {
     try {
       return await Dist.find({

@@ -183,9 +183,9 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
             createdAt: 1,
             updatedAt: 1,
             altBolge: 1,
-            // distributor: {
-            //   name : 1
-            // }
+            distributor: {
+              name : 1
+            }
             // distributor: {
             //   $reduce: {
             //     input: "$bayiler.distributor",
