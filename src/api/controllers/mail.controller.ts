@@ -36,6 +36,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
             bolgeData['bayiler'].map((bayi : any) => {
                 bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ")
             })
+            
             // Set default options for worksheeet
             let options = {
 
