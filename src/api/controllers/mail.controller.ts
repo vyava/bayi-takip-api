@@ -24,7 +24,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // If bolge length less than 1 throw error
         if (payload.length < 1) throw new APIError({
             message : "Bayi bulunamadı",
-            status : httpStatus.NO_CONTENT
+            status : httpStatus.NOT_FOUND
         })
 
         // Get keys of object to set Header

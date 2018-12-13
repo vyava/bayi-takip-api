@@ -58,7 +58,14 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
 
 export async function getBayilerByGroup(gun: any = "BUGÜN") {
   try {
-    let { start, end } = getDate(gun)
+    let obj = getDate(gun)
+    let start = obj.start;
+    let end = obj.end
+    console.log("******************\n")
+    console.log(gun)
+    console.log("******************\n")
+    console.log(obj)
+    console.log("******************\n")
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
@@ -234,15 +241,18 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
 export async function setValueToBayiler(req: Request, res: Response, next: NextFunction) {
   try {
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
-    let { start } = getDate("BUGÜN");
+    let { start } = getDate("AYBAŞI");
 
     bulk.find({
       // ilce : "KARTAL"
     })
       .update({
-        $unset: {
-          distributor: 1
-        }
+        $set: {
+          // distributor: 1,
+          // altBolge : 1,
+          // createdAt : 1,
+          updatedAt : start
+        },
       });
     bulk.execute((err, result) => {
       if (err) throw new APIError({
@@ -258,6 +268,7 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
 
 export async function setDistsToBayiler(dist: any) {
   try {
+    // console.log(dist)
     let { id, iller, ilceler, altBolge } = dist
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
     bulk.find({
@@ -279,11 +290,10 @@ export async function setDistsToBayiler(dist: any) {
           "_id": id
         }
       },
-      $set: {
-        altBolge: altBolge[0]
-      }
+      // $set: {
+      //   altBolge: altBolge[0]
+      // }
     });
-
     return await bulk.execute()
 
   } catch (err) {
@@ -320,7 +330,8 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
             sinif: bayi.sinif,
             adres: bayi.adres,
             durum: bayi.durum,
-            updatedAt: start
+            updatedAt: start,
+            altBolge : bayi.altBolge
           }
         })
 

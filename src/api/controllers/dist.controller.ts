@@ -59,6 +59,7 @@ export async function setDistInfoToBayiler(req: Request, res: Response, next: Ne
         ilceler : _.union(_.map(dist['bolgeData'], "ilce")),
         altBolge : _.union(_.map(dist['bolgeData'], "altBolge"))
       }
+      console.log(_dist.id)
       // return _dist
       return await setDistsToBayiler(_dist)
     });

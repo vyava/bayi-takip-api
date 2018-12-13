@@ -121,7 +121,7 @@ function getArrayFromSource(resultArray : any[]){
 };
 
 async function getDistIds(il : string, ilce : string){
-    return await getDistIdsByAdres(il, ilce);
+    return await getDistIdsByAdres(il, ilce) ||[];
 }
 
 function getStates(text: string) {
