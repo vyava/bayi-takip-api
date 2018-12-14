@@ -18,5 +18,10 @@ router
     .route('/ayarla')
     // .get(validate(setDist), distController.setDist)
     .get(distController.setDistInfoToBayiler);
+router
+    .route('/id')
+    // .get(validate(setDist), distController.setDist)
+    .get(distController.getDistIdsByAdresRoute);
+    
 
 module.exports = router;

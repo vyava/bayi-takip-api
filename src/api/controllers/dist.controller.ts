@@ -87,6 +87,12 @@ export async function getBolgeNameByAdres(distId){
   }
 }
 
+export async function getDistIdsByAdresRoute(req: Request, res: Response, next: NextFunction){
+  let {il, ilce} = req.query;
+  let result = await getDistIdsByAdres(il, ilce)
+  res.json(result)
+}
+
 export async function getDistIdsByAdres(_il : string, _ilce : string) : Promise<mongoose.Types.ObjectId[]>{
   try {
     let distIds = await DistModel.aggregate([

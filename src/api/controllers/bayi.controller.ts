@@ -58,31 +58,31 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
 
 export async function getBayilerByGroup(gun: any = "BUGÜN") {
   try {
-    let obj = getDate(gun)
-    let start = obj.start;
-    let end = obj.end
-    console.log("******************\n")
-    console.log(gun)
-    console.log("******************\n")
-    console.log(obj)
-    console.log("******************\n")
+    let {start, end} = getDate(gun)
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
-          $and : [
+          $and: [
             {
-              updatedAt : {
-                $gte : start
+              updatedAt: {
+                $gte: start
               }
             },
             {
-              updatedAt : {
-                $lte : end
+              updatedAt: {
+                $lte: end
               }
             },
             {
-              altBolge : {
-                $exists : true
+              altBolge: {
+                $exists: true,
+                $ne: null
+              }
+            },
+            {
+              distributor: {
+                $exists: true,
+                $ne: null
               }
             }
           ]
@@ -191,7 +191,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
             updatedAt: 1,
             altBolge: 1,
             distributor: {
-              name : 1
+              name: 1
             }
             // distributor: {
             //   $reduce: {
@@ -250,8 +250,8 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
         $set: {
           // distributor: 1,
           // altBolge : 1,
-          // createdAt : 1,
-          updatedAt : start
+          createdAt : start,
+          // updatedAt: start
         },
       });
     bulk.execute((err, result) => {
@@ -313,12 +313,9 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
           ruhsatNo: bayi.ruhsatNo
         })
         .upsert()
-        .update({
+        .updateOne({
           $setOnInsert: {
             createdAt: start
-          },
-          $addToSet: {
-            distributor: bayi.distributor[0]
           },
           $set: {
             il: bayi.il,
@@ -331,7 +328,8 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
             adres: bayi.adres,
             durum: bayi.durum,
             updatedAt: start,
-            altBolge : bayi.altBolge
+            altBolge: bayi.altBolge,
+            distributor: bayi.distributor
           }
         })
 

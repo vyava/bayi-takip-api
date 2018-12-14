@@ -13,15 +13,17 @@ export function getDate(gun : any = "BUGÜN"){
     
     let start : any, end : any;
     // console.log(GÜN[gun])
-    // if(<any>GÜN[gun] == 1 || <any>GÜN[gun] == 0){
-        start = moment().startOf(<any>GÜN.DÜN).toDate();
-        end = moment().endOf(<any>GÜN.DÜN).toDate();
-    // }else if(<any>GÜN[gun] == "year" || <any>GÜN[gun] == "month"){
-    //     start = moment().subtract(GÜN[gun], "days").startOf("day").toDate();
-    //     end = moment().subtract(GÜN[gun], "days").endOf("day").toDate();
-    // }else{
-    //     throw new Error("Tarih aralığı istenen formatta değil.");
-    // }
+    
+    if(<any>GÜN[gun] == "year" || <any>GÜN[gun] == "month"){
+        console.log()
+        start = moment().startOf(<any>GÜN[gun]).toDate();
+        end = moment().endOf(<any>GÜN[gun]).toDate();
+    }else if(<any>GÜN[gun] == 1 || <any>GÜN[gun] == 0){
+        start = moment().subtract(GÜN[gun], "days").startOf("day").toDate();
+        end = moment().subtract(GÜN[gun], "days").endOf("day").toDate();
+    }else{
+        throw new Error("Tarih aralığı istenen formatta değil.");
+    }
     var obj = {
         start : start,
         end : end

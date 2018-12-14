@@ -34,7 +34,9 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         let resultPromise = payload.map(async (bolgeData: any) => {
 
             bolgeData['bayiler'].map((bayi : any) => {
-                bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ")
+                bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ");
+                bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
+                bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
             })
             
             // Set default options for worksheeet

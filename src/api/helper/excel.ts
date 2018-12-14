@@ -71,9 +71,6 @@ export function addValuesToWorksheet(_ws: Excel.Worksheet, columns: string[], va
                     }
                 })
             }
-
-
-            _ws.addRow(values);
         })
     } catch (err) {
         throw new APIError({
