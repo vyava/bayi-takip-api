@@ -12,6 +12,8 @@ import { getDate, getDateTS } from "../helper/date";
 // import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
 const BayiModel = mongoose.model("Bayi");
+
+import * as moment from "moment"
 // import { startTimer, apiJson } from 'api/utils/Utils';
 // const { handler: errorHandler } = require('../middlewares/error');
 
@@ -88,7 +90,13 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
           ]
         }
       },
-      { $limit: 100 },
+      {
+        $sort : {
+          "distributor._id" : 1,
+          durum : 1
+        }
+      },
+      // { $limit: 100 },
       {
         $lookup: {
           from: "dist",
@@ -304,7 +312,7 @@ export async function setDistsToBayiler(dist: any) {
 export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
   try {
 
-    let { start } = getDate(gun);
+    let date = moment().toDate()
     let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
     // let processCounter : number = 0;
     bayiler.map((bayi: IBayi) => {
@@ -315,7 +323,7 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
         .upsert()
         .updateOne({
           $setOnInsert: {
-            createdAt: start
+            createdAt: date
           },
           $set: {
             il: bayi.il,
@@ -327,7 +335,7 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
             sinif: bayi.sinif,
             adres: bayi.adres,
             durum: bayi.durum,
-            updatedAt: start,
+            updatedAt: date,
             altBolge: bayi.altBolge,
             distributor: bayi.distributor
           }

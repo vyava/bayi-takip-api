@@ -1,21 +1,25 @@
 import * as moment from "moment"
+import { TARIH } from "./interface/request";
 process.env.TZ = 'Europe/Istanbul';
 moment().tz("Europe/Istanbul");
 
 enum GÜN {
     DÜN =1,
     BUGÜN= 0,
+    HAFTABAŞI = "week",
     AYBAŞI = "month",
     YILBAŞI = "year"
 }
 
-export function getDate(gun : any = "BUGÜN"){
-    
+
+export function getDate(gun : any = "BUGÜN", type? : string) : any{
+    if(type == "tapdk"){
+        return TARIH[gun]
+    }
+
     let start : any, end : any;
-    // console.log(GÜN[gun])
     
-    if(<any>GÜN[gun] == "year" || <any>GÜN[gun] == "month"){
-        console.log()
+    if(<any>GÜN[gun] == "year" || <any>GÜN[gun] == "month" || <any>GÜN[gun] == "week"){
         start = moment().startOf(<any>GÜN[gun]).toDate();
         end = moment().endOf(<any>GÜN[gun]).toDate();
     }else if(<any>GÜN[gun] == 1 || <any>GÜN[gun] == 0){
@@ -24,11 +28,7 @@ export function getDate(gun : any = "BUGÜN"){
     }else{
         throw new Error("Tarih aralığı istenen formatta değil.");
     }
-    var obj = {
-        start : start,
-        end : end
-    }
-    return obj;
+    return {start, end};
 }
 
 export function getDateTS(gun : any = "BUGÜN"){
