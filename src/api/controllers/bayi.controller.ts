@@ -325,6 +325,9 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
           $setOnInsert: {
             createdAt: date
           },
+          $addToSet : {
+            ruhsatTipleri : bayi.ruhsatTipleri
+          },
           $set: {
             il: bayi.il,
             ilce: bayi.ilce,

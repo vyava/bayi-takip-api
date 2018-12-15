@@ -17,12 +17,13 @@ export function getDate(gun : any = "BUGÜN", type? : string) : any{
         return TARIH[gun]
     }
 
-    let start : any, end : any;
+    // let start : any, end : any;
+    let {start, end} = {start : null, end : null}
     
-    if(<any>GÜN[gun] == "year" || <any>GÜN[gun] == "month" || <any>GÜN[gun] == "week"){
+    if(typeof GÜN[gun] == "string"){
         start = moment().startOf(<any>GÜN[gun]).toDate();
         end = moment().endOf(<any>GÜN[gun]).toDate();
-    }else if(<any>GÜN[gun] == 1 || <any>GÜN[gun] == 0){
+    }else if(typeof GÜN[gun] == "number"){
         start = moment().subtract(GÜN[gun], "days").startOf("day").toDate();
         end = moment().subtract(GÜN[gun], "days").endOf("day").toDate();
     }else{
@@ -32,6 +33,6 @@ export function getDate(gun : any = "BUGÜN", type? : string) : any{
 }
 
 export function getDateTS(gun : any = "BUGÜN"){
-    var date = moment().tz("Europe/Istanbul").subtract(GÜN[gun], "days").hour(7).valueOf();
+    var date = moment().tz("Europe/Istanbul").subtract(<any>GÜN[gun], "days").hour(7).valueOf();
     return date;
 }

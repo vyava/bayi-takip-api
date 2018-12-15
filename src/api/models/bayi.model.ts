@@ -35,7 +35,8 @@ const bayiSchema: Schema = new Schema(
     },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}]
+    distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
+    ruhsatTipleri : [{ type : String }]
   },
   {
     collection: "bayiler",

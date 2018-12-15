@@ -18,6 +18,7 @@ export interface IBayi {
     distributor?  : Types.ObjectId[];
     timestamp?    : string;
     altBolge?     : string;
+    ruhsatTipleri?: [string]
 }
 
 export enum IBayiIndex {
