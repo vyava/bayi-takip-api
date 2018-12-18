@@ -20,7 +20,13 @@ const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
 export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
 export async function getSourceFromExternal(gun : string) {
     try {
-        let response = await requestPromise.get(TAPDK_URL);
+        let response;
+        try {
+            response = await requestPromise.get(TAPDK_URL);    
+        } catch (error) {
+            throw new Error("Kaynakla bağlantı kurulamadı")
+        }
+        
         
         // Html etiketleri arasındaki gereksiz yeni satırlar..
         // .. tab boşluklarını siler
@@ -145,12 +151,12 @@ function getStates(text: string) {
         //     validate['__EVENTVALIDATION'] = match[2];
         // }
         if(_.isEmpty(validate['__EVENTVALIDATION']) || _.isEmpty(validate['__VIEWSTATE'])){
-            throw new Error("Validate Hatası")
+            throw new Error("Validation alınamadı. Kaynak çalışmıyor olabilir.")
         }
         return validate     
     } catch (err) {
         throw new APIError({
-            message : "VALIDATE Parse hatası"
+            message : err.message
         })
     }
     

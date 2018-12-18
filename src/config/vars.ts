@@ -16,7 +16,11 @@ module.exports = {
     uri: process.env.NODE_ENV === 'test' ? process.env.MONGO_URI_TESTS : process.env.MONGO_URI
   },
   // logs: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
-
+  sendgrid_api_key : process.env.SENDGRID_API_KEY,
+  sender_address : {
+    email : "tapdk@asstan.net",
+    name : "TAPDK"
+  },
   // DEFAULT values and limiters
   LIMIT_MAX : 101,
   LIMIT_MIN : 9,

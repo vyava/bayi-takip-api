@@ -12,6 +12,7 @@ enum HEADER {
     createdAt = "Kayıt Tarihi",
     updatedAt = "Güncelleme Tarihi",
     ruhsatNo = "Ruhat No",
+    ruhsat_tipleri = "Ruhsat Tipleri",
     adiSoyadi = "Adı-Soyadı",
     unvan = "Ünvan",
     il = "İl",
