@@ -12,13 +12,14 @@ enum HEADER {
     createdAt = "Kayıt Tarihi",
     updatedAt = "Güncelleme Tarihi",
     ruhsatNo = "Ruhat No",
-    ruhsat_tipleri = "Ruhsat Tipleri",
+    ruhsatTipleri = "Ruhsat Tipleri",
     adiSoyadi = "Adı-Soyadı",
     unvan = "Ünvan",
     il = "İl",
     ilce = "İlçe",
     adres = "Adres",
     sinif = "Sınıf",
+    sinifDsd = "Sınıf DSD",
     durum = "Durum"
 }
 
@@ -53,30 +54,28 @@ export function addValuesToWorksheet(_ws: Excel.Worksheet, columns: string[], va
         });
         _ws.columns = _column;
 
-
         values.map((values: any, indexRow: number) => {
             if (indexRow !== 1) {
                 let _row = _ws.getRow(indexRow);
                 let keys = Object.keys(values);
-
                 keys.map((key: any) => {
+                    console.log(values[key])
                     _row.getCell(key).value = {
                         'richText': [
                             {
                                 font: {
                                     size: 11
                                 },
-                                text: values[key]
+                                text: values[key] || ""
                             }
                         ]
-                    }
+                    };
                 })
             }
         })
     } catch (err) {
         throw new APIError({
-            message : err,
-            status : httpStatus.NOT_MODIFIED
+            message : err
         })
     }
 };
@@ -90,7 +89,7 @@ export function saveFile(_wb: Excel.Workbook, options?: any) {
             return path
         })
         .catch(err => {
-            throw err
+            throw new Error("Dosya yazılamadı.")
         })
 }
 

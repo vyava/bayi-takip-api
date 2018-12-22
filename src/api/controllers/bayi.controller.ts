@@ -121,6 +121,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
               adiSoyadi: "$adiSoyadi",
               unvan: "$unvan",
               sinif: "$sinif",
+              sinifDsd : "$sinifDsd",
               adres: "$adres",
               durum: "$durum",
               createdAt: "$createdAt",
@@ -144,6 +145,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
             adiSoyadi: 1,
             unvan: 1,
             sinif: 1,
+            sinifDsd : 1,
             adres: 1,
             durum: 1,
             createdAt: 1,
@@ -196,6 +198,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
             adiSoyadi: 1,
             unvan: 1,
             sinif: 1,
+            sinifDsd : 1,
             adres: 1,
             durum: 1,
             createdAt: 1,
@@ -253,7 +256,6 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
   try {
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
     let { start } = getDate("AYBAŞI");
-
     bulk.find({
       // ilce : "KARTAL"
     })
@@ -262,7 +264,8 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
           // distributor: 1,
           // altBolge : 1,
           createdAt : start,
-          // updatedAt: start
+          // ruhsatTipleri : 1
+          updatedAt: start
         },
       });
     bulk.execute((err, result) => {
@@ -339,6 +342,7 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
             soyadi: bayi.soyadi,
             unvan: bayi.unvan,
             sinif: bayi.sinif,
+            sinifDsd : bayi.sinifDsd,
             adres: bayi.adres,
             durum: bayi.durum,
             updatedAt: date,

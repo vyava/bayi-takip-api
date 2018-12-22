@@ -29,10 +29,8 @@ const bayiSchema: Schema = new Schema(
     adi: { type: String },
     soyadi: { type: String },
     unvan: { type: String, trim: true },
-    sinif: {
-      type: String,
-      trim: true
-    },
+    sinif: { type: String, trim: true },
+    sinifDsd : { type : String, trim : true },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
     distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
