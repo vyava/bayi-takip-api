@@ -31,65 +31,65 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // Get bayiler from DB by date
         let data: any[] = await getBayilerByGroup(gun);
 
-        // res.send(data)
+        res.send(data)
 
         // If bolge length less than 1 throw error
-        if (data.length < 1) throw new APIError({
-            message: "Mail gönderimi yapılacak bayi bulunamadı."
-        })
+        // if (data.length < 1) throw new APIError({
+        //     message: "Mail gönderimi yapılacak bayi bulunamadı."
+        // })
 
-        // Get keys of object to set Header
-        let HEADER = TapdkHeader;
-        // Iterate each altBolge to get file
-        let resultPromise = data.map(async (bolgeData: any) => {
-            // console.log(bolgeData)
-            bolgeData['bayiler'].map((bayi: any) => {
-                bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ");
-                bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
-                bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
-            })
+        // // Get keys of object to set Header
+        // let HEADER = TapdkHeader;
+        // // Iterate each altBolge to get file
+        // let resultPromise = data.map(async (bolgeData: any) => {
+        //     // console.log(bolgeData)
+        //     bolgeData['bayiler'].map((bayi: any) => {
+        //         bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ");
+        //         bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
+        //         bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
+        //     })
 
-            let options = {
-                _sheetname: bolgeData['_id'],
-                _header: HEADER
-            }
-            let _filePath = await getFile(bolgeData['bayiler'], options);
+        //     let options = {
+        //         _sheetname: bolgeData['_id'],
+        //         _header: HEADER
+        //     }
+        //     let _filePath = await getFile(bolgeData['bayiler'], options);
 
-            let to = _.map(bolgeData["users"], (user) => {
-                if (user.taskName == "operator" || user.taskName == "tte") {
-                    return user.email
-                }
-            });
+        //     let to = _.map(bolgeData["users"], (user) => {
+        //         if (user.taskName == "operator" || user.taskName == "tte") {
+        //             return user.email
+        //         }
+        //     });
 
-            let cc = _.map(bolgeData["users"], (user) => {
-                if (user.taskName == "dsm") {
-                    return user.email
-                }
-            });
+        //     let cc = _.map(bolgeData["users"], (user) => {
+        //         if (user.taskName == "dsm") {
+        //             return user.email
+        //         }
+        //     });
 
-            let mailPayload: MailData = {
-                from: config.sender_address,
-                attachments: [
-                    {
-                        content: fs.readFileSync(_filePath, { encoding: "base64" }),
-                        filename: options._sheetname
-                    }
-                ],
-                to: _.compact(to),
-                cc: _.compact(cc)
-            }
+        //     let mailPayload: MailData = {
+        //         from: config.sender_address,
+        //         attachments: [
+        //             {
+        //                 content: fs.readFileSync(_filePath, { encoding: "base64" }),
+        //                 filename: options._sheetname
+        //             }
+        //         ],
+        //         to: _.compact(to),
+        //         cc: _.compact(cc)
+        //     }
 
-            return mailPayload
+        //     return mailPayload
 
-        })
+        // })
 
-        Promise.all(resultPromise)
-            .then(_res => {
-                res.json(_res);
-            })
-            .catch(err => {
-                next(err)
-            })
+        // Promise.all(resultPromise)
+        //     .then(_res => {
+        //         res.json(_res);
+        //     })
+        //     .catch(err => {
+        //         next(err)
+        //     })
 
     } catch (err) {
         next(err)

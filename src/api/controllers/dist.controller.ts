@@ -89,26 +89,42 @@ export async function getBolgeNameByAdres(distId){
 
 export async function getDistIdsByAdresRoute(req: Request, res: Response, next: NextFunction){
   let {il, ilce} = req.query;
-  let result = await getDistIdsByAdres(il, ilce)
+  let result = await getDistIdsByAdres([il])
   res.json(result)
 }
 
-export async function getDistIdsByAdres(_il : string, _ilce : string) : Promise<mongoose.Types.ObjectId[]>{
+export async function getDistIdsByAdres(iller : string[]) : Promise<mongoose.Types.ObjectId[]>{
   try {
     let distIds = await DistModel.aggregate([
+      
       {
         $unwind : "$bolgeData"
       },
       {
         $match : {
-          "bolgeData.il" : _il.toUpperCase(),
-          "bolgeData.ilce" : _ilce.toUpperCase(),
+          "bolgeData.il" : {
+              $in : iller
+            }
         }
       },
       {
-        $project : {
-          _id : true
+        $group : {
+          _id : "$bolgeData._id",
+          bolge : {
+            $first : {
+              il : "$bolgeData.il",
+              ilce : "$bolgeData.ilce"
+            }
+          },
+          distId : {
+            $first : "$_id"
+          }
         }
+      },
+      {
+        "$bolge.il" : 1,
+        "$bolge.ilce" : 1,
+        distId : 1
       }
     ]);
     return distIds;
@@ -122,7 +138,7 @@ export async function getDistIdsByAdres(_il : string, _ilce : string) : Promise<
 export async function getDistAll(req: Request, res: Response, next: NextFunction) {
   try {
     let {il, ilce} = req.query
-    let dists = await getDistIdsByAdres(il, ilce);
+    let dists = await getDistIdsByAdres([il]);
     res.json(dists)
   } catch (err) {
     next(err)

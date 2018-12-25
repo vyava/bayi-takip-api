@@ -81,7 +81,7 @@ export async function getSourceFromExternal(gun : string) {
 
 function getArrayFromSource(resultArray : any[]){
     try {
-        let bolgeData : any = {};
+        let bolgeData : any[] = [];
         const finalResult : [] = resultArray.reduce((_result : IBayi[], val, i, currentArray) => {
             if (val.match(ruhsatPattern)) {
                 // Dizi içinde eşleşen `ruhsatNo` indexini alır ve bayi bilgilerinin..
@@ -92,31 +92,33 @@ function getArrayFromSource(resultArray : any[]){
                 
     
                 // Bölge listesinde il ve ilçeleri tekil olarak push eder..
-                if(_.has(bolgeData, bayi.il) ){
-                    if(!_.find(bolgeData[bayi.il], bolge => bolge.ilce == bayi.ilce)){
-                        bolgeData[bayi.il].push({
-                            name : bayi.ilce
-                        })    
-                    }                  
-                }else{
-                    bolgeData[bayi.il] = [];
-                    bolgeData[bayi.il].push({
-                        name : bayi.ilce
-                    })
-                }
+                bolgeData = _.unionWith(bolgeData, [{il : bayi.il, ilce : bayi.ilce}], _.isEqual)
+                // if(_.has(bolgeData, bayi.il) ){
+                //     if(!_.find(bolgeData[bayi.il], bolge => bolge.ilce == bayi.ilce)){
+                //         bolgeData[bayi.il].push({
+                //             name : bayi.ilce
+                //         })    
+                //     }                  
+                // }else{
+                //     bolgeData[bayi.il] = [];
+                //     bolgeData[bayi.il].push({
+                //         name : bayi.ilce
+                //     })
+                // }
                 _result.push(bayi)
             };
             return _result;
         }, []);
-        
-        return _.map(finalResult, async (bayi : IBayi) => {
-            // if(bayi.il == "İSTANBUL" && bayi.ilce == "PENDİK"){
-                bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
-                bayi.altBolge = !_.isEmpty(bayi.distributor)
-                                    ? await getBolgeNameByAdres(bayi.distributor[0]) : null
-            // }
-            return bayi;
-        })
+        console.log(_.filter(bolgeData, o => o.il == "İSTANBUL"))
+        // return _.map(finalResult, async (bayi : IBayi) => {
+        //     // if(bayi.il == "İSTANBUL" && bayi.ilce == "PENDİK"){
+        //         bayi.distributor = await getDistIds(bayi.il, bayi.ilce);
+        //         bayi.altBolge = !_.isEmpty(bayi.distributor)
+        //                             ? await getBolgeNameByAdres(bayi.distributor[0]) : null
+        //     // }
+        //     return bayi;
+        // })
+        return finalResult
         // let bolge = await getDistIds(bolgeData)
         // Promise.all(bolge).then(r => console.log)
         // return finalResult;
@@ -127,7 +129,7 @@ function getArrayFromSource(resultArray : any[]){
 };
 
 async function getDistIds(il : string, ilce : string){
-    return await getDistIdsByAdres(il, ilce) ||[];
+    return await getDistIdsByAdres() ||[];
 }
 
 function getStates(text: string) {

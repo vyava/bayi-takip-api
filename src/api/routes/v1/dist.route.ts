@@ -19,7 +19,7 @@ router
     // .get(validate(setDist), distController.setDist)
     .get(distController.setDistInfoToBayiler);
 router
-    .route('/id')
+    .route('/bolge')
     // .get(validate(setDist), distController.setDist)
     .get(distController.getDistIdsByAdresRoute);
     
