@@ -59,7 +59,6 @@ export async function setDistInfoToBayiler(req: Request, res: Response, next: Ne
         ilceler : _.union(_.map(dist['bolgeData'], "ilce")),
         altBolge : _.union(_.map(dist['bolgeData'], "altBolge"))
       }
-      console.log(_dist.id)
       // return _dist
       return await setDistsToBayiler(_dist)
     });
@@ -95,6 +94,11 @@ export async function getDistIdsByAdresRoute(req: Request, res: Response, next: 
 
 export async function getDistIdsByAdres(iller : string[]) : Promise<mongoose.Types.ObjectId[]>{
   try {
+
+    if(_.isEmpty(iller)){
+      throw new Error("Adres bilgisi bulunmuyor.")
+    }
+
     let distIds = await DistModel.aggregate([
       
       {
@@ -110,21 +114,19 @@ export async function getDistIdsByAdres(iller : string[]) : Promise<mongoose.Typ
       {
         $group : {
           _id : "$bolgeData._id",
-          bolge : {
-            $first : {
-              il : "$bolgeData.il",
-              ilce : "$bolgeData.ilce"
-            }
+          il : {
+            $first : "$bolgeData.il"
+          },
+          ilce : {
+            $first : "$bolgeData.ilce"
           },
           distId : {
             $first : "$_id"
+          },
+          altBolge : {
+            $first : "$altBolge"
           }
         }
-      },
-      {
-        "$bolge.il" : 1,
-        "$bolge.ilce" : 1,
-        distId : 1
       }
     ]);
     return distIds;
