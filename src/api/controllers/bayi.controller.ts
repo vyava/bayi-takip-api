@@ -7,7 +7,7 @@ import "../models/bayi.model"
 import "../models/distributor.model"
 import { IBayi, IBayiDocument } from 'api/interface';
 const DistModel = mongoose.model("Dist");
-import { getDate, getDateTS } from "../helper/date";
+import { getDate } from "../helper/date";
 // import {Dist} from "../models/distributor.model"
 // import { IBayi, IBayiDocument } from 'api/interface';
 // import { Bayi } from '../models/bayi.model';
@@ -260,12 +260,12 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
       // ilce : "KARTAL"
     })
       .update({
-        $set: {
+        $unset: {
           // distributor: 1,
           // altBolge : 1,
-          createdAt : start,
-          // ruhsatTipleri : 1
-          updatedAt: start
+          // createdAt : start,
+          ruhsatTipleri : 1
+          // updatedAt: start
         },
       });
     bulk.execute((err, result) => {
@@ -331,13 +331,11 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
           $setOnInsert: {
             createdAt: date
           },
-          $addToSet : {
-            ruhsatTipleri : bayi.ruhsatTipleri
-          },
           $set: {
             il: bayi.il,
             ilce: bayi.ilce,
             adiSoyadi: bayi.adiSoyadi,
+            ruhsatTipleri : bayi.ruhsatTipleri,
             adi: bayi.adi,
             soyadi: bayi.soyadi,
             unvan: bayi.unvan,

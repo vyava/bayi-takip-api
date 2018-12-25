@@ -11,7 +11,7 @@ enum HEADER {
     distributor = "Dist",
     createdAt = "Kayıt Tarihi",
     updatedAt = "Güncelleme Tarihi",
-    ruhsatNo = "Ruhat No",
+    ruhsatNo = "Ruhsat No",
     ruhsatTipleri = "Ruhsat Tipleri",
     adiSoyadi = "Adı-Soyadı",
     unvan = "Ünvan",
@@ -45,7 +45,6 @@ export function newWorksheet(_wb: Excel.Workbook, options?: any) {
 
 export function addValuesToWorksheet(_ws: Excel.Worksheet, columns: string[], values: any[], options?: any) {
     try {
-
         let _column = columns.map((key: any) => {
             return {
                 header: HEADER[key],
@@ -55,23 +54,21 @@ export function addValuesToWorksheet(_ws: Excel.Worksheet, columns: string[], va
         _ws.columns = _column;
 
         values.map((values: any, indexRow: number) => {
-            if (indexRow !== 1) {
-                let _row = _ws.getRow(indexRow);
-                let keys = Object.keys(values);
-                keys.map((key: any) => {
-                    console.log(values[key])
-                    _row.getCell(key).value = {
-                        'richText': [
-                            {
-                                font: {
-                                    size: 11
-                                },
-                                text: values[key] || ""
-                            }
-                        ]
-                    };
-                })
-            }
+            let _row = _ws.getRow(indexRow+2);
+            
+            let keys = Object.keys(values);
+            keys.map((key: any) => {
+                _row.getCell(key).value = {
+                    'richText': [
+                        {
+                            font: {
+                                size: 11
+                            },
+                            text: values[key] || ""
+                        }
+                    ]
+                };
+            })
         })
     } catch (err) {
         throw new APIError({

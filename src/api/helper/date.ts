@@ -32,7 +32,7 @@ export function getDate(gun : any = "BUGÜN", type? : string) : any{
     return {start, end};
 }
 
-export function getDateTS(gun : any = "BUGÜN"){
-    var date = moment().tz("Europe/Istanbul").subtract(<any>GÜN[gun], "days").hour(7).valueOf();
-    return date;
-}
+// export function getDateTS(gun : any = "BUGÜN"){
+//     var date = moment().tz("Europe/Istanbul").subtract(<any>GÜN[gun], "days").hour(7).valueOf();
+//     return date;
+// }

@@ -15,6 +15,7 @@ export function parseBayi(chunkArray : any[]) : IBayi{
             adiSoyadi : chunkArray[IBayiIndex.ADI]+" "+ chunkArray[IBayiIndex.SOYADI],
             unvan : chunkArray[IBayiIndex.ÜNVAN],
             sinif : chunkArray[IBayiIndex.SINIF],
+            sinifDsd : "01BAK",
             adres : chunkArray[IBayiIndex.ADRES],
             durum : chunkArray[IBayiIndex.DURUM]
         }
@@ -31,7 +32,7 @@ function parseRuhsat(ruhsat : string){
     let {ruhsatNo, ruhsatTip} = {ruhsatNo : null, ruhsatTip : null};
 
     ruhsatNo = ruhsat.match(ruhsatPattern)[1];
-    ruhsatTip = [ruhsat.match(ruhsatPattern)[2]];
+    ruhsatTip = ruhsat.match(ruhsatPattern)[2];
     
     return {ruhsatNo, ruhsatTip}
 }

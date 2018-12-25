@@ -167,7 +167,7 @@ function getForm(state: ITapdkRequest, isFile: boolean = false, gun? : any): ITa
     let formData: ITapdkRequest = {
         dd_tarih: <any>TARIH[gun],
         dd_islem: -1,
-        TXT_SICIL: "%PT%",
+        TXT_SICIL: "%%",
         dd_il: 0,
         DropDownList_CountViewGrid: 100
     }

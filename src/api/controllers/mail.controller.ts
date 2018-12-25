@@ -31,6 +31,8 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // Get bayiler from DB by date
         let data: any[] = await getBayilerByGroup(gun);
 
+        // res.send(data)
+
         // If bolge length less than 1 throw error
         if (data.length < 1) throw new APIError({
             message: "Mail gönderimi yapılacak bayi bulunamadı."
@@ -38,7 +40,6 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 
         // Get keys of object to set Header
         let HEADER = TapdkHeader;
-
         // Iterate each altBolge to get file
         let resultPromise = data.map(async (bolgeData: any) => {
             // console.log(bolgeData)
@@ -102,13 +103,13 @@ async function sendMail(payload: MailData[], options?: any) {
                 email: "genczafer02@gmail.com",
                 name: "Zafer GENÇ"
             }
-        ],
-            mail.to = [
-                {
-                    email: "zafergenc02@gmail.com",
-                    name: "Zafer GENÇ"
-                }
-            ]
+        ];
+        mail.to = [
+            {
+                email: "zafergenc02@gmail.com",
+                name: "Zafer GENÇ"
+            }
+        ]
     })
     MailService.send(payload);
 }

@@ -4,11 +4,13 @@ export const TapdkHeader = [
     "createdAt",
     "updatedAt",
     "ruhsatNo",
+    "ruhsatTipleri",
     "adiSoyadi",
     "unvan",
     "ilce",
     "il",
     "sinif",
+    "sinifDsd",
     "adres",
     "durum"
 ];
