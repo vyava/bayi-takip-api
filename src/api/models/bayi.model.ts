@@ -33,7 +33,7 @@ const bayiSchema: Schema = new Schema(
     sinifDsd : { type : String, trim : true },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    vergiNo : { type : Number, min : 10, max : 11, unique : true },
+    vergiNo : { type : Number, min : 10, max : 11 },
     distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
     ruhsatTipleri : [{ type : String }]
   },

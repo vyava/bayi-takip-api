@@ -3,7 +3,7 @@ import * as requestPromise from "request-promise";
 
 import * as cheerio from "cheerio";
 
-import { getDistIdsByAdres, getBolgeNameByAdres } from "../controllers/dist.controller";
+import { getDistIdsByAdres } from "../controllers/dist.controller";
 
 // const httpStatus = require('http-status');
 import * as  httpStatus from "http-status"
@@ -22,7 +22,7 @@ export async function getSourceFromExternal(gun : string) {
     try {
         let response;
         try {
-            response = await requestPromise.get(TAPDK_URL);    
+            response = await requestPromise.get(TAPDK_URL);
         } catch (error) {
             throw new Error("Kaynakla bağlantı kurulamadı")
         }

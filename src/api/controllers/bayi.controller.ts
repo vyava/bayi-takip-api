@@ -318,7 +318,9 @@ export async function setDistsToBayiler(dist: any) {
 export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
   try {
 
-    let date = moment().toDate()
+    let date = new Date().toLocaleString('en-US', {
+        timeZone : 'Europe/Istanbul'
+    })
     let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
     // let processCounter : number = 0;
     bayiler.map((bayi: IBayi) => {
@@ -331,10 +333,8 @@ export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
           $setOnInsert: {
             createdAt: date
           },
-          $addToSet : {
-            ruhsatTipleri : bayi.ruhsatTipleri
-          },
           $set: {
+            ruhsatTipleri : bayi.ruhsatTipleri,
             il: bayi.il,
             ilce: bayi.ilce,
             adiSoyadi: bayi.adiSoyadi,
