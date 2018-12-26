@@ -4,7 +4,6 @@ import * as mongoose from "mongoose"
 import * as _ from "lodash"
 import "../models/distributor.model"
 import "../models/user.model"
-import "../models/bolge.model"
 import { readExcelFile } from '../helper/file';
 
 import * as httpStatus from "http-status"
@@ -14,7 +13,6 @@ import { setDistsToBayiler } from "./bayi.controller";
 
 const DistModel = mongoose.model("Dist");
 const UserModel = mongoose.model("User");
-const BolgeModel = mongoose.model("Bolge");
 
 
 export async function setDist(req: Request, res: Response, next: NextFunction) {

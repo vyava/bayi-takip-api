@@ -14,7 +14,6 @@ import { parseBayi } from "./bayi";
 import { IBayi } from "api/interface";
 import { removeSpacesFromString } from "./string";
 var Iconv = require('iconv').Iconv;
-// const VAR = require("../../config/vars");
 
 const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
 export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
@@ -24,7 +23,10 @@ export async function getSourceFromExternal(gun : string) {
         try {
             response = await requestPromise.get(TAPDK_URL);
         } catch (error) {
-            throw new Error("Kaynakla bağlantı kurulamadı")
+            throw new APIError({
+                message : "Kaynakla bağlantı kurulamadı",
+                errors : "connection"
+            })
         }
         
         
@@ -47,7 +49,7 @@ export async function getSourceFromExternal(gun : string) {
         }
         
 
-        let finalStates: ITapdkRequest = getStates(response);
+        let finalStates: ITapdkRequest = getStates(response, true);
         let finalForm = getForm(finalStates, true, gun);
 
         let fileString;
@@ -59,8 +61,9 @@ export async function getSourceFromExternal(gun : string) {
             });
         } catch (fileArray) {
             throw new APIError({
-                message : fileArray,
-                err : fileArray
+                message : "Belirtilen parametreyle dosya alınamadı",
+                status : httpStatus.BAD_REQUEST,
+                errors : "connection"
             })
         }
 
@@ -97,19 +100,10 @@ async function getArrayFromSource(resultArray : any[]){
             };
             return _result;
         }, []);
+
+
+        // Get distId aggregate
         let bolgeResult = await getDistIdsByAdres(bolgeData)
-        // return _.map(finalResult, (bayi : IBayi) => {
-        //         bayi.distributor = _.map(
-        //                 _.filter(
-        //                     bolgeResult,
-        //                     bolge => 
-        //                         (bolge["il"] == bayi.il && bolge["ilce"] == bayi.ilce)),
-        //                         _bolge=> _bolge["distId"]
-        //             );
-        //         // bayi.altBolge = !_.isEmpty(bayi.distributor)
-        //         //                     ? await getBolgeNameByAdres(bayi.distributor[0]) : null
-        //     return bayi;
-        // })
 
         bolgeResult.map(bolge => {
             let bayiler = _.filter(finalResult, (bayi : IBayi) => 
@@ -132,7 +126,7 @@ async function getDistIds(il : string, ilce : string){
     return await getDistIdsByAdres([il]) ||[];
 }
 
-function getStates(text: string) {
+function getStates(text: string, last : boolean = false) {
     try {
         let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");
         let eventPattern = new RegExp(/(?:")(__EVENTVALIDATION)(?:"value=")(.*?)(?:"\/>)/, "g");
@@ -153,13 +147,26 @@ function getStates(text: string) {
         //     validate['__EVENTVALIDATION'] = match[2];
         // }
         if(_.isEmpty(validate['__EVENTVALIDATION']) || _.isEmpty(validate['__VIEWSTATE'])){
-            throw new Error("Validation alınamadı. Kaynak çalışmıyor olabilir.")
+            throw new APIError({
+                message : "Validation alınamadı. Kaynak çalışmıyor olabilir.",
+                status : httpStatus.NOT_ACCEPTABLE,
+                errors : "connection"
+            })
         }
+
+        if(last){
+            if($("#Button_Print").attr("id") != "Button_Print"){
+                throw new APIError({
+                    message : "no content",
+                    status : httpStatus.NOT_FOUND,
+                    errors : "noContent"
+                })
+            }
+        }
+
         return validate     
     } catch (err) {
-        throw new APIError({
-            message : err.message
-        })
+        throw err
     }
     
 };
@@ -197,13 +204,17 @@ function parseFileString(binaryData: string): any[] {
             let clear = match[1].trim().replace(parsePattern, '');
             dataArray.push(clear)
         }
-    
+
+        if(dataArray.length < 1){
+            throw new APIError({
+                message : "Bayi bulunamadı",
+                state : httpStatus.NOT_MODIFIED,
+                error : "connection"
+            })
+        }
         return dataArray      
     } catch (err) {
-        throw new APIError({
-            message : "Parse hatası",
-            status : httpStatus.NOT_MODIFIED
-        })
+        throw err
     }
     
 }
