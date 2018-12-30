@@ -2,7 +2,7 @@ import { Document, Types } from "mongoose";
 
 export interface ITask {
     name : string;
-    executeTime : any;
+    executeTime : Date;
     done : boolean;
     error : boolean;
 }
