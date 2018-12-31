@@ -10,7 +10,7 @@ import { updateBayiler } from './bayi.controller';
 export async function getSource(req: Request, res: Response, next: NextFunction) {
   try {
     let gun : string = req.query.gun
-    // let result = await addTask();
+    let result = await addTask();
     let task = await getTask();
     res.json(task)
     // let bayiler : any[] = await getSourceFromExternal(gun)

@@ -10,7 +10,7 @@ const TaskModel : ITaskModel = mongoose.model("Task");
 export async function addTask(){
     let task = new TaskModel();
     // task.executeTime = Date.now();
-    task.name = "Deneme";
+    task.name = "TAPDK";
     task.done = false;
     task.save();
 
@@ -40,14 +40,16 @@ function isReady(task : ITask){
     console.log(now)
     console.log(taskTime)
     let {_isValid, _data} = <any>moment.duration(now.diff(taskTime));
-    let {milliseconds, seconds, minutes, hours, days, months, years} = _data;
-    console.log(_data)
+    let {seconds, minutes, hours, days, months, years} = _data;
+    console.log(_data);
+    console.log(_isValid);
     if(_isValid){
-        if((years < 0
-            && months < 0
-            && days < 0
-            && hours < 0
-            && minutes < 2)){
+        if((years == 0
+            && months == 0
+            && days == 0
+            && hours == 0
+            && minutes == 0
+            && seconds < 61)){
                 return true
             }
             return false

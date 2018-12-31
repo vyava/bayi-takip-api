@@ -9,7 +9,8 @@ const taskSchema : Schema = new Schema({
         timeZone : 'Europe/Istanbul'
     }) },
     done : { type : Boolean, required : true },
-    error : { type : Boolean, required : false}
+    error : { type : Boolean, required : false},
+    frequency : {type : Array, required : true, default : [1,2,3,4,5]}
 })
 
 taskSchema.pre<ITaskDocument>('save', function(next){
