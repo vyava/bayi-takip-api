@@ -4,55 +4,65 @@ import * as moment from "moment";
 import "../models/task.model"
 import { ITaskModel } from "../models/task.model";
 import { ITask, ITaskDocument } from "api/interface";
+import { Request, Response, NextFunction } from "express";
+
+import { getSource } from "../controllers/tapdk.controller";
+
+const TaskHandlers = {
+    TAPDK : getSource
+}
 
 const TaskModel : ITaskModel = mongoose.model("Task");
 
-export async function addTask(){
-    let task = new TaskModel();
-    // task.executeTime = Date.now();
-    task.name = "TAPDK";
-    task.done = false;
-    task.save();
+// export async function addTask(){
+//     let task = new TaskModel();
+//     task.name = "TAPDK";
+//     task.done = false;
+//     task.period.hour = 15;
+//     task.period.minute = 44;
+//     task.save();
 
-    return await task;
-}
+//     return await task;
+// }
 
-export async function getTask(){
+export async function getTask(req : Request, res : Response, next : NextFunction){
     try {
+        let dayOfWeek = moment().day();
         let task : ITaskDocument[] = await TaskModel.find({
-            done : false
+            done : false,
+            // "period.days" : {
+            //     $eq : dayOfWeek
+            // }
         }).limit(1).sort({
             _id : -1
         });
-        if(task.length < 1) throw new Error("Task bulunamadı")
+        res.json(task[0])
+        // if(task.length < 1) throw new Error("Task bulunamadı")
+        // if(isReady(task[0])){
 
-        if(isReady(task[0])) return task[0];
-
-        throw new Error("Task not ready");
+        //     req.body = task[0].params;
+        //     console.log(task[0].params)
+        //     TaskHandlers[task[0].name](req, res, next)
+        //     return task[0];
+        // }else{
+        //     throw new Error("Task not ready");
+        // }
+        
     } catch (err) {
-        throw err
+        next(err)
     }
 }
 
+
 function isReady(task : ITask){
     let now = moment(new Date());
-    let taskTime = moment(task.executeTime);
-    console.log(now)
-    console.log(taskTime)
-    let {_isValid, _data} = <any>moment.duration(now.diff(taskTime));
-    let {seconds, minutes, hours, days, months, years} = _data;
-    console.log(_data);
-    console.log(_isValid);
-    if(_isValid){
-        if((years == 0
-            && months == 0
-            && days == 0
-            && hours == 0
-            && minutes == 0
-            && seconds < 61)){
-                return true
-            }
-            return false
-    }
+    let {hour, minute } = task.period;
+    let taskTime = moment().hour(hour).minute(minute);
+    
+
+    let {_data} = <any>moment.duration(now.diff(taskTime));
+    let {minutes, hours } = _data;
+
+    if((hours == 0 && minutes == 0)) return true
     return false
 }
