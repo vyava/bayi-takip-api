@@ -37,27 +37,33 @@ export async function getTask(req : Request, res : Response, next : NextFunction
                 $eq : _day
             },
             "period.startHour" : {
-                $gte : _hour
-            },
-            "period.stopHour" : {
                 $lte : _hour
             },
-            // "period.startMinute" : {
-            //     $gte : _minute
-            // },
-            // "period.stopMinute" : {
-            //     $lte : _minute
-            // }
+            "period.stopHour" : {
+                $gte : _hour
+            },
+            "period.startMinute" : {
+                $lte : _minute
+            },
+            "period.stopMinute" : {
+                $gte : _minute
+            }
         }).limit(1).sort({
             _id : -1
         });
         if(task.length < 1) throw new Error("Task bulunamadı");
-        res.json(task[0])
         // if(isReady(task[0])){
+        req.body = {
+            param :task[0].params,
+            taskId : task[0]._id
+        };
+        // task[0].active = false;
+        // await task[0].save();
+        
+        // res.json(task[0]);
+        let taskName = task[0].name;
+        TaskHandlers["TAPDK"](req, res, next);
 
-        //     req.body = task[0].params;
-        //     console.log(task[0].params)
-        //     TaskHandlers[task[0].name](req, res, next)
         //     return task[0];
         // }else{
         //     throw new Error("Task not ready");
@@ -66,6 +72,10 @@ export async function getTask(req : Request, res : Response, next : NextFunction
     } catch (err) {
         next(err)
     }
+}
+
+export async function findTaskById(taskId : mongoose.Types.ObjectId){
+    return await TaskModel.findById(taskId);
 }
 
 function getDateParsed(){
