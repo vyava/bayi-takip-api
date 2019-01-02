@@ -14,30 +14,45 @@ const TaskHandlers = {
 
 const TaskModel : ITaskModel = mongoose.model("Task");
 
-// export async function addTask(){
-//     let task = new TaskModel();
-//     task.name = "TAPDK";
-//     task.done = false;
-//     task.period.hour = 15;
-//     task.period.minute = 44;
-//     task.save();
+export async function addTask(){
+    let task = new TaskModel();
+    task.name = "TAPDK";
+    task.done = false;
+    task.active = true;
+    task.period.startHour = 8;
+    task.period.stopHour = 20;
+    task.period.startMinute = 0;
+    task.period.stopMinute = 60;
+    task.save();
 
-//     return await task;
-// }
+    return await task;
+}
 
 export async function getTask(req : Request, res : Response, next : NextFunction){
     try {
-        let dayOfWeek = moment().day();
+        let {_day, _hour, _minute} = getDateParsed()
         let task : ITaskDocument[] = await TaskModel.find({
-            done : false,
-            // "period.days" : {
-            //     $eq : dayOfWeek
+            active : true,
+            "period.days" : {
+                $eq : _day
+            },
+            "period.startHour" : {
+                $gte : _hour
+            },
+            "period.stopHour" : {
+                $lte : _hour
+            },
+            // "period.startMinute" : {
+            //     $gte : _minute
+            // },
+            // "period.stopMinute" : {
+            //     $lte : _minute
             // }
         }).limit(1).sort({
             _id : -1
         });
+        if(task.length < 1) throw new Error("Task bulunamadı");
         res.json(task[0])
-        // if(task.length < 1) throw new Error("Task bulunamadı")
         // if(isReady(task[0])){
 
         //     req.body = task[0].params;
@@ -53,16 +68,23 @@ export async function getTask(req : Request, res : Response, next : NextFunction
     }
 }
 
+function getDateParsed(){
+    let now = moment().toDate();
+    let _hour = now.getHours();
+    let _minute = now.getMinutes();
+    let _day = now.getDay();
+    return {_day, _hour, _minute}
+}
 
-function isReady(task : ITask){
-    let now = moment(new Date());
-    let {hour, minute } = task.period;
-    let taskTime = moment().hour(hour).minute(minute);
+// function isReady(task : ITask){
+//     let now = moment(new Date());
+//     let {hour, minute } = task.period;
+//     let taskTime = moment().hour(hour).minute(minute);
     
 
-    let {_data} = <any>moment.duration(now.diff(taskTime));
-    let {minutes, hours } = _data;
+//     let {_data} = <any>moment.duration(now.diff(taskTime));
+//     let {minutes, hours } = _data;
 
-    if((hours == 0 && minutes == 0)) return true
-    return false
-}
+//     if((hours == 0 && minutes == 0)) return true
+//     return false
+// }

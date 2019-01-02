@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSourceFromExternal } from "../helper/tapdk";
-// import { addTask, getTask } from "./task.controller";
+import { addTask, getTask } from "./task.controller";
 import { updateBayiler } from './bayi.controller';
 /**
  * Get distributor
@@ -15,10 +15,10 @@ export async function getSource(req: Request, res: Response, next: NextFunction)
     // let task = await getTask();
     // res.json(task)
     console.log(gun)
-    let bayiler : any[] = await getSourceFromExternal(gun)
+    // let bayiler : any[] = await getSourceFromExternal(gun)
     // let result = await updateBayiler(bayiler, gun);
     // res.json(bayiler[0].unvan)
-    res.json(bayiler)
+    res.json(gun)
   } catch (err) {
     next(err)
   }

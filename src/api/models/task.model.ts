@@ -15,15 +15,18 @@ const taskSchema : Schema = new Schema({
         year : { type : Number, default : new Date().getFullYear() },
         month : { type : Number, default : new Date().getMonth()+1 },
         days : {type : Array, default : [1,2,3,4,5]},
-        hour : { type : Number, required : true },
-        minute : { type : Number, required : true }
+        startHour : { type : Number, required : true },
+        stopHour : { type : Number, required : true },
+        startMinute : { type : Number, required : true },
+        stopMinute : { type : Number, required : true }
     },
     params : {
         gun : {
             type : String,
             default : "BUGÜN"
         }
-    }
+    },
+    active : { type : Boolean, default : false }
 })
 
 taskSchema.pre<ITaskDocument>('save', function(next){

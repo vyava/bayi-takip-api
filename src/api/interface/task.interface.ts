@@ -8,10 +8,13 @@ export interface ITask {
         year : number,
         month : number,
         days : number[];
-        hour : number;
-        minute : number;
+        startHour : number;
+        stopHour : number;
+        startMinute : number;
+        stopMinute : number;
     },
-    params : Object
+    params : Object,
+    active : boolean
 }
 
 export interface ITaskDocument extends Document, ITask {}
