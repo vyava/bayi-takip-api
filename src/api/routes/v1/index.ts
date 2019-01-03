@@ -26,7 +26,7 @@ router.use('/bayiler', bayilerRoutes);
 router.use('/bolge', bolgeRoute);
 router.use('/dist', distRoute);
 router.use('/user', userRoute);
-router.use('/tapdk', tapdkRoute)
+// router.use('/tapdk', tapdkRoute)
 router.use('/mail', mailRoute);
 router.use('/task', taskRoute);
 module.exports = router;

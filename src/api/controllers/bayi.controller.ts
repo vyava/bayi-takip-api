@@ -315,7 +315,7 @@ export async function setDistsToBayiler(dist: any) {
   }
 };
 
-export async function updateBayiler(bayiler: IBayi[], gun: string = "BUGÜN") {
+export async function updateBayiler(bayiler: IBayi[]) {
   try {
 
     let date = new Date().toLocaleString('en-US', {

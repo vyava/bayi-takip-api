@@ -52,7 +52,7 @@ export function parseBayi(chunkArray : any[]) : IBayi{
 }
 
 function parseRuhsat(ruhsat : string){
-    const ruhsatPattern = new RegExp('^([0-9]+)(PT|PI|TI|TT|P|AI|N)+$', 'i');
+    const ruhsatPattern = new RegExp('^([0-9]+)(PT|PI|TI|TT|P|AI|N|TE)+$', 'i');
 
     let {ruhsatNo, ruhsatTip} = {ruhsatNo : null, ruhsatTip : null};
 

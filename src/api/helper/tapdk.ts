@@ -16,8 +16,9 @@ import { removeSpacesFromString } from "./string";
 var Iconv = require('iconv').Iconv;
 
 const TAPDK_URL = "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
-export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N)+$', 'i');
-export async function getSourceFromExternal(gun : string) {
+export const ruhsatPattern = new RegExp('^[0-9]+(PT|PI|TI|TT|P|AI|N|TE)+$', 'i');
+export async function getSourceFromExternal(params : any) {
+    let {gun} = params
     try {
         let response;
         try {

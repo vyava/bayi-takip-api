@@ -14,7 +14,8 @@ export interface ITask {
         stopMinute : number;
     },
     params : Object,
-    active : boolean
+    active : boolean,
+    updatedAt : Date
 }
 
 export interface ITaskDocument extends Document, ITask {}

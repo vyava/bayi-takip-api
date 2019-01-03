@@ -1,16 +1,14 @@
 import * as requestPromise from "request-promise";
 import * as mongoose from "mongoose"
 import * as moment from "moment";
+import * as _ from "lodash"
 import "../models/task.model"
 import { ITaskModel } from "../models/task.model";
 import { ITask, ITaskDocument } from "api/interface";
 import { Request, Response, NextFunction } from "express";
 
-import { getSource } from "../controllers/tapdk.controller";
-
-const TaskHandlers = {
-    TAPDK : getSource
-}
+// import { getSource } from "../controllers/tapdk.controller";
+var modules = require("./index");
 
 const TaskModel : ITaskModel = mongoose.model("Task");
 
@@ -26,6 +24,13 @@ export async function addTask(){
     task.save();
 
     return await task;
+}
+
+function run(taskName : string){
+    if(modules[taskName]){
+        return modules[taskName]
+    }
+    throw new Error(`'${taskName}' adında task bulunamadı`)
 }
 
 export async function getTask(req : Request, res : Response, next : NextFunction){
@@ -54,24 +59,35 @@ export async function getTask(req : Request, res : Response, next : NextFunction
         if(task.length < 1) throw new Error("Task bulunamadı");
         // if(isReady(task[0])){
         req.body = {
-            param :task[0].params,
+            params :task[0].params,
             taskId : task[0]._id
         };
-        // task[0].active = false;
-        // await task[0].save();
         
-        // res.json(task[0]);
         let taskName = task[0].name;
-        TaskHandlers["TAPDK"](req, res, next);
-
-        //     return task[0];
-        // }else{
-        //     throw new Error("Task not ready");
-        // }
-        
+        run(taskName)(req, res, next)
+          
     } catch (err) {
         next(err)
     }
+}
+
+export async function taskDone(task : ITaskDocument){
+    task.active = true;
+    task.updatedAt = new Date();
+    task.done = true;
+    return await task.save();
+}
+
+export async function taskBlock(task : ITaskDocument){
+    task.active = false;
+    return await task.save();
+}
+
+export async function taskError(task : ITaskDocument){
+    task.active = true;
+    task.updatedAt = new Date();
+    task.done = false;
+    return await task.save();
 }
 
 export async function findTaskById(taskId : mongoose.Types.ObjectId){

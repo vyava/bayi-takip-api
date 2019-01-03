@@ -1,26 +1,37 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSourceFromExternal } from "../helper/tapdk";
-import { addTask, getTask, findTaskById} from "./task.controller";
+import { findTaskById, taskDone, taskError, taskBlock} from "./task.controller";
 import { updateBayiler } from './bayi.controller';
 /**
  * Get distributor
  * @public
  */
 
-export async function getSource(req: Request, res: Response, next: NextFunction) {
+async function getSource(req: Request, res: Response, next: NextFunction) {
   try {
-    let {param, taskId} = req.body;
-    // let result = await addTask();
+    let {params, taskId} = req.body;
     
-    
-    let bayiler : any[] = await getSourceFromExternal(param);
+    let bayiler : any[] = await getSourceFromExternal(params);
     let _task = await findTaskById(taskId)
-    _task.active = true;
-    await _task.save();
-    // let result = await updateBayiler(bayiler, gun);
-    // res.json(bayiler[0].unvan)
-    res.json(bayiler)
+      .then(_task => {
+        return taskBlock(_task);
+      })
+      .catch(() => {
+        throw new Error(`Task bloke edilemedi ${_task.active}`)
+      })
+    let result = await updateBayiler(bayiler)
+      .then((_result) => {
+        taskDone(_task)
+        return _result
+      })
+      .catch(() => {
+        taskError(_task)
+        throw new Error(`Task bloke edilemedi ${_task.active}`)
+      })
+    res.json(result)
   } catch (err) {
     next(err)
   }
 };
+
+module.exports = getSource
