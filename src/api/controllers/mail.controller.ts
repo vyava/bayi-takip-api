@@ -18,20 +18,22 @@ import * as fs from "fs"
 import moment = require('moment');
 import { IMailPayload } from 'api/interface/mail.interface';
 import { MailData } from '@sendgrid/helpers/classes/mail';
+import { getTemplate } from './template.controller';
 
 const BASE_DIR = "files"
 const DEFAULT_SHEETNAME = "Sayfa 1"
 
 export async function send(req: Request, res: Response, next: NextFunction) {
     try {
-        initialize()
+        // initialize()
         // Get date from request query. if null, Joi will set `DÜN` as default
-        const { gun } = req.query;
+        // const { gun } = req.query;
 
         // Get bayiler from DB by date
-        let data: any[] = await getBayilerByGroup(gun);
+        // let data: any[] = await getBayilerByGroup(gun);
+        let temp = await getTemplate();
 
-        res.send(data)
+        res.send(temp)
 
         // If bolge length less than 1 throw error
         // if (data.length < 1) throw new APIError({
