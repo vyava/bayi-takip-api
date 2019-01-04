@@ -1,0 +1,13 @@
+<mj-section background-color="#2D882D" padding="0px">
+  <mj-column>
+  <mj-text color="#88CC88" font-size="20px" align="center">
+      ASSTAN
+  </mj-text>
+    <!--<mj-navbar base-url="https://mjml.io" hamburger="hamburger" ico-color="#444">
+      <mj-navbar-link href="https://mjml.io">home</mj-navbar-link>
+      <mj-navbar-link href="https://mjml.io">Summer deals</mj-navbar-link>
+      <mj-navbar-link href="https://mjml.io">Our blog</mj-navbar-link>
+      <mj-navbar-link href="https://mjml.io">Follow us</mj-navbar-link>
+    </mj-navbar>-->
+  </mj-column>
+</mj-section>
