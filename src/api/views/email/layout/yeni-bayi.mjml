@@ -1,20 +1,37 @@
 <mjml>
 
-  <mj-body background-color="#d2eeff">
-    
+  <mj-body background-color="#004D00">
+
     <!--HEADER SECTION -->
     <mj-include path="../partials/header.mjml" />
-    
 
-    <mj-section background-color="#4395b1">
-      
-      <mj-column width="33.33333333333333%">
-        <mj-image href="https://mjml.io" src="http://191n.mj.am/img/191n/3s/x1m.png" alt="Meet us : find an agency" width="117px" padding="10px 25px"></mj-image>
-      </mj-column>
-      <mj-column width="33.33333333333333%">
-        <mj-image href="https://mjml.io" src="http://191n.mj.am/img/191n/3s/xs0.png" alt="ASK US : find an expert" width="110px" padding="10px 25px"></mj-image>
+    <mj-section padding="5px 0 5px 0" background-color="#0B280B" border-bottom="2px solid #215221">
+      <mj-column width="100%">
+        <mj-text font-size="18px" color="#BEBEBE">
+          TAPDK Ruhsatlı Yeni Bayiler
+        </mj-text>
       </mj-column>
     </mj-section>
-    
+    <mj-section background-color="#0B280B">
+
+      <mj-column>
+        <mj-table color="#fff" table-layout="auto" line-height="25px" font-size="13px">
+          <tr style="border-bottom:2px solid #105D2A;text-align:left;">
+            <th style="padding: 0 0 5px 0;"><b style="color:#fff;font-size:15px">Bölge</b></b></th>
+            <th style="padding: 0 0 5px 0;"><b style="color:#fff;font-size:15px">Dist</b></th>
+            <th style="padding: 0 0 5px 0;"><b style="color:#fff;font-size:15px">Faal</b></th>
+            <th style="padding: 0 0 5px 0;"><b style="color:#fff;font-size:15px">Onay</b></th>
+            <th style="padding: 0 0 5px 0;"><b style="color:#fff;font-size:15px">Terk</b></th>
+          </tr>
+          <tr>
+            <td style="padding: 0 0 0 0;">ASYA</td>
+            <td style="padding: 0 0 0 0;">DÜNYA</td>
+            <td style="padding: 0 0 0 0;">5</td>
+            <td style="padding: 0 0 0 0;">5</td>
+            <td style="padding: 0 0 0 0;">5</td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
   </mj-body>
 </mjml>

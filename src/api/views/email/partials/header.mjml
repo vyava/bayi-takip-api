@@ -1,13 +1,6 @@
-<mj-section background-color="#2D882D" padding="0px">
+
+<mj-section background-color="#22343e" padding="0px 0px" border-top="1px solid #152A35" border-bottom="2px solid #152A35">
   <mj-column>
-  <mj-text color="#88CC88" font-size="20px" align="center">
-      ASSTAN
-  </mj-text>
-    <!--<mj-navbar base-url="https://mjml.io" hamburger="hamburger" ico-color="#444">
-      <mj-navbar-link href="https://mjml.io">home</mj-navbar-link>
-      <mj-navbar-link href="https://mjml.io">Summer deals</mj-navbar-link>
-      <mj-navbar-link href="https://mjml.io">Our blog</mj-navbar-link>
-      <mj-navbar-link href="https://mjml.io">Follow us</mj-navbar-link>
-    </mj-navbar>-->
+    <mj-text padding="3px 25px" color="#fff" font-size="10px" align="right">ASSTAN v0.0.1</mj-text>
   </mj-column>
 </mj-section>
