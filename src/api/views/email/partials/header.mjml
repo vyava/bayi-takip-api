@@ -1,6 +1,0 @@
-
-<mj-section background-color="#22343e" padding="0px 0px" border-top="1px solid #152A35" border-bottom="2px solid #152A35">
-  <mj-column>
-    <mj-text padding="3px 25px" color="#fff" font-size="10px" align="right">ASSTAN v0.0.1</mj-text>
-  </mj-column>
-</mj-section>

@@ -1,26 +1,41 @@
 // const MailService = require("@sendgrid/mail")
 // import * as MailService from "@sendgrid/mail"
 
-import * as handlebars from "handlebars";
+import * as pug from "pug";
 const mjml2html = require("mjml")
 import * as fs from "fs";
 import * as path from "path"
 
 export async function getTemplate() {
 
+    let data = {
+            dist : [
+                {
+                    bolge : "ASYA",
+                    dist : "DÜNYA",
+                    bayiler : {
+                        faal : 5,
+                        onay : 1,
+                        terk : 1
+                    }   
+                }
+            ],
+            tarih : "07.01.2019"
+        }
+
     let viewPath = path.join(__dirname, "../views/email");
     let layoutPath = path.join(viewPath, "layout")
-    let partialsPath = path.join(viewPath, "partials/header.mjml")
-    console.log(viewPath)
-    let file = fs.readFileSync(layoutPath+"/yeni-bayi.mjml", "utf8")
+    
+    let file = fs.readFileSync(layoutPath+"/yeni-bayi.pug", "utf8")
 
-    // let template = handlebars.compile(file);
+    let template = pug.compile(file, {
+        basedir : viewPath,
+        pretty : true
+    });
 
-    // const context = {
-    //     message: 'Hello World'
-    // };
-    // const mjml = template(context);
-    const html = mjml2html(file, {filePath : partialsPath});
+    let compiled = template(data)
+    
+    const html = mjml2html(compiled);
     return html['html']
 }
 

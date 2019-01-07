@@ -1,0 +1,29 @@
+mjml
+  mj-body(background-color='#C0C0C0')
+    include /partials/header.pug
+
+    mj-section(padding='5px 10px' background-color='#2D8633')
+      mj-column(width='100%' background-color='#0B280B')
+        mj-text(font-size='18px' color='#BEBEBE')
+          | TAPDK Ruhsatlı Bayiler #{tarih}
+    mj-section(background-color='#2D8633' padding='10px 10px')
+      mj-column(background-color='#0B280B')
+        mj-table(color='#fff' line-height='25px' font-size='13px')
+          tr(style={'border-bottom': '2px solid #105D2A', 'text-align': 'left'})
+            th(style={'padding': '0 0 5px 0'})
+              b(style={'color': '#fff','font-size': '15px'}) Bölge
+            th(style={'padding': '0 0 5px 0'})
+              b(style={'color': '#fff','font-size': '15px'}) Dist
+            th(style={'padding': '0 0 5px 0'})
+              b(style={'color': '#fff','font-size': '15px'}) Faal
+            th(style={'padding': '0 0 5px 0'})
+              b(style={'color': '#fff','font-size': '15px'}) Onay
+            th(style={'padding': '0 0 5px 0'})
+              b(style={'color': '#fff','font-size': '15px'}) Terk
+          each d in dist
+            tr
+              td(style={'padding':0})= d.bolge
+              td(style={'padding':0})= d.dist
+              td(style={'padding':0})= d.bayiler.faal
+              td(style={'padding':0})= d.bayiler.onay
+              td(style={'padding':0})= d.bayiler.terk
