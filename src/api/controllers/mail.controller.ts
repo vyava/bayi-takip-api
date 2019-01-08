@@ -30,10 +30,10 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         const { gun } = req.query;
 
         // Get bayiler from DB by date
-        let data: any[] = await getBayilerByGroup(gun);
+        // let data: any[] = await getBayilerByGroup(gun);
         let temp = await getTemplate();
 
-        res.send(data)
+        res.send(temp)
 
         // If bolge length less than 1 throw error
         // if (data.length < 1) throw new APIError({

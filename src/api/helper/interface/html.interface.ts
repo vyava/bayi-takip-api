@@ -5,3 +5,7 @@ export const YENI_BAYI = [
     "Onay Bekliyor",
     "Terk"
 ];
+
+export enum YENI {
+    
+}

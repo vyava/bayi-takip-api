@@ -5,10 +5,12 @@ import * as pug from "pug";
 const mjml2html = require("mjml")
 import * as fs from "fs";
 import * as path from "path"
+import {YENI_BAYI  } from "../helper/interface/html.interface";
 
 export async function getTemplate() {
 
     let data = {
+            header : YENI_BAYI,
             dist : [
                 {
                     bolge : "ASYA",
