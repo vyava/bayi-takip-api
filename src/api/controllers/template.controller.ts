@@ -26,7 +26,7 @@ export async function getTemplate() {
         }
 
     let viewPath = path.join(__dirname, "../views/email");
-    let layoutPath = path.join(viewPath, "layout")
+    let layoutPath = path.join(viewPath, "layout");
     
     let file = fs.readFileSync(layoutPath+"/yeni-bayi.pug", "utf8")
 

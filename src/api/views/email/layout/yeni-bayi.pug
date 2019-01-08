@@ -1,13 +1,15 @@
 mjml
-  mj-body(background-color='#C0C0C0')
+  mj-head
+    include /styles/global.pug
+  mj-body(mj-class="griBackground")
     include /partials/header.pug
 
-    mj-section(padding='5px 10px' background-color='#2D8633')
-      mj-column(width='100%' background-color='#0B280B')
+    mj-section(mj-class="padding5px10px acikyesilBackground" )
+      mj-column(width='100%' mj-class="koyuyesilBackground")
         mj-text(font-size='18px' color='#BEBEBE')
           | TAPDK Ruhsatlı Bayiler #{tarih}
-    mj-section(background-color='#2D8633' padding='10px 10px')
-      mj-column(background-color='#0B280B')
+    mj-section(mj-class="acikyesilBackground padding10px10px")
+      mj-column(mj-class="koyuyesilBackground")
         mj-table(color='#fff' line-height='25px' font-size='13px')
           tr(style={'border-bottom': '2px solid #105D2A', 'text-align': 'left'})
             each head in header

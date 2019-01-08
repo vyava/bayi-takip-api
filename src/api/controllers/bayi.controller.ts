@@ -61,6 +61,7 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
 export async function getBayilerByGroup(gun: any = "BUGÜN") {
   try {
     let {start, end} = getDate(gun)
+    console.log("********************************")
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
