@@ -9,8 +9,8 @@ import * as httpStatus from "http-status"
 
 const config = require("../../config/vars")
 
-// import * as MailService from "@sendgrid/mail";
-const MailService = require("@sendgrid/mail")
+import * as MailService from "@sendgrid/mail";
+// const MailService = require("@sendgrid/mail")
 
 import * as _ from "lodash"
 
@@ -31,7 +31,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 
         // Get bayiler from DB by date
         let data: any[] = await getBayilerByGroup(gun);
-        // let temp = await getTemplate();
+        
 
         // res.send(data)
 
@@ -57,57 +57,64 @@ export async function send(req: Request, res: Response, next: NextFunction) {
                         found[bayi.durum] = (found[bayi.durum]+1) || 1
                     }else{
                         bolgeData["data"].push({
+                            bolge : bayi.altBolge,
                             distributor : obj.name,
                             [bayi.durum] : 1
                         })
                     }
-                    // bolgeData["data"][obj.name] = {}
-                    // bolgeData["data"][obj.name][bayi.durum] = (bolgeData["data"][obj.name][bayi.durum]+1) || 1
 
                     return obj.name
                 }).join(", ");
-                console.log(bayi.updatedAt)
                 bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
                 bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
             })
 
-            // let options = {
-            //     _sheetname: bolgeData['_id'],
-            //     _header: HEADER
-            // }
-            // let _filePath = await getFile(bolgeData['bayiler'], options);
+            let options = {
+                _sheetname: bolgeData['_id'],
+                _header: HEADER
+            }
+            let _filePath = await getFile(bolgeData['bayiler'], options);
 
-            // let to = _.map(bolgeData["users"], (user) => {
-            //     if (user.taskName == "operator" || user.taskName == "tte") {
-            //         return user.email
-            //     }
-            // });
+            let to = _.map(bolgeData["users"], (user) => {
+                if (user.taskName == "operator" || user.taskName == "tte") {
+                    return user.email
+                }
+            });
 
-            // let cc = _.map(bolgeData["users"], (user) => {
-            //     if (user.taskName == "dsm") {
-            //         return user.email
-            //     }
-            // });
+            let cc = _.map(bolgeData["users"], (user) => {
+                if (user.taskName == "dsm") {
+                    return user.email
+                }
+            });
 
-            // let mailPayload: MailData = {
-            //     from: config.sender_address,
-            //     attachments: [
-            //         {
-            //             content: fs.readFileSync(_filePath, { encoding: "base64" }),
-            //             filename: options._sheetname
-            //         }
-            //     ],
-            //     to: _.compact(to),
-            //     cc: _.compact(cc)
-            // }
+            let htmlData = await getTemplate("YENI_BAYI", bolgeData["data"]);
 
-            return bolgeData
+            let mailPayload: MailData = {
+                subject : "TAPDK",
+                from: config.sender_address,
+                attachments: [
+                    {
+                        content: fs.readFileSync(_filePath, { encoding: "base64" }),
+                        filename: options._sheetname+".xlsx"
+                    }
+                ],
+                // to: _.compact(to),
+                // cc: _.compact(cc),
+                to : [{
+                    name : "Zafer GENÇ",
+                    email : "zafergenc02@gmail.com"
+                }],
+                html : htmlData
+            }
+
+            return mailPayload
 
         })
 
         Promise.all(resultPromise)
             .then(_res => {
-                res.json(_res);
+                let _result = sendMail(_res)
+                res.json(_result);
             })
             .catch(err => {
                 next(err)
@@ -119,21 +126,21 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 }
 
 async function sendMail(payload: MailData[], options?: any) {
-    payload.map(mail => {
-        mail.cc = [
-            {
-                email: "genczafer02@gmail.com",
-                name: "Zafer GENÇ"
-            }
-        ];
-        mail.to = [
-            {
-                email: "zafergenc02@gmail.com",
-                name: "Zafer GENÇ"
-            }
-        ]
-    })
-    MailService.send(payload);
+    // payload.map(mail => {
+    //     mail.cc = [
+    //         {
+    //             email: "genczafer02@gmail.com",
+    //             name: "Zafer GENÇ"
+    //         }
+    //     ];
+    //     mail.to = [
+    //         {
+    //             email: "zafergenc02@gmail.com",
+    //             name: "Zafer GENÇ"
+    //         }
+    //     ]
+    // })
+    return await MailService.send(payload);
 }
 
 function initialize() {

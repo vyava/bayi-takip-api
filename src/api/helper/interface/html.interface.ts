@@ -1,4 +1,4 @@
-export const YENI_BAYI = [
+export const YENI_BAYI_HEADER = [
     "Bölge",
     "Distribütör",
     "Faal",
@@ -6,6 +6,11 @@ export const YENI_BAYI = [
     "Terk"
 ];
 
-export enum YENI {
-    
+export const VIEW_PARAMS = {
+    "YENI_BAYI" : {
+        viewFileName : "yeni-bayi.pug",
+        fileParams : {
+            header : YENI_BAYI_HEADER
+        }
+    }
 }

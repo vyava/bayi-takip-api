@@ -15,10 +15,10 @@ mjml
             each head in header
               th(style={'padding': '0 0 5px 0'})
                 b(style={'color': '#fff','font-size': '15px'})=head
-          each d in dist
+          each d in fileData
             tr
               td(style={'padding':0})= d.bolge
-              td(style={'padding':0})= d.dist
-              td(style={'padding':0})= d.bayiler.faal
-              td(style={'padding':0})= d.bayiler.onay
-              td(style={'padding':0})= d.bayiler.terk
+              td(style={'padding':0})= d.distributor
+              td(style={'padding':0})= d["FAAL - 2019 SUİ BEDELİ ÖDENMEDİ"]
+              td(style={'padding':0})= d["ONAY BEKLİYOR"]
+              td(style={'padding':0})= d["TERK"]

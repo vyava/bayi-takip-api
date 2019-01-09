@@ -3,45 +3,48 @@
 
 import * as pug from "pug";
 const mjml2html = require("mjml")
+import * as _ from "lodash"
 import * as fs from "fs";
 import * as path from "path"
-import {YENI_BAYI  } from "../helper/interface/html.interface";
+import { VIEW_PARAMS  } from "../helper/interface/html.interface";
 
-export async function getTemplate() {
+export async function getTemplate(templateName : string, data) {
+    try {
+        let {viewFileName, fileParams} = getTemplateParams(templateName);
+        let htmlData = {
+                header : fileParams["header"],
+                fileData : data,
+                tarih : "07.01.2019"
+            }
+            console.log(htmlData)
+        let viewPath = path.join(__dirname, "../views/email");
+        let layoutPath = path.join(viewPath, "layout");
+        let filePath = path.join(layoutPath, viewFileName);
+        
+        let file = fs.readFileSync(filePath, "utf8")
 
-    let data = {
-            header : YENI_BAYI,
-            dist : [
-                {
-                    bolge : "ASYA",
-                    dist : "DÜNYA",
-                    bayiler : {
-                        faal : 5,
-                        onay : 1,
-                        terk : 1
-                    }   
-                }
-            ],
-            tarih : "07.01.2019"
-        }
+        let template = pug.compile(file, {
+            basedir : viewPath,
+            pretty : true
+        });
 
-    let viewPath = path.join(__dirname, "../views/email");
-    let layoutPath = path.join(viewPath, "layout");
+        let compiled = template(htmlData)
+        
+        const html = mjml2html(compiled);
+        return html['html']
+    } catch (err) {
+        return err;
+    }
     
-    let file = fs.readFileSync(layoutPath+"/yeni-bayi.pug", "utf8")
-
-    let template = pug.compile(file, {
-        basedir : viewPath,
-        pretty : true
-    });
-
-    let compiled = template(data)
-    
-    const html = mjml2html(compiled);
-    return html['html']
 }
 
-
+function getTemplateParams(templateName : string){
+    if(_.isEmpty(VIEW_PARAMS[templateName])){
+        throw new Error(`Template parametre bulunamadı : ${templateName}`);
+    }else{
+        return VIEW_PARAMS[templateName]
+    }
+}
 
 
 // export async function setWithTemplate(){
