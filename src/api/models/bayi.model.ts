@@ -35,7 +35,7 @@ const bayiSchema: Schema = new Schema(
     durum: { type: String, trim: true },
     vergiNo : { type : Number, min : 10, max : 11 },
     distributor : [{type : Schema.Types.ObjectId, ref : 'Dist'}],
-    ruhsatTipleri : [{ type : String }],
+    ruhsatTipleri : { type : String },
     updatedAt : {type : Date}
   },
   {

@@ -62,6 +62,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
   try {
     let {start, end} = getDate(gun)
     console.log("********************************")
+    console.info(start, end)
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
@@ -101,7 +102,7 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
       {
         $lookup: {
           from: "dist",
-          let: { "distId": "$distributor._id" },
+          let: { "distId": "$distributor" },
           pipeline: [
             {
               $match: { $expr: { $in: ["$_id", "$$distId"] } },
@@ -319,9 +320,7 @@ export async function setDistsToBayiler(dist: any) {
 export async function updateBayiler(bayiler: IBayi[]) {
   try {
 
-    let date = new Date().toLocaleString('en-US', {
-        timeZone : 'Europe/Istanbul'
-    })
+    let date = new Date();
     let updateBulk = BayiModel.collection.initializeUnorderedBulkOp();
     // let processCounter : number = 0;
     bayiler.map((bayi: IBayi) => {

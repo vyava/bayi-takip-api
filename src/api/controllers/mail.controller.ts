@@ -31,9 +31,9 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 
         // Get bayiler from DB by date
         let data: any[] = await getBayilerByGroup(gun);
-        let temp = await getTemplate();
+        // let temp = await getTemplate();
 
-        res.send(data)
+        // res.send(data)
 
         // If bolge length less than 1 throw error
         // if (data.length < 1) throw new APIError({
@@ -41,57 +41,77 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // })
 
         // // Get keys of object to set Header
-        // let HEADER = TapdkHeader;
+        let HEADER = TapdkHeader;
         // // Iterate each altBolge to get file
-        // let resultPromise = data.map(async (bolgeData: any) => {
-        //     // console.log(bolgeData)
-        //     bolgeData['bayiler'].map((bayi: any) => {
-        //         bayi.distributor = bayi.distributor.map(obj => obj.name).join(", ");
-        //         bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
-        //         bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
-        //     })
+        let resultPromise = data.map(async (bolgeData: any) => {
+            bolgeData["data"] = [];
+            bolgeData['bayiler'].map((bayi: any) => {
 
-        //     let options = {
-        //         _sheetname: bolgeData['_id'],
-        //         _header: HEADER
-        //     }
-        //     let _filePath = await getFile(bolgeData['bayiler'], options);
+                bayi.distributor = bayi.distributor.map(obj => {
+                    // FAAL, ONAY VE TERK bayi sayılarını distributor bazında sayar
+                    let found = _.find(bolgeData["data"], o => {
+                        return (o.distributor == obj.name)
+                    })
 
-        //     let to = _.map(bolgeData["users"], (user) => {
-        //         if (user.taskName == "operator" || user.taskName == "tte") {
-        //             return user.email
-        //         }
-        //     });
+                    if(found){
+                        found[bayi.durum] = (found[bayi.durum]+1) || 1
+                    }else{
+                        bolgeData["data"].push({
+                            distributor : obj.name,
+                            [bayi.durum] : 1
+                        })
+                    }
+                    // bolgeData["data"][obj.name] = {}
+                    // bolgeData["data"][obj.name][bayi.durum] = (bolgeData["data"][obj.name][bayi.durum]+1) || 1
 
-        //     let cc = _.map(bolgeData["users"], (user) => {
-        //         if (user.taskName == "dsm") {
-        //             return user.email
-        //         }
-        //     });
+                    return obj.name
+                }).join(", ");
+                console.log(bayi.updatedAt)
+                bayi.updatedAt = moment(bayi.updatedAt).format("DD.MM.YYYY");
+                bayi.createdAt = moment(bayi.createdAt).format("DD.MM.YYYY");
+            })
 
-        //     let mailPayload: MailData = {
-        //         from: config.sender_address,
-        //         attachments: [
-        //             {
-        //                 content: fs.readFileSync(_filePath, { encoding: "base64" }),
-        //                 filename: options._sheetname
-        //             }
-        //         ],
-        //         to: _.compact(to),
-        //         cc: _.compact(cc)
-        //     }
+            // let options = {
+            //     _sheetname: bolgeData['_id'],
+            //     _header: HEADER
+            // }
+            // let _filePath = await getFile(bolgeData['bayiler'], options);
 
-        //     return mailPayload
+            // let to = _.map(bolgeData["users"], (user) => {
+            //     if (user.taskName == "operator" || user.taskName == "tte") {
+            //         return user.email
+            //     }
+            // });
 
-        // })
+            // let cc = _.map(bolgeData["users"], (user) => {
+            //     if (user.taskName == "dsm") {
+            //         return user.email
+            //     }
+            // });
 
-        // Promise.all(resultPromise)
-        //     .then(_res => {
-        //         res.json(_res);
-        //     })
-        //     .catch(err => {
-        //         next(err)
-        //     })
+            // let mailPayload: MailData = {
+            //     from: config.sender_address,
+            //     attachments: [
+            //         {
+            //             content: fs.readFileSync(_filePath, { encoding: "base64" }),
+            //             filename: options._sheetname
+            //         }
+            //     ],
+            //     to: _.compact(to),
+            //     cc: _.compact(cc)
+            // }
+
+            return bolgeData
+
+        })
+
+        Promise.all(resultPromise)
+            .then(_res => {
+                res.json(_res);
+            })
+            .catch(err => {
+                next(err)
+            })
 
     } catch (err) {
         next(err)
