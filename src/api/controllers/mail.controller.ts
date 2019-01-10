@@ -19,6 +19,7 @@ import moment = require('moment');
 import { IMailPayload } from 'api/interface/mail.interface';
 import { MailData } from '@sendgrid/helpers/classes/mail';
 import { getTemplate } from './template.controller';
+import { memorySizeOf } from '../helper/byte';
 
 const BASE_DIR = "files"
 const DEFAULT_SHEETNAME = "Sayfa 1"
@@ -43,7 +44,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         // // Get keys of object to set Header
         let HEADER = TapdkHeader;
         // // Iterate each altBolge to get file
-        let resultPromise = data.map(async (bolgeData: any) => {
+        let resultPromises = data.map(async (bolgeData: any) => {
             bolgeData["data"] = [];
             bolgeData['bayiler'].map((bayi: any) => {
 
@@ -109,21 +110,60 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 
             return mailPayload
 
-        })
-
-        Promise.all(resultPromise)
-            .then(_res => {
-                let _result = sendMail(_res)
-                res.json(_result);
-            })
-            .catch(err => {
-                next(err)
-            })
+        });
+        
+        let payloadResult = await executeAllPromises(resultPromises);
+        console.log(memorySizeOf(payloadResult))
+        let mailResult = await sendMail(payloadResult.results)
+        res.json(mailResult)
 
     } catch (err) {
         next(err)
     }
-}
+};
+
+function executeAllPromises(promises) {
+    // Wrap all Promises in a Promise that will always "resolve"
+    var resolvingPromises = promises.map(function(promise) {
+      return new Promise(function(resolve) {
+        var payload = new Array(2);
+        promise.then(function(result) {
+            payload[0] = result;
+          })
+          .catch(function(error) {
+            payload[1] = error;
+          })
+          .then(function() {
+            /* 
+             * The wrapped Promise returns an array:
+             * The first position in the array holds the result (if any)
+             * The second position in the array holds the error (if any)
+             */
+            resolve(payload);
+          });
+      });
+    });
+  
+    var errors = [];
+    var results = [];
+  
+    // Execute all wrapped Promises
+    return Promise.all(resolvingPromises)
+      .then(function(items) {
+        items.forEach(function(payload) {
+          if (payload[1]) {
+            errors.push(payload[1]);
+          } else {
+            results.push(payload[0]);
+          }
+        });
+  
+        return {
+          errors: errors,
+          results: results
+        };
+      });
+  }
 
 async function sendMail(payload: MailData[], options?: any) {
     // payload.map(mail => {

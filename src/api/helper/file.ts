@@ -75,7 +75,6 @@ function parseData(row: Row) {
                         })
                     }else{
                         _.compact(_v[1].split(",")).map((ilce : string) => {
-                            console.log(data['altBolge'])
                             result.push({
                                 il : _v[0],
                                 ilce : _.trim(ilce),
