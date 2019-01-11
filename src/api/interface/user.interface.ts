@@ -8,6 +8,11 @@ export interface Mail {
     name : string;
 }
 
+export interface IUserPayload {
+    email : Mail;
+    taskName : string;
+}
+
 export interface IUser {
     _id : any;
     name : string;

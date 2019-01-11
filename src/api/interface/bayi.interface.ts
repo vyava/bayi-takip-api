@@ -8,6 +8,7 @@ export interface IBayi {
     il?           : string;
     ilce?         : string;
     ruhsatNo?     : string;
+    ruhsatTipleri?: string[] | string
     adi?          : string;
     soyadi?       : string;
     adiSoyadi?    : string;
@@ -16,10 +17,10 @@ export interface IBayi {
     sinifDsd?     : string;
     adres?        : string;
     durum?        : string;
-    distributor?  : Types.ObjectId[];
-    timestamp?    : string;
+    createdAt?    : string;
+    updatedAt?    : string;
+    distributor?  : Types.ObjectId[] | [{name : string}];
     altBolge?     : string;
-    ruhsatTipleri?: string[] | string
 }
 
 export enum IBayiIndex {

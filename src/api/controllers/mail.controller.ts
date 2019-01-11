@@ -16,7 +16,7 @@ import * as _ from "lodash"
 
 import * as fs from "fs"
 import moment = require('moment');
-import { IMailPayload } from 'api/interface/mail.interface';
+import { IMailPayload, IBolgeMailData } from 'api/interface/mail.interface';
 import { MailData } from '@sendgrid/helpers/classes/mail';
 import { getTemplate } from './template.controller';
 import { memorySizeOf } from '../helper/byte';
@@ -31,22 +31,22 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         const { gun } = req.query;
 
         // Get bayiler from DB by date
-        let data: any[] = await getBayilerByGroup(gun);
+        let data: IBolgeMailData[] = await getBayilerByGroup(gun);
         
-
+        
         // res.send(data)
 
         // If bolge length less than 1 throw error
-        // if (data.length < 1) throw new APIError({
-        //     message: "Mail gönderimi yapılacak bayi bulunamadı."
-        // })
+        if (data.length < 1) throw new APIError({
+            message: "Mail gönderimi yapılacak bayi bulunamadı."
+        })
 
         // // Get keys of object to set Header
         let HEADER = TapdkHeader;
         // // Iterate each altBolge to get file
-        let resultPromises = data.map(async (bolgeData: any) => {
+        let resultPromises = data.map(async (bolgeData) => {
             bolgeData["data"] = [];
-            bolgeData['bayiler'].map((bayi: any) => {
+            bolgeData['bayiler'].map((bayi : any) => {
 
                 bayi.distributor = bayi.distributor.map(obj => {
                     // FAAL, ONAY VE TERK bayi sayılarını distributor bazında sayar
@@ -121,6 +121,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         next(err)
     }
 };
+
 
 function executeAllPromises(promises) {
     // Wrap all Promises in a Promise that will always "resolve"

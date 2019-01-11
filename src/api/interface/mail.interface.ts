@@ -1,4 +1,5 @@
-import { Mail } from "./user.interface";
+import { Mail, IUserPayload } from "./user.interface";
+import { IBayi } from "./bayi.interface";
 
 export interface IMailPayload {
     file : any;
@@ -19,3 +20,10 @@ interface IAttachment {
     disposition?: string;
     content_id?: string;
 };
+
+export interface IBolgeMailData {
+    _id     : string;
+    bayiler : [IBayi];
+    users   : [IUserPayload];
+    data    : any;
+}
