@@ -7,6 +7,7 @@ const userRoute = require('./user.route');
 const tapdkRoute = require('./tapdk.route');
 const mailRoute = require('./mail.route');
 const taskRoute = require('./task.route');
+const incomingRoute = require('./incoming.route');
 // import {} from "./user.route";
 // const authRoutes = require('./auth.route');
 
@@ -29,4 +30,5 @@ router.use('/user', userRoute);
 // router.use('/tapdk', tapdkRoute)
 router.use('/mail', mailRoute);
 router.use('/task', taskRoute);
+router.use('/incoming', incomingRoute);
 module.exports = router;
