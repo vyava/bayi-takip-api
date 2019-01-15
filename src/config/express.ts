@@ -1,7 +1,8 @@
 export {};
 import * as express from 'express';
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
+import * as bodyParser from "body-parser"
 const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
@@ -28,6 +29,7 @@ app.use(morgan(logs));
 // parse body params and attache them to req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw({limit : "5mb"}));
 
 // gzip compression
 app.use(compress());
