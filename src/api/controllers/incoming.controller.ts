@@ -8,7 +8,7 @@ import { parseEmail } from "../helper/file";
 export async function incomingHandler(req: Request, res: Response, next: NextFunction) {
     let result = await parseData(req);
 
-    console.log(await verifySender(result.sender.email.address))
+    let senderInfo = await getSenderInfo(result.sender.email.address);
 
     res.json(result)
 }
@@ -36,6 +36,6 @@ function parseSender(text){
   return parseEmail(text);
 }
 
-async function verifySender(userEmail : string){
-  return await userController.isUserExist(userEmail)
+async function getSenderInfo(userEmail : string){
+  return await userController.isUserExist(userEmail);
 }
