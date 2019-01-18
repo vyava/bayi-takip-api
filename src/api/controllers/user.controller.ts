@@ -10,7 +10,14 @@ const UserModel = mongoose.model("User");
 import * as httpStatus from "http-status"
 const APIError = require('../utils/APIError');
 
-
+export async function isUserExist(userEmail : string){
+    try{
+        const user = await UserModel.findOne({"email.address" : userEmail});
+        return await user;
+    }catch{
+        return null
+    }
+}
 
 export async function getUsersAll(req: Request, res: Response, next: NextFunction) {
     try {

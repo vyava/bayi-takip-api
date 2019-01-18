@@ -29,7 +29,7 @@ app.use(morgan(logs));
 // parse body params and attache them to req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.raw({limit : "5mb"}));
+// app.use(bodyParser.raw({limit : "5mb"}));
 
 // gzip compression
 app.use(compress());
@@ -39,7 +39,7 @@ app.use(compress());
 app.use(methodOverride());
 
 // secure apps by setting various HTTP headers
-app.use(helmet());
+// app.use(helmet());
 
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());

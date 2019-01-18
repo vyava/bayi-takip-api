@@ -102,7 +102,7 @@ interface IMailData  {
     name : string,
     taskName : string
 }
-function parseEmail(data : string, taskName : string) : any{
+export function parseEmail(data : string, taskName? : string) : any{
     let _data = data.toString();
     try {
         let matchedData : any = {};
@@ -112,7 +112,7 @@ function parseEmail(data : string, taskName : string) : any{
                 address : _.trim(p2)
             };
             matchedData['name'] = _.trim(p1);
-            matchedData['taskName'] = taskName
+            matchedData['taskName'] = taskName ? taskName : null
             return m
         });
         return matchedData;
