@@ -25,7 +25,7 @@ module.exports = {
   LIMIT_MAX : 101,
   LIMIT_MIN : 9,
   LIMIT_DEFAULT : 500,
-
+  FILE_UPLOAD_DIR : path.join(__dirname, '../../incoming_files'),
 
   TAPDK_URL : "http://212.174.130.210/NewTapdk/ViewApp/sorgu.aspx"
 };
