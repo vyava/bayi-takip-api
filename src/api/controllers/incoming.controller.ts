@@ -15,24 +15,6 @@ export async function incomingHandler(req: Request, res: Response, next: NextFun
     res.json(result)
 }
 
-async function parseData(request : Request) {
-  
-  // form.parse(request, function (err, fields, files: any) {
-  //   if (err) {
-  //     result["error"] = "Parse başarısız"
-  //   }
-  //   result["fields"] = fields;
-  //   result["files"] = files;
-  //   result["sender"] = parseSender(fields["from"])
-  // });
-  // return result;
-};
-
-
-
-// function parseSender(text){
-//   return parseEmail(text);
-// }
 
 async function getSenderInfo(userEmail : string){
   return await userController.isUserExist(userEmail);
