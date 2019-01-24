@@ -13,9 +13,11 @@ function formLoader() {
 const ALLOWED_FILE_EXTENSIONS = /\.(xls|xlsx)$/i
 
 export function fileFilter(request : Request, file : Express.Multer.File, cb){
-    console.log(file.originalname)
-    console.log(file.path)
-    cb(null, true)
+    if(file.originalname.match(ALLOWED_FILE_EXTENSIONS)){
+        cb(null, true)
+    }else{
+        cb(null, false)
+    }
 }
 
 export function handleForm(request : Request, response : Response, next : NextFunction){
