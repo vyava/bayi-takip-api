@@ -13,7 +13,7 @@ export interface IMailPayload {
     sendAt? : number;
 }
 
-interface IAttachment {
+export interface IAttachment {
     content: any;
     filename: string;
     type?: string;

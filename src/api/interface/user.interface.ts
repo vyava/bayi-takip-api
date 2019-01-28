@@ -10,6 +10,7 @@ export interface Mail {
 
 export interface IUserPayload {
     email : Mail;
+    name? : string;
     taskName : string;
 }
 

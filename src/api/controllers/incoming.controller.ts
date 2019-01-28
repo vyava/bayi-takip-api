@@ -1,26 +1,33 @@
 import { Request, Response, NextFunction } from "express";
 import { IInBound } from "api/interface/incoming.interface";
 import * as _ from "lodash"
+import {join} from "path"
+import * as fs from "fs"
 var config = require("../../config/vars")
 
 import * as userController from "./user.controller"
 import { parseEmail } from "../helper/file";
+import { IncomingPayload } from "api/helper/interface/mail.interface";
+import { Attachment } from "../helper/interface/mail.interface";
 // import { parseEmail } from "../helper/file";
 
 const PROPERTIES = ["to", "cc", "from", "envelope", "attachment-info", "attachments", "subject", "sender_ip"];
 
 export async function incomingHandler(req: Request, res: Response, next: NextFunction) {
   // let result = await parseData(req);
-
-  // let senderInfo = await getSenderInfo(result.sender.email.address);
   let data = req.body;
+  console.log(req.files)
   let selected = selectProperties(data, PROPERTIES);
-  let result = parse(selected);
-  // Object.keys(result).map(key => {
-  //   result[key] = JSON.parse(result[key])
-  // })
+  let receivedPayload : IncomingPayload = parse(selected);
+  let senderInfo = await getSenderInfo(receivedPayload.from.email.address);
 
-  res.json(result)
+  if(senderInfo){
+    res.json(receivedPayload)
+  }else{
+    removeFiles(receivedPayload.attachments)
+    res.status(401).json(receivedPayload)
+  }
+  
 }
 
 function selectProperties(body, _properties: string[]) {
@@ -35,27 +42,31 @@ function parse(data) {
     let _prop = data[prop];
     switch (prop) {
       case "envelope":
-        payload["received"] = JSON.parse(_prop)["to"]
+        payload["receivedFrom"] = JSON.parse(_prop)["to"]
         break;
       case "to":
       case "cc":
         let received = JSON.parse(data["envelope"])["to"]
-        payload[prop] = _.difference(_prop.split(",").map(parseEmail).map(_v => _v["email"]["address"]), received)
+        if(_prop)
+          payload[prop] = _.difference(_prop.split(",").map(parseEmail).map(_v => _v["email"]["address"]), received)
         break;
       case "subject":
-        payload[prop] = _prop.trim()
+      if(_prop)
+          payload[prop] = _prop.trim()
         break;
       case "attachments":
-        payload["filesLength"] = parseInt(_prop)
+        if(_prop)
+          payload["filesLength"] = parseInt(_prop)
         break;
       case "attachment-info":
-        payload["attachments"] = _.values(JSON.parse(_prop))
+        if(_prop)
+          payload["attachments"] = _.values(JSON.parse(_prop))
         break;
       case "sender_ip":
         payload["senderIp"] = _prop
         break;
       case "from":
-        payload[prop] = _prop;
+        payload[prop] = parseEmail(_prop);
         break;
       default:
         break;
@@ -63,6 +74,14 @@ function parse(data) {
   });
 
   return payload;
+}
+
+function removeFiles(paths : Attachment[]){
+  for(var i=0;i<paths.length;i++){
+    
+    let path = join(config.FILE_UPLOAD_DIR, paths[i].filename);
+    // fs.unlinkSync(path);
+  };
 }
 
 function getPayload() {

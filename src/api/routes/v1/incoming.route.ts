@@ -1,6 +1,7 @@
 import * as express from "express"
 import * as validate from "express-validation";
 import * as multer from "multer"
+const path = require("path")
 import { handleForm, fileFilter } from "../../helper/formHandler";
 import { incomingHandler } from "../../controllers/incoming.controller";
 const config = require("../../../config/vars");
@@ -8,8 +9,7 @@ const config = require("../../../config/vars");
 var storage = multer.diskStorage({
     destination : config.FILE_UPLOAD_DIR,
     filename : function(req, file, cb){
-        // console.log(file)
-        cb(null, file.originalname)
+        cb(null, file['content-id']+path.extname(file.originalname))
     }
 })
 
