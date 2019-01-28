@@ -16,7 +16,7 @@ const PROPERTIES = ["to", "cc", "from", "envelope", "attachment-info", "attachme
 export async function incomingHandler(req: Request, res: Response, next: NextFunction) {
   // let result = await parseData(req);
   let data = req.body;
-  console.log(req.files)
+  let files = req.files
   let selected = selectProperties(data, PROPERTIES);
   let receivedPayload : IncomingPayload = parse(selected);
   let senderInfo = await getSenderInfo(receivedPayload.from.email.address);
@@ -24,7 +24,7 @@ export async function incomingHandler(req: Request, res: Response, next: NextFun
   if(senderInfo){
     res.json(receivedPayload)
   }else{
-    removeFiles(receivedPayload.attachments)
+    removeFiles(files)
     res.status(401).json(receivedPayload)
   }
   
@@ -76,10 +76,10 @@ function parse(data) {
   return payload;
 }
 
-function removeFiles(paths : Attachment[]){
+function removeFiles(paths){
   for(var i=0;i<paths.length;i++){
     
-    let path = join(config.FILE_UPLOAD_DIR, paths[i].filename);
+    let path = join(config.FILE_UPLOAD_DIR, paths[i]);
     // fs.unlinkSync(path);
   };
 }
