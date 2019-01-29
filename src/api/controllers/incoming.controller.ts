@@ -8,7 +8,6 @@ var config = require("../../config/vars")
 import * as userController from "./user.controller"
 import { parseEmail } from "../helper/file";
 import { IncomingPayload } from "api/helper/interface/mail.interface";
-import { Attachment } from "../helper/interface/mail.interface";
 // import { parseEmail } from "../helper/file";
 
 const PROPERTIES = ["to", "cc", "from", "envelope", "attachment-info", "attachments", "subject", "sender_ip"];
@@ -16,7 +15,8 @@ const PROPERTIES = ["to", "cc", "from", "envelope", "attachment-info", "attachme
 export async function incomingHandler(req: Request, res: Response, next: NextFunction) {
   // let result = await parseData(req);
   let data = req.body;
-  let files = req.files
+  let files : any = req.files
+
   let selected = selectProperties(data, PROPERTIES);
   let receivedPayload : IncomingPayload = parse(selected);
   let senderInfo = await getSenderInfo(receivedPayload.from.email.address);
@@ -27,7 +27,12 @@ export async function incomingHandler(req: Request, res: Response, next: NextFun
     removeFiles(files)
     res.status(401).json(receivedPayload)
   }
-  
+}
+
+function removeFiles(files : Express.Multer.File[]){
+  files.map(file => {
+    fs.unlinkSync(file.path)
+  })
 }
 
 function selectProperties(body, _properties: string[]) {
@@ -74,14 +79,6 @@ function parse(data) {
   });
 
   return payload;
-}
-
-function removeFiles(paths){
-  for(var i=0;i<paths.length;i++){
-    
-    let path = join(config.FILE_UPLOAD_DIR, paths[i]);
-    // fs.unlinkSync(path);
-  };
 }
 
 function getPayload() {

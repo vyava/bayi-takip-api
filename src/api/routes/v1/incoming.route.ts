@@ -9,7 +9,7 @@ const config = require("../../../config/vars");
 var storage = multer.diskStorage({
     destination : config.FILE_UPLOAD_DIR,
     filename : function(req, file, cb){
-        cb(null, file['content-id']+path.extname(file.originalname))
+        cb(null, Date.now()+path.extname(file.originalname))
     }
 })
 
