@@ -4,7 +4,7 @@ import * as moment from "moment";
 import * as _ from "lodash"
 import "../models/task.model"
 import { ITaskModel } from "../models/task.model";
-import { ITask, ITaskDocument } from "api/interface";
+import { ITask, ITaskDocument } from "../../api/interface";
 import { Request, Response, NextFunction } from "express";
 
 // import { getSource } from "../controllers/tapdk.controller";

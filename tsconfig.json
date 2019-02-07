@@ -4,19 +4,24 @@
     "allowJs": true,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "target": "es6",
     "module": "commonjs",
-    "baseUrl": "src"
+    "target": "es2015",
+    "lib": [
+      "es2015",
+      "dom"
+      ],
+    // "baseUrl": "src",
   },
   "include": [
     "./src/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.spec.ts"
   ],
-  "paths": {
-    "api/*": ["api/*"],
-    "config/*": ["config/*"],
-    "@model/*" : ["api/models/*"]
-  }
+  // "paths": {
+  //   "api/*": ["api/*"],
+  //   "config/*": ["config/*"],
+  //   "@model/*" : ["api/models/*"]
+  // }
 }

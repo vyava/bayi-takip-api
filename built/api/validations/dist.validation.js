@@ -10,10 +10,26 @@ const distValidation = {
     },
     setDist: {
         query: {
-            kod: Joi.string().required(),
+            kod: Joi.number().required(),
             name: Joi.string().required(),
-            bolge: Joi.string().required()
+            altBolge: Joi.string().required(),
+            bolgeKod: Joi.number().required(),
+            bolge: Joi.string().required(),
+            cc: Joi.any().required(),
+            to: Joi.any().required(),
+            status: Joi.boolean().required()
+        }
+    },
+    getDistsByAdres: {
+        query: {
+            il: Joi.string().required(),
+            ilce: Joi.string().required()
+        }
+    },
+    getDistsByIl: {
+        params: {
+            il: Joi.string().required()
         }
     }
 };
-exports.getDist = distValidation.getDist, exports.setDist = distValidation.setDist;
+exports.getDist = distValidation.getDist, exports.setDist = distValidation.setDist, exports.getDistsByAdres = distValidation.getDistsByAdres, exports.getDistsByIl = distValidation.getDistsByIl;

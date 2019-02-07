@@ -11,7 +11,7 @@ const APIError = require('../utils/APIError');
 
 import * as _ from "lodash";
 import { parseBayi } from "./bayi";
-import { IBayi } from "api/interface";
+import { IBayi } from "../../api/interface";
 import { removeSpacesFromString } from "./string";
 var Iconv = require('iconv').Iconv;
 

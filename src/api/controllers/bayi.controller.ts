@@ -5,7 +5,7 @@ import { isEmpty } from "lodash";
 import * as mongoose from "mongoose"
 import "../models/bayi.model"
 import "../models/distributor.model"
-import { IBayi, IBayiDocument } from 'api/interface';
+import { IBayi, IBayiDocument } from '../../api/interface';
 const DistModel = mongoose.model("Dist");
 import { getDate } from "../helper/date";
 // import {Dist} from "../models/distributor.model"

@@ -7,3 +7,8 @@ __export(require("./bayi.controller"));
 __export(require("./bolge.controller"));
 __export(require("./dist.controller"));
 __export(require("./user.controller"));
+__export(require("./mail.controller"));
+module.exports = {
+    TAPDK: require("./tapdk.controller"),
+    MAIL: require("./mail.controller")
+};

@@ -10,9 +10,9 @@ mongoose.connection.on('error', (err) => {
     process.exit(-1);
 });
 // print mongoose logs in dev env
-if (env === 'development') {
-    mongoose.set('debug', true);
-}
+// if (env === 'development') {
+//   mongoose.set('debug', true);
+// }
 /**
  * Connect to mongo db
  *

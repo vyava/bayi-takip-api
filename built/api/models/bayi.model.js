@@ -1,24 +1,10 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-// const mongoose = require('mongoose');
-// import * as mongoose from "mongoose";
 const mongoose_1 = require("mongoose");
-// const httpStatus = require('http-status');
-const httpStatus = require("http-status");
-const lodash_1 = require("lodash");
 const bcrypt = require('bcryptjs');
 const moment = require('moment-timezone');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
-const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 /**
  * Bayi Roles
  */
@@ -28,72 +14,26 @@ const roles = ['user', 'admin'];
  * @private
  */
 const bayiSchema = new mongoose_1.Schema({
-    il: { type: String },
-    ilce: { type: String },
+    il: { type: String, uppercase: true },
+    ilce: { type: String, uppercase: true },
     ruhsatNo: { type: String, index: true, unique: true },
+    adiSoyadi: {
+        type: String,
+        trim: true
+    },
     adi: { type: String },
     soyadi: { type: String },
     unvan: { type: String, trim: true },
     sinif: { type: String, trim: true },
+    sinifDsd: { type: String, trim: true },
     adres: { type: String, trim: true },
     durum: { type: String, trim: true },
-    distributor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Test' }
-}, { collection: "bayiler" });
-bayiSchema.static('getBayilerBySehir', (sehir, options) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        let bayi = yield exports.Bayi.find({ il: sehir }).select(options.select).limit(options.limit);
-        if (lodash_1.isEmpty(bayi))
-            throw new APIError({
-                message: "Bayi bulunamadı",
-                code: httpStatus.NO_CONTENT
-            });
-        return bayi;
-    }
-    catch (err) {
-        throw err;
-    }
-}));
-bayiSchema.static('getBayiById', (id) => {
-    try {
-        let bayi = exports.Bayi.find({ _id: id }).populate("distributor");
-        if (lodash_1.isEmpty(bayi))
-            throw new APIError({
-                message: "Bayi bulunamadı",
-                code: httpStatus.NO_CONTENT
-            });
-        return bayi;
-    }
-    catch (err) {
-        throw err;
-    }
-});
-bayiSchema.static('getBayilerByIlce', (sehir, ilce, options) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        let bayi = yield exports.Bayi.find({
-            il: sehir,
-            ilce: ilce
-        }).select(options.select).limit(options.limit);
-        if (lodash_1.isEmpty(bayi))
-            throw new APIError({
-                message: "Bayi bulunamadı",
-                code: httpStatus.NO_CONTENT
-            });
-        return bayi;
-    }
-    catch (err) {
-        throw err;
-    }
-}));
-bayiSchema.static('setBayi', (options) => {
-    try {
-        let bayi = new exports.Bayi();
-        bayi.il = options.il;
-        bayi.ilce = options.ilce;
-        return bayi.save();
-    }
-    catch (err) {
-        throw err;
-    }
+    vergiNo: { type: Number, min: 10, max: 11 },
+    distributor: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Dist' }],
+    ruhsatTipleri: { type: String },
+    updatedAt: { type: Date }
+}, {
+    collection: "bayiler",
 });
 /**
  * @typedef Bayi
@@ -150,9 +90,6 @@ exports.Bayi = mongoose_1.model("Bayi", bayiSchema);
 //     return bcrypt.compare(password, this.password);
 //   }
 // });
-// userSchema.static("getSehirById", async (id: string) => {
-//   return await User.find({})
-// })
 /**
  * Statics
  */

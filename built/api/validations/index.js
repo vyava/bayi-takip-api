@@ -7,3 +7,4 @@ __export(require("./bayi.validation"));
 __export(require("./bolge.validation"));
 __export(require("./dist.validation"));
 __export(require("./user.validation"));
+__export(require("./tapdk.validation"));

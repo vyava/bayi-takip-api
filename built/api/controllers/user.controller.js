@@ -8,26 +8,108 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_model_1 = require("../models/user.model");
-function getUser(req, res) {
+require("../models/distributor.model");
+const mongoose = require("mongoose");
+require("../models/distributor.model");
+require("../models/user.model");
+const _ = require("lodash");
+const DistModel = mongoose.model("Dist");
+const UserModel = mongoose.model("User");
+const httpStatus = require("http-status");
+const APIError = require('../utils/APIError');
+function isUserExist(userEmail) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let userId = req.query.id || null;
-            const user = yield user_model_1.User.getUser(userId);
-            res.json(user);
+            const user = yield UserModel.findOne({ "email.address": userEmail });
+            return yield user;
         }
-        catch (erre) {
+        catch (_a) {
+            return null;
         }
     });
 }
-exports.getUser = getUser;
-;
-function setUser(req, res) {
+exports.isUserExist = isUserExist;
+function getUsersAll(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let payload = req.query || null;
-        const user = yield user_model_1.User.setUser(payload);
-        res.json(user);
+        try {
+            const users = yield UserModel.find();
+            if (_.isEmpty(users) || users.length == 0)
+                throw new APIError({
+                    message: "Kullanıcı bulunamadı",
+                    status: httpStatus.NOT_FOUND
+                });
+            res.json(users);
+        }
+        catch (err) {
+            next(err);
+        }
     });
 }
-exports.setUser = setUser;
+exports.getUsersAll = getUsersAll;
+;
+function getUsersEmailByDist(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let distName = req.query.name;
+            let usersEmail = yield UserModel.aggregate([
+                {
+                    $lookup: {
+                        from: "dist",
+                        localField: "distributor",
+                        foreignField: "_id",
+                        as: "distributorler"
+                    }
+                },
+                {
+                    $unwind: "$distributorler"
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        name: "$email.name",
+                        address: "$email.address",
+                        distName: "$distributorler.name",
+                        bolge: "$distributorler.altBolge",
+                        taskName: "$taskName",
+                        status: "$distributorler.status"
+                    }
+                },
+                {
+                    $match: {
+                        distName: distName,
+                        status: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$taskName",
+                        users: {
+                            $addToSet: {
+                                name: "$name",
+                                address: "$address",
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        task: "$_id",
+                        users: "$users"
+                    }
+                }
+            ]);
+            if (!usersEmail)
+                throw new APIError({
+                    message: "Kullanıcı email listesi bulunamadı",
+                    status: httpStatus.NOT_FOUND
+                });
+            res.json(usersEmail);
+        }
+        catch (err) {
+            next(err);
+        }
+    });
+}
+exports.getUsersEmailByDist = getUsersEmailByDist;
 ;

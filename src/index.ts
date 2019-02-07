@@ -5,7 +5,7 @@ mstime.plugins([{ plugin: require('mstime/dist/cjs/plugins/msPluginTrimMean') }]
 mstime.start('app-start');
 
 // make bluebird default Promise
-Promise = require('bluebird'); // eslint-disable-line no-global-assign
+// Promise = require('bluebird'); // eslint-disable-line no-global-assign
 const { port, env, socketEnabled } = require('./config/vars');
 
 // const https = require('https');
@@ -24,6 +24,7 @@ const options = {
 };
 // const server = spdy.createServer(options, app);
 const server = http.createServer(app)
+
 
 server.listen(port, () => {
   console.info(`--- 🌟  Started (${env}) --- http://localhost:${port}`);

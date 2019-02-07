@@ -8,22 +8,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bolge_model_1 = require("../models/bolge.model");
-function getBolge(req, res) {
+const _ = require("lodash");
+const mongoose = require("mongoose");
+require("../models/bolge.model");
+const httpStatus = require("http-status");
+const APIError = require('../utils/APIError');
+const BolgeModel = mongoose.model("Bolge");
+function getBolgeById(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let bolgeKod = req.query.kod || null;
-        const bolge = yield bolge_model_1.Bolge.getBolge(bolgeKod);
-        res.json(bolge);
+        try {
+            let bolgeKod = req.query.kod || null;
+            const bolge = yield BolgeModel.find({
+                bolgeKod: bolgeKod
+            });
+            if (_.isEmpty(bolge))
+                throw new APIError({
+                    message: "Bölge bulunamadı",
+                    status: httpStatus.NOT_FOUND
+                });
+            res.json(bolge);
+        }
+        catch (err) {
+            next(err);
+        }
     });
 }
-exports.getBolge = getBolge;
+exports.getBolgeById = getBolgeById;
 ;
-function setBolge(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let payload = req.query || null;
-        const bolge = yield bolge_model_1.Bolge.setBolge(payload);
-        res.json(bolge);
-    });
-}
-exports.setBolge = setBolge;
-;
+// export async function getDistsByBolge(req: Request, res: Response, next: NextFunction) {
+//     try {
+//         let payload: IBolge = req.query || null
+//         let dists = await BolgeModel.find({ kod: req.body.kod });
+//         if (_.isEmpty(dists) && dists.length == 0) throw new APIError({
+//             message: "Bölge bulunamadı",
+//             status: httpStatus.NOT_FOUND
+//         });
+//         res.json(dists);
+//     } catch (err) {
+//         next(err)
+//     }
+// };

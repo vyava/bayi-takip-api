@@ -4,7 +4,7 @@ const APIError = require("../utils/APIError");
 import * as httpStatus from "http-status"
 
 import * as tempfile from "tempfile";
-import { IBayi } from "api/interface";
+import { IBayi } from "../../api/interface";
 
 enum HEADER {
     altBolge = "Bölge",

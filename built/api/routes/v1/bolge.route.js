@@ -8,8 +8,5 @@ const router = express.Router();
 // GET /v1/bolge?kod={bolgeKod}
 router
     .route('/')
-    .get(bolgeController.getBolge);
-router
-    .route('/yeni')
-    .get(validate(validations_1.setBolge), bolgeController.setBolge);
+    .get(validate(validations_1.getBolgeById), bolgeController.getBolgeById);
 module.exports = router;

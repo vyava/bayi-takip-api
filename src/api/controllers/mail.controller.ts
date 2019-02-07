@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { getBayilerByGroup } from "../controllers/bayi.controller";
 import { addValuesToWorksheet, newWorkbook, newWorksheet, saveFile } from "../helper/excel";
-import { IBayi } from 'api/interface';
+import { IBayi } from '../../api/interface';
 import { TapdkHeader } from '../helper/interface/file.interface';
 
 const APIError = require("../utils/APIError");
@@ -16,7 +16,7 @@ import * as _ from "lodash"
 
 import * as fs from "fs"
 import moment = require('moment');
-import { IMailPayload, IBolgeMailData } from 'api/interface/mail.interface';
+import { IMailPayload, IBolgeMailData } from '../../api/interface/mail.interface';
 import { MailData } from '@sendgrid/helpers/classes/mail';
 import { getTemplate } from './template.controller';
 import { memorySizeOf } from '../helper/byte';

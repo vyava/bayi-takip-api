@@ -15,23 +15,24 @@ const router = express.Router();
  */
 // router.param('userId', controller.load);
 router
-    .route('/')
+    .route("/set")
+    .get(controller.setValueToBayiler);
+;
+router
+    .route("/get")
+    .get(controller.getBayilerByUpdatedAt);
+// router
+//   .route("/getArray")
+//   .get(controller.getBayilerByGroup)
+router
+    .route("/bayi")
+    .get(validate(bayi_validation_1.getBayi), controller.getBayiByRuhsatNo);
+router
+    .route('/:sehir')
     // .get((req, res) => {
     //   res.json("ok")
     // })
-    .get(validate(bayi_validation_1.getSehir), controller.getSehir);
-router
-    .route("/yeni")
-    .get(controller.setBayi);
-router
-    .route("/bayi")
-    .get(validate(bayi_validation_1.getBayi), controller.getBayiById);
-router
-    .route('/:sehir')
-    .get(validate(bayi_validation_1.getSehir), controller.getSehir);
-router
-    .route("/:sehir/:ilce")
-    .get(validate(bayi_validation_1.getIlce), controller.getIlce);
+    .get(validate(bayi_validation_1.getSehir), controller.getBayilerBySehir);
 /**
  * @api {get} v1/users List Users
  * @apiDescription Get a list of users
@@ -80,8 +81,8 @@ router
  * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
  */
 // .post(authorize(ADMIN), validate(createUser), controller.create);
-router
-    .route('/profile');
+// router
+//   .route('/profile')
 /**
  * @api {get} v1/users/profile User Profile
  * @apiDescription Get logged in user profile information

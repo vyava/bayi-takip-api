@@ -8,7 +8,7 @@ const SELECT_CUSTOM_VALIDATE = Joi.extend({
     name: "stringArray",
     coerce: (value, state, options) => ((value && value.includes(","))
         ? value.split(",")
-        : [value, "-_id"]) || ["il", "-_id"]
+        : [value]) || ["il"]
 });
 // Custom validation for selection
 const SELECT_VALIDATE = SELECT_CUSTOM_VALIDATE

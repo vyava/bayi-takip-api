@@ -1,4 +1,4 @@
-import { IUserPayload } from "api/interface";
+import { IUserPayload } from "../../../api/interface";
 
 export interface IncomingPayload {
     to?             : string[];

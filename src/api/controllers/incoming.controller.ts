@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { IInBound } from "api/interface/incoming.interface";
+import { IInBound } from "../../api/interface/incoming.interface";
 import * as _ from "lodash"
 import {join} from "path"
 import * as fs from "fs"
@@ -7,7 +7,7 @@ var config = require("../../config/vars")
 
 import * as userController from "./user.controller"
 import { parseEmail } from "../helper/file";
-import { IncomingPayload } from "api/helper/interface/mail.interface";
+import { IncomingPayload } from "../../api/helper/interface/mail.interface";
 // import { parseEmail } from "../helper/file";
 
 const PROPERTIES = ["to", "cc", "from", "envelope", "attachment-info", "attachments", "subject", "sender_ip"];

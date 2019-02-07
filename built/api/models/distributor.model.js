@@ -9,37 +9,70 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-// const httpStatus = require('http-status');
-const httpStatus = require("http-status");
+require("../models/user.model");
 const APIError = require('../utils/APIError');
 const distributorSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
+    name: { type: String, default: "TANIMSIZ" },
     status: { type: Boolean, default: true },
-    dsm: { type: String },
-    tte: { type: String },
-    operator: { type: String },
-    scope: { type: String },
-    bolge: { type: String, required: true }
-}, { collection: "distributor" });
-distributorSchema.static('getDistById', (id) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        let dist = yield exports.Dist.findOne({ id: id });
-        if (!dist)
-            throw new APIError({
-                message: "Distributor bulunamadı",
-                status: httpStatus.NOT_FOUND
-            });
-        return dist;
+    users: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+    kod: {
+        type: Number,
+        required: true,
+        unique: true,
+        index: true
+    },
+    bolge: { type: String, default: "TANIMSIZ" },
+    altBolge: { type: String, default: "TANIMSIZ" },
+    bolgeData: [
+        {
+            il: {
+                type: String,
+                uppercase: true,
+                require: true
+            },
+            ilce: {
+                type: String,
+                uppercase: true,
+                require: true
+            },
+            altBolge: {
+                type: String,
+                uppercase: true,
+                require: true
+            }
+        }
+    ]
+}, {
+    collection: "dist",
+    // toJSON : {
+    //   transform : (doc, ret) => {
+    //     delete ret._id
+    //   }
+    // },
+    timestamps: {
+        createdAt: "created_at",
+        updatedAt: "updated_at"
     }
-    catch (err) {
-        throw new APIError(err);
+});
+distributorSchema.set('toJSON', {
+    virtuals: true,
+    transform: (doc, ret, options) => {
+        delete ret._id;
     }
-}));
-distributorSchema.static('setDist', (payload) => __awaiter(this, void 0, void 0, function* () {
+});
+distributorSchema.static('getDistsIdByAdres', (adres) => __awaiter(this, void 0, void 0, function* () {
     try {
-        let dist = new exports.Dist(payload);
-        let result = yield dist.save();
-        return result;
+        return yield exports.Dist.find({
+            bolgeData: {
+                $elemMatch: {
+                    il: adres.il,
+                    ilce: adres.ilce
+                }
+            }
+        }).select("_id");
     }
     catch (err) {
         throw new APIError(err);
