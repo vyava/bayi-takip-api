@@ -7,6 +7,7 @@ import * as _ from "lodash"
 import * as fs from "fs";
 import * as path from "path"
 import { VIEW_PARAMS  } from "../helper/interface/html.interface";
+import * as moment from "moment";
 
 export async function getTemplate(templateName : string, data) {
     try {
@@ -14,7 +15,7 @@ export async function getTemplate(templateName : string, data) {
         let htmlData = {
                 header : fileParams["header"],
                 fileData : data,
-                tarih : "07.01.2019"
+                tarih : moment().format("DD.MM.YYYY")
             }
             console.log(htmlData)
         let viewPath = path.join(__dirname, "../views/email");

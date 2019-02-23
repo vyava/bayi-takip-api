@@ -1,8 +1,5 @@
 // setup mstime to measure API response time
-const mstime = require('mstime');
 const http = require("http")
-mstime.plugins([{ plugin: require('mstime/dist/cjs/plugins/msPluginTrimMean') }]);
-mstime.start('app-start');
 
 // make bluebird default Promise
 // Promise = require('bluebird'); // eslint-disable-line no-global-assign
@@ -28,7 +25,6 @@ const server = http.createServer(app)
 
 server.listen(port, () => {
   console.info(`--- 🌟  Started (${env}) --- http://localhost:${port}`);
-  console.log(`${mstime.end('app-start').last} ms`);
 });
 
 /**
