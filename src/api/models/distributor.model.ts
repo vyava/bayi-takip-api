@@ -10,7 +10,7 @@ const APIError = require('../utils/APIError');
 // import * as APIError from "../utils/APIError"
 
 export interface IDistributorDocumentModel extends Model<IDistributorDocument> {
-    getDistsIdByAdres(adres : DistRequest) : any
+    getDistsIdByAdres(adres : string[]) : any
     toJSON() : any
 }
 

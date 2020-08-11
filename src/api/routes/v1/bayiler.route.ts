@@ -22,14 +22,14 @@ router
 
 router
   .route("/get")
-  .get(controller.getBayilerByUpdatedAt)
-// router
-//   .route("/getArray")
-//   .get(controller.getBayilerByGroup)
+  .get(controller.getBayilerByUpdatedAt);
+router
+  .route("/getArray")
+  .get(controller.getBayilerByGroup);
 router
   .route("/bayi")
 
-  .get(validate(getBayi), controller.getBayiByRuhsatNo)
+  .get(validate(getBayi), controller.getBayiByRuhsatNo);
 router
   .route('/:sehir')
   // .get((req, res) => {

@@ -58,9 +58,10 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
   }
 }
 
-export async function getBayilerByGroup(gun: any = "BUGÜN") {
+export async function getBayilerByGroup(req : Request, res : Response, next : NextFunction) {
   try {
-    let {start, end} = getDate(gun)
+    let _g = req.query.gun || "DÜN";
+    let {start, end} = getDate(_g)
     console.log("********************************")
     console.info(start, end)
     const bayiler = await BayiModel.aggregate([
@@ -248,9 +249,11 @@ export async function getBayilerByGroup(gun: any = "BUGÜN") {
         }
       }
     ]);
-    return bayiler;
+    
+    
+    res.json(bayiler);
   } catch (err) {
-    throw err;
+    res.json(err);
   }
 }
 

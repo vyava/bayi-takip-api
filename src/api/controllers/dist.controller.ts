@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { DistRequest, IIlce, IDistributor, IUser, IDistributorDocument, IUserDocument } from '../interface';
+import {  IDistributor, IUser } from '../interface';
 import * as mongoose from "mongoose"
 import * as _ from "lodash"
 import { Dist } from "../models/distributor.model"
-import "../models/user.model"
+import { User } from "../models/user.model";
 import { readExcelFile } from '../helper/file';
 
 import * as httpStatus from "http-status"
 const APIError = require('../utils/APIError');
 
 import { setDistsToBayiler } from "./bayi.controller";
-
-// const DistModel = mongoose.model("Dist");
-const UserModel = mongoose.model("User");
 
 declare global {
   interface String {
@@ -46,7 +43,7 @@ export async function setDist(req: Request, res: Response, next: NextFunction) {
       let userResult: any = users.map(async (user: IUser) => {
         user.distributor = distDoc._id;
         // user.distributor = distId;
-        let _userDoc = await UserModel.findOneAndUpdate({ "email.address": user.email.address }, user, { new: true, upsert: true })
+        let _userDoc = await User.findOneAndUpdate({ "email.address": user.email.address }, user, { new: true, upsert: true })
         distDoc.users.push({
           "_id": _userDoc._id
         }
@@ -102,7 +99,7 @@ export async function getDistIdsByAdresRoute(req: Request, res: Response, next: 
   res.json(result)
 }
 
-export async function getDistIdsByAdres(iller: DistRequest): Promise<mongoose.Types.ObjectId[]> {
+export async function getDistIdsByAdres(iller: string[]): Promise<mongoose.Types.ObjectId[]> {
   try {
     if (_.isEmpty(iller)) {
       throw new Error("Adres bilgisi bulunmuyor.")
@@ -117,7 +114,7 @@ export async function getDistIdsByAdres(iller: DistRequest): Promise<mongoose.Ty
 
 export async function getDistAll(req: Request, res: Response, next: NextFunction) {
   try {
-    let { il, ilce } = <any>req.query;
+    let { il } = <any>req.query;
     let iller = il.split(",").map((_: any) => _.turkishToUpper());
     let dists = await getDistIdsByAdres(iller);
     res.json(dists)
