@@ -181,7 +181,7 @@ async function sendMail(payload: MailData[], options?: any) {
     //         }
     //     ]
     // })
-    return await MailService.send(payload);
+    return await MailService.send(<any>payload);
 }
 
 function initialize() {

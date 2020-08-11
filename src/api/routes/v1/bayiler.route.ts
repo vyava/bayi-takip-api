@@ -18,7 +18,7 @@ const router = express.Router();
 // router.param('userId', controller.load);
 router
   .route("/set")
-  .get(controller.setValueToBayiler);;
+  .get(controller.setValueToBayiler);
 
 router
   .route("/get")

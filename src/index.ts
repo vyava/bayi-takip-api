@@ -24,7 +24,7 @@ const server = http.createServer(app)
 
 
 server.listen(port, () => {
-  console.info(`--- 🌟  Started (${env}) --- http://localhost:${port}`);
+  console.info(`--- 🌟  Startedd (${env}) --- http://localhost:${port}`);
 });
 
 /**

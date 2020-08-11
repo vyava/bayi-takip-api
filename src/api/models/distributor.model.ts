@@ -72,16 +72,39 @@ const distributorSchema: Schema = new Schema(
   })
 
   
-  distributorSchema.static('getDistsIdByAdres', async (adres: DistRequest) => {
+  distributorSchema.static('getDistsIdByAdres', async (iller: string[]) => {
     try {
-      return await Dist.find({
-        bolgeData: {
-          $elemMatch: {
-            il: adres.il,
-            ilce: adres.ilce
+      let distIds = await Dist.aggregate([
+      
+        {
+          $unwind : "$bolgeData"
+        },
+        {
+          $match : {
+            "bolgeData.il" : {
+                $in : iller
+              }
+          }
+        },
+        {
+          $group : {
+            _id : "$bolgeData._id",
+            il : {
+              $first : "$bolgeData.il"
+            },
+            ilce : {
+              $first : "$bolgeData.ilce"
+            },
+            distId : {
+              $first : "$_id"
+            },
+            altBolge : {
+              $first : "$altBolge"
+            }
           }
         }
-      }).select("_id")
+      ]);
+      return distIds;
     } catch (err) {
       throw new APIError(err)
     }

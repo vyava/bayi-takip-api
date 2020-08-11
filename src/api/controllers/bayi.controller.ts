@@ -26,7 +26,7 @@ import * as moment from "moment"
 export async function getBayilerBySehir(req: Request, res: Response, next: NextFunction) {
   try {
     let sehir = req.param('sehir')
-    let options = req.query || null
+    let options = <any>req.query || null
     let bayiler = await BayiModel.find({ il: sehir }).select(options.select).limit(options.limit);
     if (isEmpty(bayiler)) throw new APIError({
       message: "Bayi bulunamadı",

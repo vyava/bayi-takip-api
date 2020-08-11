@@ -6,8 +6,8 @@ export interface RequestOptions {
 }
 
 export interface DistRequest {
-    il : string;
-    ilce : string;
+    il : string[] | string;
+    ilce : string[] | string;
 };
 
 export interface NewDist {

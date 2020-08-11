@@ -35,7 +35,10 @@ function run(taskName : string){
 
 export async function getTask(req : Request, res : Response, next : NextFunction){
     try {
-        let {_day, _hour, _minute} = getDateParsed()
+        let {_day, _hour, _minute} = getDateParsed();
+
+        console.log(_day, _hour, _minute)
+
         let task : ITaskDocument[] = await TaskModel.find({
             active : true,
             "period.days" : {
