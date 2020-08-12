@@ -123,10 +123,6 @@ async function getArrayFromSource(resultArray : any[]){
     
 };
 
-async function getDistIds(il : string, ilce : string){
-    return await getDistIdsByAdres([il]) ||[];
-}
-
 function getStates(text: string, last : boolean = false) {
     try {
         let viewPattern = new RegExp(/(?:")(__VIEWSTATE)(?:"value=")(.*?)(?:"\/>)/, "g");

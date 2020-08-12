@@ -69,7 +69,7 @@ var bayiValidation : any = {
   // GET /v1/bayi
   getBayi : {
     query : {
-      ruhsatNo : Joi.string().required().regex(/^[0-9]{7,11}PT$/g)
+      ruhsatNo : Joi.string().required().regex(/^[0-9]{7,11}\w.$/g).error((err) => `${err} gereklidir`)
     }
   }
 }

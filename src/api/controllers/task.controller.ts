@@ -40,7 +40,7 @@ export async function getTask(req : Request, res : Response, next : NextFunction
         console.log(_day, _hour, _minute)
 
         let task : ITaskDocument[] = await TaskModel.find({
-            active : true,
+            // active : true,
             "period.days" : {
                 $eq : _day
             },

@@ -23,9 +23,9 @@ router
 router
   .route("/get")
   .get(controller.getBayilerByUpdatedAt);
-router
-  .route("/getArray")
-  .get(controller.getBayilerByGroup);
+// router
+//   .route("/getArray")
+//   .get(controller.getBayilerByGroup);
 router
   .route("/bayi")
 

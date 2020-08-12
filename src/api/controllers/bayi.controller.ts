@@ -47,7 +47,7 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
         $gte: start
       },
       // updatedAt : today,
-      sended: false
+      // sended: false
     });
     res.json(bayiler);
   } catch (err) {
@@ -58,12 +58,11 @@ export async function getBayilerByUpdatedAt(req: Request, res: Response, next: N
   }
 }
 
-export async function getBayilerByGroup(req : Request, res : Response, next : NextFunction) {
+export async function getBayilerByGroup(gun : string) {
   try {
-    let _g = req.query.gun || "DÜN";
+    let _g = gun || "DÜN";
     let {start, end} = getDate(_g)
-    console.log("********************************")
-    console.info(start, end)
+    
     const bayiler = await BayiModel.aggregate([
       {
         $match: {
@@ -210,21 +209,6 @@ export async function getBayilerByGroup(req : Request, res : Response, next : Ne
             distributor: {
               name: 1
             }
-            // distributor: {
-            //   $reduce: {
-            //     input: "$bayiler.distributor",
-            //     initialValue: "",
-            //     in: {
-            //       $cond: {
-            //         if: { $eq: ["$$value", ""] },
-            //         then: "$$this.name",
-            //         else: {
-            //           $concat: ["$$value", ", ", "$$this.name"]
-            //         }
-            //       }
-            //     }
-            //   }
-            // }
           },
           users: {
             $reduce: {
@@ -251,9 +235,9 @@ export async function getBayilerByGroup(req : Request, res : Response, next : Ne
     ]);
     
     
-    res.json(bayiler);
+    return bayiler;
   } catch (err) {
-    res.json(err);
+    throw err;
   }
 }
 
@@ -287,7 +271,6 @@ export async function setValueToBayiler(req: Request, res: Response, next: NextF
 
 export async function setDistsToBayiler(dist: any) {
   try {
-    // console.log(dist)
     let { id, iller, ilceler, altBolge } = dist
     let bulk = BayiModel.collection.initializeUnorderedBulkOp();
     bulk.find({
@@ -387,13 +370,19 @@ export async function updateBayiler(bayiler: IBayi[]) {
 export async function getBayiByRuhsatNo(req: Request, res: Response, next: NextFunction) {
   try {
     let ruhsatNo = req.query.ruhsatNo;
-    let bayi: IBayiDocument = await BayiModel.findOne({ ruhsatNo: ruhsatNo }).populate("distributor");
-    bayi.adi = "ZAFER GENÇ"
-    bayi.save();
-    // if (isEmpty(bayi)) throw new APIError({
-    //   message: "Bayi bulunamadı",
-    //   code: httpStatus.NOT_FOUND
-    // });
+    let bayi: IBayiDocument = await (await BayiModel.findOne({ ruhsatNo: ruhsatNo }).populate({
+      path : "distributor",
+      select : "-bolgeData -id -created_at -updated_at",
+      populate : {
+        path : "users",
+        select : "email"
+      }
+    }));
+    
+    if (isEmpty(bayi)) throw new APIError({
+      message: "Bayi bulunamadı",
+      code: httpStatus.NOT_FOUND
+    });
     res.send(bayi)
   } catch (err) {
     next(err)

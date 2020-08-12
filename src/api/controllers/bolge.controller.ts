@@ -24,18 +24,3 @@ export async function getBolgeById(req: Request, res: Response, next: NextFuncti
         next(err)
     }
 };
-
-// export async function getDistsByBolge(req: Request, res: Response, next: NextFunction) {
-
-//     try {
-//         let payload: IBolge = req.query || null
-//         let dists = await BolgeModel.find({ kod: req.body.kod });
-//         if (_.isEmpty(dists) && dists.length == 0) throw new APIError({
-//             message: "Bölge bulunamadı",
-//             status: httpStatus.NOT_FOUND
-//         });
-//         res.json(dists);
-//     } catch (err) {
-//         next(err)
-//     }
-// };

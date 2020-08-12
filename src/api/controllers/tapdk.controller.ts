@@ -19,16 +19,16 @@ async function getSource(req: Request, res: Response, next: NextFunction) {
       .catch(() => {
         throw new Error(`Task bloke edilemedi ${_task.active}`)
       })
-    // let result = await updateBayiler(bayiler)
-    //   .then((_result) => {
-    //     taskDone(_task)
-    //     return _result
-    //   })
-    //   .catch(() => {
-    //     taskError(_task)
-    //     throw new Error(`Task bloke edilemedi ${_task.active}`)
-    //   })
-    res.json(bayiler)
+    let result = await updateBayiler(bayiler)
+      .then((_result) => {
+        taskDone(_task)
+        return _result
+      })
+      .catch(() => {
+        taskError(_task)
+        throw new Error(`Task bloke edilemedi ${_task.active}`)
+      })
+    res.json(result)
   } catch (err) {
     next(err)
   }

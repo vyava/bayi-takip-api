@@ -28,7 +28,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
     try {
         initialize()
         // Get date from request query. if null, Joi will set `DÜN` as default
-        const { gun } = req.query;
+        const { gun } = <any>req.query;
 
         // Get bayiler from DB by date
         let data: IBolgeMailData[] = await getBayilerByGroup(gun);
